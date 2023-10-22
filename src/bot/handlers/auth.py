@@ -1,11 +1,10 @@
 from aiogram import types, Router, F, Bot
 from aiogram.fsm.context import FSMContext
 
+from bot.middlewares import DatabaseMd
+from bot.structures.fsm import RegisterGroup, LoginGroup, MainGroup
+from bot.structures.keyboards import get_login_kb, get_main_kb
 from src.db import Database
-from src.encryption import hash_data
-from src.fsm import RegisterGroup, LoginGroup, MainGroup
-from src.keyboards import get_login_kb, get_main_kb
-from src.middlewares import DatabaseMd
 from .additional import edit_last_msg, update_last_msg, delete_last_msg
 
 auth_router = Router(name='auth')
@@ -35,23 +34,19 @@ async def reg_entering_password(msg: types.Message, state: FSMContext, bot: Bot)
 async def reg_entering_master(msg: types.Message, state: FSMContext, db: Database, bot: Bot) -> None:
     user_data = await state.get_data()
 
-    password, salt = hash_data(user_data['password'])
-    master, _ = hash_data(msg.text, salt)
+    async with db.session.begin():
+        await db.user.register(
+            db=db,
+            user_id=msg.from_user.id,
+            first_name=msg.from_user.first_name,
+            last_name=msg.from_user.last_name,
+            username=msg.from_user.username,
+            language_code=msg.from_user.language_code,
+            password=user_data['password'],
+            master=msg.text,
+        )
 
     await msg.delete()
-
-    user_data = await state.get_data()
-    async with db.session.begin():
-        auth_data = db.auth_data.new(
-            password,
-            master,
-            salt
-        )
-        db.user.new(
-            msg.from_user.id,
-            msg.from_user.username if msg.from_user.username is not None else '',
-            auth_data
-        )
 
     await delete_last_msg(bot, user_data)
     await msg.answer('Регистрация успешно завершена! Вы можете начать пользование менеджером 😊\n\n'

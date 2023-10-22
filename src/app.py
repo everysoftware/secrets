@@ -2,19 +2,14 @@ import asyncio
 import logging
 import sys
 
-from aiogram import Bot, Dispatcher
-from aiogram.fsm.storage.redis import RedisStorage
-from redis.asyncio.client import Redis
+from aiogram import Bot
 
+from bot.handlers import redirects
+from bot.handlers.commands import BOT_COMMANDS
 from cache import Cache
 from config import cfg
 from db import create_async_engine, get_session_maker
-from handlers import routers, redirects
-from handlers.commands import BOT_COMMANDS
-
-
-def get_redis_storage(redis: Redis, state_ttl: int = cfg.redis.state_ttl, data_ttl: int = cfg.redis.data_ttl):
-    return RedisStorage(redis=redis, state_ttl=state_ttl, data_ttl=data_ttl)
+from dispatcher import create_dispatcher, get_redis_storage
 
 
 async def main() -> None:
@@ -28,17 +23,12 @@ async def main() -> None:
     engine = create_async_engine(cfg.db.build_connection_str())
     session_maker = get_session_maker(engine)
 
-    dp = Dispatcher(
-        storage=storage
-    )
-
-    for router in routers:
-        dp.include_router(router)
+    dp = create_dispatcher(storage)
 
     await dp.start_polling(
         bot,
         allowed_updates=dp.resolve_used_update_types(),
-        session_maker=session_maker,
+        pool=session_maker,
         cache=cache,
         redirects=redirects
     )

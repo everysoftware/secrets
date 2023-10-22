@@ -1,12 +1,12 @@
 from aiogram import types, Router, F, Bot
 from aiogram.fsm.context import FSMContext
 
+from bot.encryption import encrypt_data, decrypt_data, generate_password
+from bot.middlewares import RegisterCheck
+from bot.structures.fsm import MainGroup
+from bot.structures.keyboards import get_main_kb, get_storage_kb
 from src.db import Database
 from src.db.models import Record
-from src.encryption import encrypt_data, decrypt_data, generate_password
-from src.fsm import MainGroup
-from src.keyboards import get_main_kb, get_storage_kb
-from src.middlewares import RegisterCheck
 from .additional import update_last_msg, edit_last_msg, delete_last_msg
 from .confirmation import confirm_master
 from .redirects import redirects

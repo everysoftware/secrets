@@ -3,12 +3,11 @@ from typing import Callable, Dict, Any, Awaitable
 from aiogram import BaseMiddleware, types
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, CallbackQuery
-from sqlalchemy.orm import sessionmaker
 
+from bot.structures.fsm import RegisterGroup
+from bot.structures.keyboards import get_reg_kb
 from cache import Cache
 from db.database import Database
-from fsm import RegisterGroup
-from keyboards import get_reg_kb
 
 
 class RegisterCheck(BaseMiddleware):
@@ -18,10 +17,9 @@ class RegisterCheck(BaseMiddleware):
             event: Message | CallbackQuery,
             data: Dict[str, Any]
     ) -> Any:
-        session_maker: sessionmaker = data['session_maker']
         cache: Cache = data['cache']
 
-        async with session_maker() as session:
+        async with data['pool']() as session:
             db = Database(session)
             data['db'] = db
 

@@ -57,6 +57,7 @@ class RedisConfig:
 
 @dataclass(frozen=True)
 class Config:
+    mode: str = getenv('MODE', 'dev')
     debug: bool = bool(getenv('DEBUG'))
     logging_level: int = getenv('LOGGING_LEVEL', 'INFO')
 
