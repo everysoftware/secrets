@@ -1,27 +1,26 @@
-from sqlalchemy import Column, VARCHAR, LargeBinary, BigInteger
-from sqlalchemy.orm import relationship, Mapped
+from sqlalchemy.orm import relationship, Mapped, mapped_column
 from sqlalchemy.sql.schema import Identity, ForeignKey
 
-from .base import Base
+from .base import Base, str_64
 
 
 class Record(Base):
-    __tablename__: str = 'records'
+    __tablename__ = 'records'
 
-    id: Mapped[str] = Column(BigInteger, Identity(), primary_key=True)
+    id: Mapped[int] = mapped_column(Identity(), primary_key=True)
 
-    user_id: Mapped[int] = Column(BigInteger, ForeignKey('users.user_id'))
+    user_id: Mapped[int] = mapped_column(ForeignKey('users.user_id'))
     user = relationship(
         'User',
         back_populates='records',
     )
 
-    url: Mapped[str] = Column(VARCHAR(64), nullable=False)
-    title: Mapped[str] = Column(VARCHAR(64), nullable=False)
+    url: Mapped[str_64]
+    title: Mapped[str_64]
 
-    username: Mapped[bytes] = Column(LargeBinary)
-    password_: Mapped[bytes] = Column(LargeBinary)
-    salt: Mapped[bytes] = Column(LargeBinary, nullable=False)
+    username: Mapped[bytes]
+    password_: Mapped[bytes]
+    salt: Mapped[bytes]
 
     comment = relationship(
         'Comment',
@@ -29,6 +28,3 @@ class Record(Base):
         lazy='joined',
         uselist=False
     )
-
-    def __str__(self) -> str:
-        return str({'id': self.id})

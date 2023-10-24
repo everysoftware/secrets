@@ -58,20 +58,6 @@ def decrypt_data_(data: bytes, master_password: bytes, salt: bytes) -> bytes:
     return plaintext
 
 
-# Пример использования
-def example() -> None:
-    master_password = b'my_secret_master_password'
-    salt = os.urandom(16)
-    data = b'This is the data to be encrypted'
-
-    encrypted_data = encrypt_data_(data, master_password, salt)
-    decrypted_data = decrypt_data_(encrypted_data, master_password, salt)
-
-    print("Исходные данные:", data)
-    print("Зашифрованные данные:", encrypted_data)
-    print("Расшифрованные данные:", decrypted_data)
-
-
 def encrypt_data(data: str, master: str, salt: bytes | None = None) -> tuple[bytes, bytes]:
     if salt is None:
         salt = os.urandom(16)

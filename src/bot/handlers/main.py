@@ -4,7 +4,7 @@ from aiogram.fsm.context import FSMContext
 from bot.encryption import encrypt_data, decrypt_data, generate_password
 from bot.middlewares import RegisterCheck
 from bot.structures.fsm import MainGroup
-from bot.structures.keyboards import get_main_kb, get_storage_kb
+from bot.structures.keyboards import MAIN_MENU_KB, get_storage_kb
 from src.db import Database
 from src.db.models import Record
 from .additional import update_last_msg, edit_last_msg, delete_last_msg
@@ -129,7 +129,7 @@ async def password_step(msg: types.Message, state: FSMContext, db: Database, bot
     await delete_last_msg(bot, user_data)
     await msg.answer(
         'Запись успешно добавлена в хранилище! ✅',
-        reply_markup=get_main_kb()
+        reply_markup=MAIN_MENU_KB
     )
     await state.clear()
     await state.set_state(MainGroup.main_menu)

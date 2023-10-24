@@ -1,14 +1,15 @@
-from sqlalchemy import Column, VARCHAR, BigInteger
-from sqlalchemy.orm import Mapped, relationship
+from typing import Optional
+
+from sqlalchemy.orm import Mapped, relationship, mapped_column
 from sqlalchemy.sql.schema import ForeignKey
 
-from .base import Base
+from .base import Base, str_256
 
 
 class Comment(Base):
     __tablename__ = 'comments'
 
-    record_id: Mapped[int] = Column(BigInteger, ForeignKey('records.id'), primary_key=True)
+    record_id: Mapped[int] = mapped_column(ForeignKey('records.id'), primary_key=True)
 
     record = relationship(
         'Record',
@@ -16,4 +17,4 @@ class Comment(Base):
         lazy='joined',
     )
 
-    text: Mapped[str] = Column(VARCHAR(512))
+    text: Mapped[Optional[str_256]]

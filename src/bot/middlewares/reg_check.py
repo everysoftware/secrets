@@ -5,7 +5,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, CallbackQuery
 
 from bot.structures.fsm import RegisterGroup
-from bot.structures.keyboards import get_reg_kb
+from bot.structures.keyboards import REG_KB
 from cache import Cache
 from db.database import Database
 
@@ -41,5 +41,5 @@ class RegisterCheck(BaseMiddleware):
     async def reg_gate(msg: types.Message, state: FSMContext):
         await msg.answer(
             'Ты не зарегистрирован. Чтобы зарегистрироваться нажми на кнопку внизу 👇',
-            reply_markup=get_reg_kb())
+            reply_markup=REG_KB)
         await state.set_state(RegisterGroup.button_step)

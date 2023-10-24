@@ -20,7 +20,7 @@ from utils.mocked_db import MockedDatabase
 def event_loop():
     loop = asyncio.new_event_loop()
     yield loop
-    asyncio.set_event_loop(loop)
+    loop.close()
 
 
 @pytest.fixture(scope='session')

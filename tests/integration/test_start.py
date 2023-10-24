@@ -4,11 +4,11 @@ from aiogram.dispatcher.event.bases import UNHANDLED
 from aiogram.methods import SendMessage
 from aiogram.types import User
 from sqlalchemy.orm import sessionmaker
-
-from bot.structures.keyboards import get_login_kb, get_reg_kb
-from db import Database
 from utils.entities import get_update, get_message, get_user
 from utils.mocked_bot import MockedBot
+
+from bot.structures.keyboards import LOGIN_KB, REG_KB
+from db import Database
 
 
 def get_users():
@@ -21,7 +21,10 @@ def get_users():
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize('is_new, user', get_users())
+@pytest.mark.parametrize(
+    'is_new, user',
+    get_users()
+)
 async def test_start_command(
         is_new: bool,
         user: User,
@@ -42,8 +45,8 @@ async def test_start_command(
     )
 
     assert isinstance(result, SendMessage)
-    assert is_new and result.reply_markup == get_reg_kb() or \
-           not is_new and result.reply_markup == get_login_kb()
+    assert is_new and result.reply_markup == REG_KB or \
+           not is_new and result.reply_markup == LOGIN_KB
 
 
 @pytest.mark.asyncio

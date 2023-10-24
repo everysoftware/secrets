@@ -22,7 +22,6 @@ async def main() -> None:
     storage = get_redis_storage(cache.client)
     engine = create_async_engine(cfg.db.build_connection_str())
     session_maker = get_session_maker(engine)
-
     dp = create_dispatcher(storage)
 
     await dp.start_polling(

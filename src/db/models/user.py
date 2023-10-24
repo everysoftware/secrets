@@ -1,7 +1,7 @@
 import datetime
+from typing import Optional
 
-from sqlalchemy import Column, TIMESTAMP, BigInteger, String
-from sqlalchemy.orm import relationship, Mapped
+from sqlalchemy.orm import relationship, Mapped, mapped_column
 from sqlalchemy.sql.schema import Identity
 
 from .base import Base
@@ -10,15 +10,13 @@ from .base import Base
 class User(Base):
     __tablename__ = 'users'
 
-    id: Mapped[int] = Column(BigInteger, Identity(), unique=True)
+    id: Mapped[int] = mapped_column(Identity(), unique=True)
 
-    user_id: Mapped[int] = Column(BigInteger, primary_key=True, unique=True, nullable=False)
-    """Telegram User ID"""
-
-    first_name: Mapped[str] = Column(String)
-    last_name: Mapped[str] = Column(String)
-    language_code: Mapped[str] = Column(String)
-    username: Mapped[str] = Column(String, unique=True)
+    user_id: Mapped[int] = mapped_column(primary_key=True, unique=True)
+    first_name: Mapped[str]
+    last_name: Mapped[Optional[str]]
+    language_code: Mapped[Optional[str]]
+    username: Mapped[Optional[str]]
     auth_data = relationship(
         'AuthData',
         back_populates='user',
@@ -26,7 +24,7 @@ class User(Base):
         lazy='joined',
     )
 
-    reg_date: Mapped[datetime] = Column(TIMESTAMP, default=datetime.datetime.now(), nullable=False)
+    reg_date: Mapped[datetime.datetime] = mapped_column(default=datetime.datetime.now())
 
     records = relationship(
         'Record',

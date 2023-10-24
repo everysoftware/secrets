@@ -3,7 +3,7 @@ from aiogram.fsm.context import FSMContext
 
 from bot.middlewares import DatabaseMd
 from bot.structures.fsm import RegisterGroup, LoginGroup, MainGroup
-from bot.structures.keyboards import get_login_kb, get_main_kb
+from bot.structures.keyboards import LOGIN_KB, MAIN_MENU_KB
 from src.db import Database
 from .additional import edit_last_msg, update_last_msg, delete_last_msg
 
@@ -51,7 +51,7 @@ async def reg_entering_master(msg: types.Message, state: FSMContext, db: Databas
     await delete_last_msg(bot, user_data)
     await msg.answer('Регистрация успешно завершена! Вы можете начать пользование менеджером 😊\n\n'
                      'Нажмите на кнопку ниже, чтобы авторизоваться 👇',
-                     reply_markup=get_login_kb())
+                     reply_markup=LOGIN_KB)
     await state.clear()
     await state.set_state(LoginGroup.button_step)
 
@@ -73,7 +73,7 @@ async def login_entering_password(msg: types.Message, state: FSMContext, db: Dat
         if await db.user.login(msg.from_user.id, msg.text):
             await delete_last_msg(bot, user_data)
             await msg.answer('Успешная авторизация ✅',
-                             reply_markup=get_main_kb())
+                             reply_markup=MAIN_MENU_KB)
             await state.clear()
             await state.set_state(MainGroup.main_menu)
         else:

@@ -9,27 +9,15 @@ from aiogram.utils.keyboard import InlineKeyboardBuilder
 
 from db import Database
 
-
-def get_main_kb() -> ReplyKeyboardMarkup:
-    return ReplyKeyboardMarkup(
-        keyboard=[
-            [KeyboardButton(text='Хранилище 📁')],
-            [KeyboardButton(text='Добавить ➕'),
-             KeyboardButton(text='Сгенерировать 🔑')]
-        ],
-        resize_keyboard=True,
-        # one_time_keyboard=True
-    )
-
-
-def get_record_reply_kb() -> ReplyKeyboardMarkup:
-    return ReplyKeyboardMarkup(
-        keyboard=[
-            [KeyboardButton(text='В меню ⬅️')],
-        ],
-        resize_keyboard=True,
-        one_time_keyboard=True
-    )
+MAIN_MENU_KB = ReplyKeyboardMarkup(
+    keyboard=[
+        [KeyboardButton(text='Хранилище 📁')],
+        [KeyboardButton(text='Добавить ➕'),
+         KeyboardButton(text='Сгенерировать 🔑')]
+    ],
+    resize_keyboard=True,
+    # one_time_keyboard=True
+)
 
 
 async def get_storage_kb(msg: Message, db: Database) -> InlineKeyboardMarkup:

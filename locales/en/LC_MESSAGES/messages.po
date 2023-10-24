@@ -1,0 +1,49 @@
+# English translations for PROJECT.
+# Copyright (C) 2023 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2023.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2023-10-24 14:29+0300\n"
+"PO-Revision-Date: 2023-10-24 14:39+0300\n"
+"Last-Translator: \n"
+"Language-Team: en <LL@li.org>\n"
+"Language: en\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Generated-By: Babel 2.13.0\n"
+"X-Generator: Poedit 3.4\n"
+
+#: src/bot/handlers/start.py:25
+msgid ""
+"Привет! Я бот-менеджер паролей. Я надёжно защищу твои данные и буду "
+"хранить их в целости и сохранности. Чтобы зарегистрироваться нажми на "
+"кнопку внизу 👇"
+msgstr ""
+"Hi! I'm a password manager bot. I will securely protect your data and "
+"keep it safe and sound. To sign up click the button below 👇"
+
+#: src/bot/handlers/start.py:31
+msgid ""
+"Привет, {first_name} {last_name}, мы тебя помним! Чтобы авторизоваться "
+"нажми на кнопку внизу 👇"
+msgstr ""
+"Hi, {first_name} {last_name}, we remember you! To log in, click the "
+"button below 👇"
+
+#: src/bot/handlers/start.py:42
+msgid ""
+"<b>Команды бота:</b>\n"
+"\n"
+msgstr ""
+"<b>Bot Commands:</b>\n"
+"\n"
+
+#: src/bot/handlers/start.py:47
+msgid "Автор бота: @ivanstasevich 👨‍💻"
+msgstr "Bot author: @ivanstasevich 👨‍💻"

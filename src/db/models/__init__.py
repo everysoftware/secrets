@@ -1,7 +1,7 @@
 from .auth_data import AuthData
-from .base import Base
+from .base import Base, str_64, str_256
 from .comment import Comment
 from .record import Record
 from .user import User
 
-__all__ = ('AuthData', 'Base', 'Comment', 'Record', 'User')
+__all__ = ('AuthData', 'Base', 'str_64', 'str_256', 'Comment', 'Record', 'User')
