@@ -3,7 +3,7 @@ from typing import Callable, Dict, Any, Awaitable
 from aiogram import BaseMiddleware
 from aiogram.types import Message, CallbackQuery
 
-from db.database import Database
+from src.db.database import Database
 
 
 class DatabaseMd(BaseMiddleware):

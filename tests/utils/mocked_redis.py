@@ -18,6 +18,13 @@ class MockedRedis(Redis):
         self.data[name] = value
         return True
 
+    async def delete(self, name: str) -> bool:
+        if not self.exists(name):
+            return False
+
+        self.data.pop(name)
+        return True
+
     async def exists(self, name: str) -> int:
         """Check if keys are exists in mocked storage."""
         return name in self.data

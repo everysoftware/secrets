@@ -1,3 +1,4 @@
+import os
 import pathlib
 from dataclasses import dataclass
 from os import getenv
@@ -7,10 +8,11 @@ from sqlalchemy.engine import URL
 
 
 def setup_env() -> None:
-    path = pathlib.Path(__file__).parent.parent
-    dotenv_path = path.joinpath('.env')
-    if dotenv_path.exists():
-        load_dotenv(dotenv_path)
+    if os.getenv('TESTING_MODE') is None:
+        path = pathlib.Path(__file__).parent.parent
+        dotenv_path = path.joinpath('.env' if os.getenv('DOCKER_MODE') is not None else '.dev.env')
+        if dotenv_path.exists():
+            load_dotenv(dotenv_path)
 
 
 setup_env()
@@ -18,16 +20,17 @@ setup_env()
 
 @dataclass(frozen=True)
 class BotConfig:
-    tg_token: str = getenv('TG_TOKEN')
+    tg_token: str = getenv('BOT_TELEGRAM_TOKEN')
 
 
 @dataclass(frozen=True)
 class DatabaseConfig:
-    db: str = getenv('POSTGRES_DATABASE')
-    username: str = getenv('POSTGRES_USERNAME', 'postgres')
+    db: str = getenv('POSTGRES_DB', 'postgres')
+    username: str = getenv('POSTGRES_USER', 'postgres')
     password: str = getenv('POSTGRES_PASSWORD', None)
+
     port: int = int(getenv('POSTGRES_PORT', 5432))
-    host: str = getenv('POSTGRES_HOST', 'localhost')
+    host: str = getenv('POSTGRES_HOST', 'postgres')
 
     driver: str = 'asyncpg'
     database_system: str = 'postgresql'
@@ -49,7 +52,7 @@ class RedisConfig:
     username: str = getenv('REDIS_USERNAME', None)
     password: str = getenv('REDIS_PASSWORD', None)
     port: int = int(getenv('REDIS_PORT', 6379))
-    host: str = getenv('REDIS_HOST', 'localhost')
+    host: str = getenv('REDIS_HOST', 'redis')
 
     state_ttl: int = getenv('REDIS_TTL_STATE', None)
     data_ttl: int = getenv('REDIS_TTL_DATA', None)
@@ -57,9 +60,9 @@ class RedisConfig:
 
 @dataclass(frozen=True)
 class Config:
-    mode: str = getenv('MODE', 'dev')
-    debug: bool = bool(getenv('DEBUG'))
-    logging_level: int = getenv('LOGGING_LEVEL', 'INFO')
+    mode: str = getenv('BOT_MODE', 'dev')
+    debug: bool = bool(getenv('BOT_DEBUG'))
+    logging_level: int = getenv('BOT_LOGGING_LEVEL', 'INFO')
 
     bot: BotConfig = BotConfig()
     db: DatabaseConfig = DatabaseConfig()

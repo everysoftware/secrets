@@ -4,12 +4,12 @@ import sys
 
 from aiogram import Bot
 
-from bot.handlers import redirects
-from bot.handlers.commands import BOT_COMMANDS
-from cache import Cache
-from config import cfg
-from db import create_async_engine, get_session_maker
-from dispatcher import create_dispatcher, get_redis_storage
+from .bot.handlers import redirects
+from .bot.handlers.commands import BOT_COMMANDS
+from .cache import Cache
+from .config import cfg
+from .db import create_async_engine, get_session_maker
+from .dispatcher import create_dispatcher, get_redis_storage
 
 
 async def main() -> None:
@@ -29,7 +29,7 @@ async def main() -> None:
         allowed_updates=dp.resolve_used_update_types(),
         pool=session_maker,
         cache=cache,
-        redirects=redirects
+        redirects=redirects,
     )
 
 

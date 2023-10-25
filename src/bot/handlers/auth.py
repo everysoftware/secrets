@@ -1,11 +1,13 @@
 from aiogram import types, Router, F, Bot
 from aiogram.fsm.context import FSMContext
 
-from bot.middlewares import DatabaseMd
-from bot.structures.fsm import RegisterGroup, LoginGroup, MainGroup
-from bot.structures.keyboards import LOGIN_KB, MAIN_MENU_KB
+from src.bot.middlewares import DatabaseMd
+from src.bot.structures.fsm import RegisterGroup, LoginGroup
+from src.bot.structures.keyboards import LOGIN_KB
+from src.cache import Cache
 from src.db import Database
 from .additional import edit_last_msg, update_last_msg, delete_last_msg
+from .main import show_main_menu
 
 auth_router = Router(name='auth')
 auth_router.message.middleware(DatabaseMd())
@@ -31,12 +33,19 @@ async def reg_entering_password(msg: types.Message, state: FSMContext, bot: Bot)
 
 
 @auth_router.message(RegisterGroup.entering_master)
-async def reg_entering_master(msg: types.Message, state: FSMContext, db: Database, bot: Bot) -> None:
+async def reg_entering_master(
+        msg: types.Message,
+        state: FSMContext,
+        db: Database,
+        bot: Bot,
+        cache: Cache
+) -> None:
     user_data = await state.get_data()
 
     async with db.session.begin():
         await db.user.register(
             db=db,
+            cache=cache,
             user_id=msg.from_user.id,
             first_name=msg.from_user.first_name,
             last_name=msg.from_user.last_name,
@@ -47,10 +56,10 @@ async def reg_entering_master(msg: types.Message, state: FSMContext, db: Databas
         )
 
     await msg.delete()
-
     await delete_last_msg(bot, user_data)
-    await msg.answer('Регистрация успешно завершена! Вы можете начать пользование менеджером 😊\n\n'
-                     'Нажмите на кнопку ниже, чтобы авторизоваться 👇',
+
+    await msg.answer('Регистрация успешно завершена! Ты можешь начать пользование менеджером 😊\n\n'
+                     'Нажми на кнопку ниже, чтобы авторизоваться 👇',
                      reply_markup=LOGIN_KB)
     await state.clear()
     await state.set_state(LoginGroup.button_step)
@@ -72,9 +81,9 @@ async def login_entering_password(msg: types.Message, state: FSMContext, db: Dat
     async with db.session.begin():
         if await db.user.login(msg.from_user.id, msg.text):
             await delete_last_msg(bot, user_data)
-            await msg.answer('Успешная авторизация ✅',
-                             reply_markup=MAIN_MENU_KB)
             await state.clear()
-            await state.set_state(MainGroup.main_menu)
+            await msg.answer('Успешная авторизация ✅')
+
+            await show_main_menu(msg, state)
         else:
             await edit_last_msg(bot, user_data, state, 'Неверный пароль. Попробуй ещё раз ⬇️')

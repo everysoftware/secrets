@@ -7,7 +7,7 @@ from aiogram.types import (
 )
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
-from db import Database
+from src.db import Database
 
 MAIN_MENU_KB = ReplyKeyboardMarkup(
     keyboard=[

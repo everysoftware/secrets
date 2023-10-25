@@ -9,7 +9,10 @@ class Record(Base):
 
     id: Mapped[int] = mapped_column(Identity(), primary_key=True)
 
-    user_id: Mapped[int] = mapped_column(ForeignKey('users.user_id'))
+    user_id: Mapped[int] = mapped_column(ForeignKey(
+        'users.user_id',
+        ondelete='cascade'
+    ))
     user = relationship(
         'User',
         back_populates='records',

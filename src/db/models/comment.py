@@ -9,7 +9,10 @@ from .base import Base, str_256
 class Comment(Base):
     __tablename__ = 'comments'
 
-    record_id: Mapped[int] = mapped_column(ForeignKey('records.id'), primary_key=True)
+    record_id: Mapped[int] = mapped_column(ForeignKey(
+        'records.id',
+        ondelete='cascade'
+    ), primary_key=True)
 
     record = relationship(
         'Record',

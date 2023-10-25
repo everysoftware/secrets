@@ -14,7 +14,6 @@ def build_redis_client() -> Redis:
         db=cfg.redis.db,
         port=cfg.redis.port,
         password=cfg.redis.password,
-        username=cfg.redis.username,
     )
 
     asyncio.create_task(client.ping())
@@ -32,8 +31,16 @@ class Cache:
     def redis_client(self) -> Redis:
         return self.client
 
-    async def get(self, key: KeyLike) -> Any:
-        return await self.client.get(str(key))
+    async def get(self, key: KeyLike, type_: Any = None) -> Any:
+        result = await self.client.get(str(key))
+
+        if result is None:
+            return result
+
+        return type_(result) if type_ is not None else result
 
     async def set(self, key: KeyLike, value: Any):
-        await self.client.set(name=str(key), value=value)
+        return await self.client.set(name=str(key), value=value)
+
+    async def delete(self, key: KeyLike):
+        return await self.client.delete(key)

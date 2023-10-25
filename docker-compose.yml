@@ -1,0 +1,47 @@
+version: '3.7'
+services:
+  redis:
+    build:
+      context: buildfiles
+      dockerfile: RedisDockerfile
+    env_file:
+      - .env
+    restart: on-failure
+    ports:
+      - "6378:6379"
+  db:
+    image: postgres:15-alpine
+    env_file:
+      - .env
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    restart: on-failure
+    ports:
+      - "5431:5432"
+  tests:
+    build:
+      context: .
+      dockerfile: buildfiles/Tests.Dockerfile
+    command: sh -c "make migrate && pytest -s -v"
+    env_file:
+      - .test.env
+    restart: no
+    depends_on:
+      - db
+      - redis
+  bot:
+    build:
+      context: .
+      dockerfile: buildfiles/Dockerfile
+    command: sh -c "make migrate && python -m src"
+    env_file:
+      - .env
+    restart: always
+    depends_on:
+      - tests
+      - db
+      - redis
+
+volumes:
+  pgdata:
+  pgadmin-data:

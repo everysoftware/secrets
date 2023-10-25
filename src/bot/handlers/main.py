@@ -1,19 +1,32 @@
 from aiogram import types, Router, F, Bot
 from aiogram.fsm.context import FSMContext
 
-from bot.encryption import encrypt_data, decrypt_data, generate_password
-from bot.middlewares import RegisterCheck
-from bot.structures.fsm import MainGroup
-from bot.structures.keyboards import MAIN_MENU_KB, get_storage_kb
+from src.bot.encryption import encrypt_data, decrypt_data, generate_password
+from src.bot.middlewares import DatabaseMd
+from src.bot.structures.fsm import MainGroup
+from src.bot.structures.keyboards import MAIN_MENU_KB, get_storage_kb
 from src.db import Database
 from src.db.models import Record
 from .additional import update_last_msg, edit_last_msg, delete_last_msg
 from .confirmation import confirm_master
 from .redirects import redirects
+from ..filters.reg_filter import RegisterFilter
 
 main_router = Router(name='main')
-main_router.message.middleware(RegisterCheck())
-main_router.callback_query.middleware(RegisterCheck())
+
+main_router.message.middleware(DatabaseMd())
+main_router.callback_query.middleware(DatabaseMd())
+
+main_router.message.filter(RegisterFilter())
+main_router.callback_query.filter(RegisterFilter())
+
+
+async def show_main_menu(msg: types.Message, state: FSMContext) -> None:
+    await msg.answer(
+        'Ты в главном меню бота. Для навигации используй кнопки внизу 👇',
+        reply_markup=MAIN_MENU_KB
+    )
+    await state.set_state(MainGroup.main_menu)
 
 
 @main_router.message(MainGroup.main_menu)

@@ -1,5 +1,7 @@
+.PHONY: generate
 generate:
-    alembic revision --m="{NAME}" --autogenerate
+	alembic revision --m="$(NAME)" --autogenerate
 
+.PHONY: migrate
 migrate:
-    alembic upgrade head
+	alembic upgrade head

@@ -3,15 +3,20 @@ from typing import Callable
 from aiogram import Router, types, Bot
 from aiogram.fsm.context import FSMContext
 
-from bot.encryption import verify_data
-from bot.middlewares import RegisterCheck
-from bot.structures.fsm import LoginGroup
+from src.bot.encryption import verify_data
+from src.bot.structures.fsm import LoginGroup
 from src.db import Database
 from .additional import update_last_msg, edit_last_msg
 from .redirects import Redirects
+from ..filters import RegisterFilter
+from ..middlewares import DatabaseMd
 
 confirmation_router = Router(name='confirmation')
-confirmation_router.message.middleware(RegisterCheck())
+
+confirmation_router.message.middleware(DatabaseMd())
+confirmation_router.callback_query.middleware(DatabaseMd())
+
+confirmation_router.message.filter(RegisterFilter())
 
 
 async def confirm_master(msg: types.Message, state: FSMContext, redirect: Callable) -> None:

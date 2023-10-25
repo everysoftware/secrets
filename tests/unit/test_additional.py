@@ -1,9 +1,9 @@
 import pytest
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.storage.base import StorageKey
-from utils.entities import get_message, get_user, get_chat
 
 from bot.handlers.additional import update_last_msg
+from utils.entities import get_message, get_user, get_chat
 
 
 @pytest.mark.asyncio

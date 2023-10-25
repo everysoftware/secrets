@@ -4,11 +4,12 @@ from aiogram.dispatcher.event.bases import UNHANDLED
 from aiogram.methods import SendMessage
 from aiogram.types import User
 from sqlalchemy.orm import sessionmaker
-from utils.entities import get_update, get_message, get_user
-from utils.mocked_bot import MockedBot
 
 from bot.structures.keyboards import LOGIN_KB, REG_KB
+from cache import Cache
 from db import Database
+from utils.entities import get_update, get_message, get_user
+from utils.mocked_bot import MockedBot
 
 
 def get_users():
@@ -30,18 +31,28 @@ async def test_start_command(
         user: User,
         dispatcher: Dispatcher,
         bot: MockedBot,
-        pool: sessionmaker,
-        db: Database
+        db: Database,
+        cache: Cache,
+        pool: sessionmaker
 ):
     async with db.session.begin():
         if not is_new:
-            await db.user.register(db, user.id, user.first_name, user.last_name, 'test', 'test')
+            await db.user.register(
+                db,
+                cache,
+                user.id,
+                user.first_name,
+                user.last_name,
+                'test',
+                'test'
+            )
 
     msg = get_message(text='/start', from_user=user)
     result = await dispatcher.feed_update(
         bot=bot,
         update=get_update(message=msg),
-        pool=pool,
+        cache=cache,
+        pool=pool
     )
 
     assert isinstance(result, SendMessage)

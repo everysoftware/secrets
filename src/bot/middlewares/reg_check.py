@@ -1,13 +1,10 @@
 from typing import Callable, Dict, Any, Awaitable
 
-from aiogram import BaseMiddleware, types
-from aiogram.fsm.context import FSMContext
+from aiogram import BaseMiddleware
 from aiogram.types import Message, CallbackQuery
 
-from bot.structures.fsm import RegisterGroup
-from bot.structures.keyboards import REG_KB
-from cache import Cache
-from db.database import Database
+from src.cache import Cache
+from src.db.database import Database
 
 
 class RegisterCheck(BaseMiddleware):
@@ -23,23 +20,13 @@ class RegisterCheck(BaseMiddleware):
             db = Database(session)
             data['db'] = db
 
-            user_exists = await cache.get(f'user_exists:{event.from_user.id}')
+            user_exists = await cache.get(f'user_exists:{event.from_user.id}', int)
             if user_exists is None:
                 async with session.begin():
                     user_exists = int(await data['db'].user.get(event.from_user.id) is not None)
-                    await cache.set(
-                        f'user_exists:{event.from_user.id}',
-                        user_exists
-                    )
+                await cache.set(
+                    f'user_exists:{event.from_user.id}',
+                    user_exists
+                )
 
-            if user_exists:
-                return await handler(event, data)
-            else:
-                return await self.reg_gate(event, data['state'])
-
-    @staticmethod
-    async def reg_gate(msg: types.Message, state: FSMContext):
-        await msg.answer(
-            'Ты не зарегистрирован. Чтобы зарегистрироваться нажми на кнопку внизу 👇',
-            reply_markup=REG_KB)
-        await state.set_state(RegisterGroup.button_step)
+            return await handler(event, data)

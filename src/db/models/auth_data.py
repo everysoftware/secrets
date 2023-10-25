@@ -7,8 +7,10 @@ from .base import Base, str_64
 class AuthData(Base):
     __tablename__ = 'auth_data'
 
-    user_id: Mapped[int] = mapped_column(ForeignKey('users.user_id'), primary_key=True)
-    """Telegram User ID"""
+    user_id: Mapped[int] = mapped_column(ForeignKey(
+        'users.user_id',
+        ondelete='cascade'
+    ), primary_key=True)
     user = relationship(
         'User',
         back_populates='auth_data',
