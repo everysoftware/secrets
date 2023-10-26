@@ -1,3 +1,5 @@
+from typing import Optional
+
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from .repo import Repository
@@ -15,8 +17,7 @@ class RecordRepo(Repository[Record]):
             title: str,
             username: bytes,
             password: bytes,
-            salt: bytes,
-            comment: Comment,
+            salt: bytes
     ) -> Record:
         new_record = Record(
             user=user,
@@ -25,7 +26,6 @@ class RecordRepo(Repository[Record]):
             username=username,
             password_=password,
             salt=salt,
-            comment=comment,
         )
         self.session.add(new_record)
         return new_record

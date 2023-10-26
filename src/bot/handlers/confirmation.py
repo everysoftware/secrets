@@ -19,9 +19,15 @@ confirmation_router.callback_query.middleware(DatabaseMd())
 confirmation_router.message.filter(RegisterFilter())
 
 
-async def confirm_master(msg: types.Message, state: FSMContext, redirect: Callable) -> None:
+async def confirm_master(
+        msg: types.Message,
+        state: FSMContext,
+        redirect: Callable,
+        save_master: bool = False
+) -> None:
     await state.update_data(last_state=await state.get_state())
     await state.update_data(redirect=redirect.__name__)
+    await state.update_data(save_master=save_master)
 
     sent_msg = await msg.answer('Для подтверждения операции введите мастер-пароль ⬇️')
     await update_last_msg(sent_msg, state)
@@ -46,7 +52,8 @@ async def confirm_master_helper(msg: types.Message, redirects: Redirects, **data
 
     if verify_data(master, master_from_db, salt):
         await edit_last_msg(bot, user_data, state, 'Операция подтверждена мастер-паролем ✅')
-        await state.update_data(master=master)
+        if user_data['save_master']:
+            await state.update_data(master=master)
         await state.set_state(user_data['last_state'])
 
         await redirects.redirect(user_data['redirect'], msg=msg, **data)

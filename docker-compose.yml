@@ -41,6 +41,17 @@ services:
       - tests
       - db
       - redis
+  scheduler:
+    build:
+      context: .
+      dockerfile: buildfiles/Scheduler.Dockerfile
+    env_file:
+      - .env
+    restart: always
+    command: sh -c "arq src.scheduler.main.WorkerSettings"
+    depends_on:
+      - redis
+      - bot
 
 volumes:
   pgdata:

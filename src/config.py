@@ -3,6 +3,7 @@ import pathlib
 from dataclasses import dataclass
 from os import getenv
 
+from arq.connections import RedisSettings
 from dotenv import load_dotenv
 from sqlalchemy.engine import URL
 
@@ -56,6 +57,13 @@ class RedisConfig:
 
     state_ttl: int = getenv('REDIS_TTL_STATE', None)
     data_ttl: int = getenv('REDIS_TTL_DATA', None)
+
+    pool_settings = RedisSettings(
+        username=username,
+        password=password,
+        port=port,
+        host=host
+    )
 
 
 @dataclass(frozen=True)

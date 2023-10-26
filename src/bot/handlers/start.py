@@ -1,7 +1,10 @@
+from datetime import timedelta
+
 from aiogram import types, Router
 from aiogram.filters import CommandObject, Command
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
+from arq import ArqRedis
 
 from src.bot.middlewares import RegisterCheck
 from src.bot.structures.fsm import LoginGroup, RegisterGroup
@@ -15,7 +18,12 @@ start_router.message.middleware(RegisterCheck())
 
 
 @start_router.message(Command('start'))
-async def start(msg: types.Message, state: FSMContext, cache: Cache, command: CommandObject = None) -> Message:
+async def start(
+        msg: types.Message,
+        state: FSMContext,
+        cache: Cache,
+        command: CommandObject = None,
+) -> Message:
     if await cache.get(f'user_exists:{msg.from_user.id}', int):
         await state.set_state(LoginGroup.button_step)
         msg = await msg.answer(

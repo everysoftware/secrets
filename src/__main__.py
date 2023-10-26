@@ -3,6 +3,7 @@ import logging
 import sys
 
 from aiogram import Bot
+from arq import create_pool
 
 from .bot.handlers import redirects
 from .bot.handlers.commands import BOT_COMMANDS
@@ -23,6 +24,7 @@ async def main() -> None:
     engine = create_async_engine(cfg.db.build_connection_str())
     session_maker = get_session_maker(engine)
     dp = create_dispatcher(storage)
+    redis_pool = await create_pool(cfg.redis.pool_settings)
 
     await dp.start_polling(
         bot,
@@ -30,6 +32,7 @@ async def main() -> None:
         pool=session_maker,
         cache=cache,
         redirects=redirects,
+        arq_redis=redis_pool
     )
 
 
