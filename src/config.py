@@ -9,9 +9,9 @@ from sqlalchemy.engine import URL
 
 
 def setup_env() -> None:
-    if os.getenv('TESTING_MODE') is None:
+    if os.getenv('TESTING_MODE') is None and os.getenv('DOCKER_MODE') is None:
         path = pathlib.Path(__file__).parent.parent
-        dotenv_path = path.joinpath('.env' if os.getenv('DOCKER_MODE') is not None else '.dev.env')
+        dotenv_path = path.joinpath('.dev.env')
         if dotenv_path.exists():
             load_dotenv(dotenv_path)
 
