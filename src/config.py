@@ -25,6 +25,16 @@ class BotConfig:
 
 
 @dataclass(frozen=True)
+class WebhookConfig:
+    on: bool = bool(int(getenv('WEBHOOK_ON', False)))
+    ngrok_url: str = getenv('WEBHOOK_URL')
+    host: str = getenv('WEBHOOK_HOST', 'localhost')
+    port: str = int(getenv('WEBHOOK_PORT', 8080))
+    path: str = f'/bot/{BotConfig.tg_token}'
+    url: str = f'{ngrok_url}{path}'
+
+
+@dataclass(frozen=True)
 class DatabaseConfig:
     db: str = getenv('POSTGRES_DB', 'postgres')
     username: str = getenv('POSTGRES_USER', 'postgres')
@@ -73,6 +83,7 @@ class Config:
     logging_level: int = getenv('BOT_LOGGING_LEVEL', 'INFO')
 
     bot: BotConfig = BotConfig()
+    webhook: WebhookConfig = WebhookConfig()
     db: DatabaseConfig = DatabaseConfig()
     redis: RedisConfig = RedisConfig()
 

@@ -31,8 +31,8 @@ def bot():
 
 
 @pytest_asyncio.fixture(scope='session')
-async def dispatcher(storage):
-    dp = create_dispatcher(storage)
+async def dispatcher(storage, cache, pool):
+    dp = create_dispatcher(storage, cache, pool)
     await dp.emit_startup()
     try:
         yield dp

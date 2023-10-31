@@ -16,8 +16,6 @@ def build_redis_client() -> Redis:
         password=cfg.redis.password,
     )
 
-    asyncio.create_task(client.ping())
-
     return client
 
 
@@ -44,3 +42,6 @@ class Cache:
 
     async def delete(self, key: KeyLike):
         return await self.client.delete(key)
+
+    async def on_startup(self):
+        asyncio.create_task(self.client.ping())
