@@ -1,2 +1,2 @@
-# Secrets Telegram Bot
+# Secrets
 Твой быстрый и безопасный менеджер паролей.
