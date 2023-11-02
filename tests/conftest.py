@@ -51,8 +51,9 @@ def cache():
 
 
 @pytest.fixture(scope='session')
-def engine():
-    return create_async_engine(cfg.db.build_connection_str())
+def engine(postgresql: Connection):
+    connection_str = f'postgresql+psycopg2://{postgresql.info.user}:@{postgresql.info.host}:{postgresql.info.port}/{postgresql.info.dbname}'
+    return create_async_engine(connection_str)
 
 
 @pytest_asyncio.fixture(scope='session', autouse=True)
