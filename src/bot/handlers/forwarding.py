@@ -5,15 +5,6 @@ from typing import Callable
 class Redirects:
     callback_map: dict[str, Callable] = {}
 
-    # def register_redirect(self, func):
-    #     # Используем functools.wraps для сохранения метаданных декорируемой функции.
-    #     @wraps(func)
-    #     async def wrapper(*args, **kwargs):
-    #         return await func(*args, **kwargs)
-    #
-    #     self.callback_map[func.__name__] = wrapper
-    #
-    #     return wrapper
     def register_redirect(self, func):
         self.callback_map[func.__name__] = func
         return func

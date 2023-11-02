@@ -11,7 +11,6 @@ class RecordRepo(Repository[Record]):
     def new(
             self,
             user: User,
-            url: str,
             title: str,
             username: bytes,
             password: bytes,
@@ -19,7 +18,6 @@ class RecordRepo(Repository[Record]):
     ) -> Record:
         new_record = Record(
             user=user,
-            url=url,
             title=title,
             username=username,
             password_=password,

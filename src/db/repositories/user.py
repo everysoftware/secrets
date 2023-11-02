@@ -17,9 +17,9 @@ class UserRepo(Repository[User]):
             self,
             user_id: int,
             first_name: str,
-            last_name: str,
             auth_data: AuthData,
             language_code: str,
+            last_name: Optional[str] = None,
             username: Optional[str] = None,
     ) -> User:
         new_user = User(
@@ -67,7 +67,7 @@ class UserRepo(Repository[User]):
 
         return new_user
 
-    async def login(self, from_user: Optional[types.User], password: Optional[str]) -> bool:
+    async def login(self, from_user: types.User, password: str) -> bool:
         user = await self.get(from_user.id)
 
         if user is None:

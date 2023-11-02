@@ -1,3 +1,5 @@
+from typing import Optional
+
 from sqlalchemy.orm import relationship, Mapped, mapped_column
 from sqlalchemy.sql.schema import Identity, ForeignKey
 
@@ -18,8 +20,8 @@ class Record(Base):
         back_populates='records',
     )
 
-    url: Mapped[str_64]
     title: Mapped[str_64]
+    url: Mapped[Optional[str_64]]
 
     username: Mapped[bytes]
     password_: Mapped[bytes]

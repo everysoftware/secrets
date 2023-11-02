@@ -6,17 +6,17 @@ from aiogram.fsm.context import FSMContext
 from src.bot.encryption import verify_data
 from src.bot.structures.fsm import LoginGroup
 from src.db import Database
-from .additional import update_last_msg, edit_last_msg
-from .redirects import Redirects
+from .additional import update_last_message, edit_last_message
+from .forwarding import Redirects
 from ..filters import RegisterFilter
 from ..middlewares import DatabaseMd
 
-confirmation_router = Router(name='confirmation')
+router = Router(name='confirmation')
 
-confirmation_router.message.middleware(DatabaseMd())
-confirmation_router.callback_query.middleware(DatabaseMd())
+router.message.middleware(DatabaseMd())
+router.callback_query.middleware(DatabaseMd())
 
-confirmation_router.message.filter(RegisterFilter())
+router.message.filter(RegisterFilter())
 
 
 async def confirm_master(
@@ -30,11 +30,11 @@ async def confirm_master(
     await state.update_data(save_master=save_master)
 
     sent_msg = await msg.answer('Для подтверждения операции введите мастер-пароль ⬇️')
-    await update_last_msg(sent_msg, state)
+    await update_last_message(state, sent_msg)
     await state.set_state(LoginGroup.master_confirmation)
 
 
-@confirmation_router.message(LoginGroup.master_confirmation)
+@router.message(LoginGroup.master_confirmation)
 async def confirm_master_helper(msg: types.Message, redirects: Redirects, **data) -> None:
     state: FSMContext = data['state']
     db: Database = data['db']
@@ -51,11 +51,11 @@ async def confirm_master_helper(msg: types.Message, redirects: Redirects, **data
         salt = user.auth_data.salt
 
     if verify_data(master, master_from_db, salt):
-        await edit_last_msg(bot, user_data, state, 'Операция подтверждена мастер-паролем ✅')
+        await edit_last_message(bot, state, user_data, 'Операция подтверждена мастер-паролем ✅')
         if user_data['save_master']:
             await state.update_data(master=master)
         await state.set_state(user_data['last_state'])
 
         await redirects.redirect(user_data['redirect'], msg=msg, **data)
     else:
-        await edit_last_msg(bot, user_data, state, 'Неверный мастер-пароль. Введи мастер-пароль ⬇️')
+        await edit_last_message(bot, state, user_data, 'Неверный мастер-пароль. Введи мастер-пароль ⬇️')

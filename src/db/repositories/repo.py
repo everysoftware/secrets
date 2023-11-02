@@ -38,6 +38,9 @@ class Repository(Generic[AbstractModel]):
         statement = delete(self.type_model).where(where_clause)
         await self.session.execute(statement)
 
+    async def merge(self, model: AbstractModel) -> AbstractModel:
+        return await self.session.merge(model)
+
     @abc.abstractmethod
     def new(self, *args, **kwargs) -> None:
         ...

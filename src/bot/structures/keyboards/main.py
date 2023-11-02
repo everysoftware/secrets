@@ -11,9 +11,14 @@ from src.db import Database
 
 MAIN_MENU_KB = ReplyKeyboardMarkup(
     keyboard=[
-        [KeyboardButton(text='Хранилище 📁')],
-        [KeyboardButton(text='Добавить ⏬'),
-         KeyboardButton(text='Сгенерировать 🔑')]
+        [
+            KeyboardButton(text='Хранилище 📁'),
+            KeyboardButton(text='Мой профиль 👨'),
+        ],
+        [
+            KeyboardButton(text='Добавить ⏬'),
+            KeyboardButton(text='Сгенерировать 🔑')
+        ]
     ],
     resize_keyboard=True,
     # one_time_keyboard=True
@@ -51,5 +56,22 @@ YESNO_KB = InlineKeyboardMarkup(
             InlineKeyboardButton(text='Да ✅', callback_data='yes'),
             InlineKeyboardButton(text='Нет ❌', callback_data='no')
         ]
+    ]
+)
+
+UPDATE_RECORD_KB = InlineKeyboardMarkup(
+    inline_keyboard=[
+        [
+            InlineKeyboardButton(text='Имя веб-сайта', callback_data='update_title'),
+            InlineKeyboardButton(text='Имя пользователя', callback_data='update_username'),
+
+        ],
+        [
+            InlineKeyboardButton(text='Пароль', callback_data='update_password'),
+            InlineKeyboardButton(text='Веб-сайт', callback_data='update_url'),
+        ],
+        [
+            InlineKeyboardButton(text='Комментарий', callback_data='update_comment')
+        ],
     ]
 )

@@ -2,7 +2,7 @@ import pytest
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.storage.base import StorageKey
 
-from bot.handlers.additional import update_last_msg
+from bot.handlers.additional import update_last_message
 from utils.entities import get_message, get_user, get_chat
 
 
@@ -14,7 +14,7 @@ async def test_update_last_msg(storage, bot):
         key=StorageKey(bot_id=bot.id, user_id=user.id, chat_id=chat.id)
     )
 
-    await update_last_msg(msg, state)
+    await update_last_message(state, msg)
     user_data = await state.get_data()
 
     assert user_data['chat_id'] == msg.chat.id
