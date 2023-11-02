@@ -49,6 +49,6 @@ class RegisterFilter(Filter):
                 'Для совершения этого действия тебе необходимо зарегистрироваться 👇',
                 reply_markup=REG_KB
             )
-            await state.set_state(RegisterGroup.button_step)
+            await state.set_state(RegisterGroup.waiting_for_click)
 
         return False

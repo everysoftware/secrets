@@ -1,10 +1,7 @@
-from datetime import timedelta
-
 from aiogram import types, Router
 from aiogram.filters import CommandObject, Command
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
-from arq import ArqRedis
 
 from src.bot.middlewares import RegisterCheck
 from src.bot.structures.fsm import LoginGroup, RegisterGroup
@@ -25,19 +22,19 @@ async def start(
         command: CommandObject = None,
 ) -> Message:
     if await cache.get(f'user_exists:{msg.from_user.id}', int):
-        await state.set_state(LoginGroup.button_step)
+        await state.set_state(LoginGroup.waiting_for_click)
         msg = await msg.answer(
             'Привет, {first_name} {last_name}, мы тебя помним! '
-            'Чтобы авторизоваться нажми на кнопку внизу 👇'.format(
+            'Нажми на кнопку внизу, чтобы войти в аккаунт 👇'.format(
                 first_name=msg.from_user.first_name,
                 last_name=msg.from_user.last_name),
             reply_markup=LOGIN_KB)
 
     else:
-        await state.set_state(RegisterGroup.button_step)
+        await state.set_state(RegisterGroup.waiting_for_click)
         msg = await msg.answer(
-            'Привет! Я бот-менеджер паролей. Я надёжно защищу твои данные и буду хранить их в целости и '
-            'сохранности. Чтобы зарегистрироваться нажми на кнопку внизу 👇',
+            'Привет! Я бот, позволяющий безопасно хранить твои пароли в Телеграм. '
+            'Нажми на кнопку внизу, чтобы создать аккаунт 👇',
             reply_markup=REG_KB)
 
     return msg

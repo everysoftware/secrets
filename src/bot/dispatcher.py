@@ -1,11 +1,11 @@
 from aiogram import Dispatcher
 from aiogram.fsm.storage.base import BaseStorage
 from aiogram.fsm.storage.redis import RedisStorage
-from redis import Redis
+from redis.asyncio.client import Redis
 from sqlalchemy.orm import sessionmaker
 
-from src.cache import Cache
 from src.bot.handlers import routers, redirects
+from src.cache import Cache
 from src.config import cfg
 
 

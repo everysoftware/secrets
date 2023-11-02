@@ -1,5 +1,6 @@
 import hashlib
 import os
+from typing import Optional
 
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes
@@ -79,7 +80,7 @@ def decrypt_data(data: bytes, master: str, salt: bytes) -> str:
     return decrypted_password.decode('utf-8')
 
 
-def hash_data(data: str, salt: bytes = None) -> tuple[str, bytes]:
+def hash_data(data: str, salt: Optional[bytes] = None) -> tuple[str, bytes]:
     if salt is None:
         salt = os.urandom(16)  # Генерация случайной соли, если она не предоставлена
 

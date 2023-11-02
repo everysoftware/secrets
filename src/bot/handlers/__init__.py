@@ -10,3 +10,5 @@ routers = (
     main_router,
     confirmation_router
 )
+
+__all__ = ('routers', 'redirects')

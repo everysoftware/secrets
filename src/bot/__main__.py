@@ -7,9 +7,9 @@ from aiogram.webhook.aiohttp_server import SimpleRequestHandler, setup_applicati
 from aiohttp import web
 
 from src.cache import Cache
+from src.config import cfg
 from src.db import create_async_engine, get_session_maker
 from .api import generate_secret, on_startup, on_shutdown
-from .config import cfg
 from .dispatcher import create_dispatcher, create_redis_storage
 
 

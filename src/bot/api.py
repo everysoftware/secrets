@@ -4,8 +4,8 @@ import os
 from aiogram import Bot, Dispatcher
 from arq import create_pool
 
+from src.config import cfg
 from src.bot.handlers.commands import BOT_COMMANDS
-from .config import cfg
 
 
 def generate_secret() -> str:

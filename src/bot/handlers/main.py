@@ -5,6 +5,7 @@ from aiogram.fsm.context import FSMContext
 from arq import ArqRedis
 
 from src.bot.encryption import encrypt_data, decrypt_data, generate_password
+from src.bot.filters import RegisterFilter
 from src.bot.middlewares import DatabaseMd
 from src.bot.structures.fsm import MainGroup
 from src.bot.structures.keyboards import MAIN_MENU_KB, get_storage_kb, YESNO_KB, RECORD_KB
@@ -13,7 +14,6 @@ from src.db.models import Record
 from .additional import update_last_msg, edit_last_msg, delete_last_msg
 from .confirmation import confirm_master
 from .redirects import redirects
-from ..filters.reg_filter import RegisterFilter
 
 main_router = Router(name='main')
 
@@ -34,6 +34,7 @@ async def show_main_menu(msg: types.Message, state: FSMContext) -> None:
 
 @main_router.message(MainGroup.viewing_main_menu, F.text == 'Добавить ⏬')
 @main_router.message(MainGroup.viewing_storage, F.text == 'Добавить ⏬')
+@main_router.message(MainGroup.viewing_record, F.text == 'Добавить ⏬')
 async def add_record_confirmation(msg: types.Message, state: FSMContext) -> None:
     await confirm_master(msg, state, add_record, True)
 
@@ -47,11 +48,11 @@ async def add_record(msg: types.Message, state: FSMContext) -> None:
 
 @main_router.message(MainGroup.viewing_main_menu, F.text == 'Сгенерировать 🔑')
 @main_router.message(MainGroup.viewing_storage, F.text == 'Сгенерировать 🔑')
+@main_router.message(MainGroup.viewing_record, F.text == 'Сгенерировать 🔑')
 async def gen_password(msg: types.Message, arq_redis: ArqRedis) -> None:
     password = generate_password()
     sent_msg = await msg.answer(
-        f'🔑 Твой сгенерированный пароль:\n\n<code>{password}</code>\n\n'
-        'В целях безопасности это сообщение будет удалено через 1 минуту.',
+        f'🔑 Твой сгенерированный пароль:\n\n<code>{password}</code>'
     )
     await arq_redis.enqueue_job(
         'delete_message',
@@ -152,6 +153,7 @@ async def password_step(msg: types.Message, state: FSMContext, db: Database, bot
 
 @main_router.message(MainGroup.viewing_main_menu, F.text == 'Хранилище 📁')
 @main_router.message(MainGroup.viewing_storage, F.text == 'Хранилище 📁')
+@main_router.message(MainGroup.viewing_record, F.text == 'Хранилище 📁')
 async def show_storage(msg: types.Message, state: FSMContext, db: Database) -> None:
     kb = await get_storage_kb(msg, db)
     sent_msg = await msg.answer(
@@ -196,7 +198,7 @@ async def show_record(msg: types.Message, state: FSMContext, db: Database, arq_r
         )
 
     cp_msg = await msg.answer(
-        f'В целях безопасности это сообщение будет удалено через 2 минуты.',
+        'Выбери действие',
         reply_markup=RECORD_KB
     )
 
@@ -231,7 +233,7 @@ async def delete_record_confirmation(callback: types.CallbackQuery, state: FSMCo
 @redirects.register_redirect
 async def delete_record_yesno(msg: types.Message) -> None:
     await msg.answer(
-        'После удаления запись невозможно будет восстановить. Вы действительно хотите удалить запись?',
+        'После удаления записи её нельзя будет восстановить. Ты действительно хочешь удалить запись?',
         reply_markup=YESNO_KB
     )
 

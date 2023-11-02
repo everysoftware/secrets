@@ -2,6 +2,7 @@ import os
 import pathlib
 from dataclasses import dataclass
 from os import getenv
+from typing import Optional
 
 from arq.connections import RedisSettings
 from dotenv import load_dotenv
@@ -21,7 +22,7 @@ setup_env()
 
 @dataclass(frozen=True)
 class BotConfig:
-    tg_token: str = getenv('BOT_TELEGRAM_TOKEN')
+    tg_token: str = getenv('BOT_TELEGRAM_TOKEN', '')
 
 
 @dataclass(frozen=True)
@@ -29,7 +30,7 @@ class WebhookConfig:
     on: bool = bool(int(getenv('WEBHOOK_ON', False)))
     ngrok_url: str = getenv('WEBHOOK_URL')
     host: str = getenv('WEBHOOK_HOST', 'localhost')
-    port: str = int(getenv('WEBHOOK_PORT', 8080))
+    port: int = int(getenv('WEBHOOK_PORT', 8080))
     path: str = f'/bot/{BotConfig.tg_token}'
     url: str = f'{ngrok_url}{path}'
 
@@ -38,7 +39,7 @@ class WebhookConfig:
 class DatabaseConfig:
     db: str = getenv('POSTGRES_DB', 'postgres')
     username: str = getenv('POSTGRES_USER', 'postgres')
-    password: str = getenv('POSTGRES_PASSWORD', None)
+    password: Optional[str] = getenv('POSTGRES_PASSWORD', None)
 
     port: int = int(getenv('POSTGRES_PORT', 5432))
     host: str = getenv('POSTGRES_HOST', 'postgres')

@@ -17,30 +17,18 @@ services:
       - pgdata:/var/lib/postgresql/data
     restart: on-failure
     ports:
-      - "5431:5432"
-  tests:
-    build:
-      context: .
-      dockerfile: buildfiles/Tests.Dockerfile
-    command: sh -c "make migrate && pytest -s -v"
-    env_file:
-      - .test.env
-    restart: no
-    depends_on:
-      - db
-      - redis
+      - "5432:5432"
   bot:
     build:
       context: .
       dockerfile: buildfiles/Dockerfile
-    command: sh -c "make migrate && python -m src"
+    command: /bin/bash -c "source venv/bin/activate && make migrate && python -m src.bot"
     env_file:
       - .env
     restart: always
     ports:
       - "8080:8080"
     depends_on:
-      - tests
       - db
       - redis
   scheduler:
@@ -50,7 +38,7 @@ services:
     env_file:
       - .env
     restart: always
-    command: sh -c "arq src.scheduler.main.WorkerSettings"
+    command: /bin/bash -c "source venv/bin/activate && arq src.scheduler.main.WorkerSettings"
     depends_on:
       - redis
       - bot

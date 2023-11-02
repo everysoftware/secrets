@@ -11,7 +11,7 @@ from sqlalchemy.orm import sessionmaker
 from cache import Cache
 from config import cfg
 from db import get_session_maker, create_async_engine
-from dispatcher import create_dispatcher
+from bot.dispatcher import create_dispatcher
 from utils.alembic import alembic_config_from_url
 from utils.mocked_bot import MockedBot
 from utils.mocked_db import MockedDatabase

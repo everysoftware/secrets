@@ -45,7 +45,6 @@ RECORD_KB = InlineKeyboardMarkup(
     ]
 )
 
-
 YESNO_KB = InlineKeyboardMarkup(
     inline_keyboard=[
         [

@@ -1,9 +1,7 @@
-from typing import Optional
-
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from .repo import Repository
-from ..models import User, Record, Comment
+from ..models import User, Record
 
 
 class RecordRepo(Repository[Record]):
