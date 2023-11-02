@@ -22,13 +22,13 @@ setup_env()
 
 @dataclass(frozen=True)
 class BotConfig:
-    tg_token: str = getenv('BOT_TELEGRAM_TOKEN', '')
+    tg_token: Optional[str] = getenv('BOT_TELEGRAM_TOKEN')
 
 
 @dataclass(frozen=True)
 class WebhookConfig:
     on: bool = bool(int(getenv('WEBHOOK_ON', False)))
-    ngrok_url: str = getenv('WEBHOOK_URL')
+    ngrok_url: Optional[str] = getenv('WEBHOOK_URL')
     host: str = getenv('WEBHOOK_HOST', 'localhost')
     port: int = int(getenv('WEBHOOK_PORT', 8080))
     path: str = f'/bot/{BotConfig.tg_token}'
@@ -39,7 +39,7 @@ class WebhookConfig:
 class DatabaseConfig:
     db: str = getenv('POSTGRES_DB', 'postgres')
     username: str = getenv('POSTGRES_USER', 'postgres')
-    password: Optional[str] = getenv('POSTGRES_PASSWORD', None)
+    password: str = getenv('POSTGRES_PASSWORD', 'postgres')
 
     port: int = int(getenv('POSTGRES_PORT', 5432))
     host: str = getenv('POSTGRES_HOST', 'postgres')
@@ -61,13 +61,13 @@ class DatabaseConfig:
 @dataclass(frozen=True)
 class RedisConfig:
     db: str = getenv('REDIS_DATABASE', 1)
-    username: str = getenv('REDIS_USERNAME', None)
-    password: str = getenv('REDIS_PASSWORD', None)
+    username: str = getenv('REDIS_USERNAME', 'redis')
+    password: Optional[str] = getenv('REDIS_PASSWORD')
     port: int = int(getenv('REDIS_PORT', 6379))
-    host: str = getenv('REDIS_HOST', 'redis')
+    host: str = getenv('REDIS_HOST', 'localhost')
 
-    state_ttl: int = getenv('REDIS_TTL_STATE', None)
-    data_ttl: int = getenv('REDIS_TTL_DATA', None)
+    state_ttl: Optional[int] = getenv('REDIS_TTL_STATE')
+    data_ttl: Optional[int] = getenv('REDIS_TTL_DATA')
 
     pool_settings = RedisSettings(
         username=username,

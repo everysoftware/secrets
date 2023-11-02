@@ -240,4 +240,3 @@ cython_debug/
 #.idea/
 
 .dev.env
-.test.env
