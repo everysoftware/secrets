@@ -1,9 +1,9 @@
 from aiogram import Router, types, F
 from aiogram.fsm.context import FSMContext
 
-from bot.filters import RegisterFilter
-from bot.middlewares import DatabaseMd
-from bot.structures.fsm import MainGroup
+from src.bot.filters import RegisterFilter
+from src.bot.middlewares import DatabaseMd
+from src.bot.structures.fsm import MainGroup
 
 router = Router(name='record_misc')
 

@@ -1,7 +1,7 @@
 from aiogram import Router, F, types, Bot
 from aiogram.fsm.context import FSMContext
 
-from bot.handlers.additional import update_last_message, edit_last_message, delete_last_message
+from src.bot.handlers.additional import update_last_message, edit_last_message, delete_last_message
 from src.bot.encryption import encrypt_data
 from src.bot.filters import RegisterFilter
 from src.bot.handlers.confirmation import confirm_master
