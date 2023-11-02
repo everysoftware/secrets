@@ -1,2 +1,2 @@
-# secrets-bot
-Your fast and secure password manager.
+# Secrets Telegram Bot
+Твой быстрый и безопасный менеджер паролей.
