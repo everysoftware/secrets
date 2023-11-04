@@ -1,13 +1,17 @@
+from datetime import timedelta
+
 from aiogram import types, Router
 from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
+from arq import ArqRedis
 
 from src.bot.fsm import LoginGroup, RegisterGroup
 from src.bot.keyboards import LOGIN_KB, REG_KB
 from src.bot.middlewares import RegisterCheck
 from src.cache import Cache
 from .commands import BOT_COMMANDS_STR
+from ..encryption import generate_password
 
 router = Router(name='start')
 
@@ -41,6 +45,21 @@ async def start(
 @router.message(Command('help'))
 async def help_(message: types.Message) -> Message:
     return await message.answer('<b>Команды бота:</b>\n\n' + BOT_COMMANDS_STR)
+
+
+@router.message(Command('generate'))
+async def generate(message: types.Message, arq_redis: ArqRedis) -> Message:
+    password = generate_password()
+    sent_msg = await message.answer(
+        f'🔑 Твой сгенерированный пароль:\n\n<code>{password}</code>'
+    )
+    await arq_redis.enqueue_job(
+        'delete_message',
+        _defer_by=timedelta(minutes=1),
+        chat_id=message.from_user.id,
+        message_id=sent_msg.message_id,
+    )
+    return sent_msg
 
 
 @router.message(Command('author'))

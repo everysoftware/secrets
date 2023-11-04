@@ -1,12 +1,10 @@
-from datetime import timedelta
-
 from aiogram import types, Router, F
 from aiogram.fsm.context import FSMContext
 from arq import ArqRedis
 
-from src.bot.encryption import generate_password
 from src.bot.filters import RegisterFilter
 from src.bot.fsm import MainGroup
+from src.bot.handlers.start import generate
 from src.bot.keyboards import MAIN_MENU_KB, get_storage_kb
 from src.bot.keyboards.main import PROFILE_KB
 from src.bot.middlewares import DatabaseMd
@@ -44,17 +42,8 @@ async def show_storage(message: types.Message, state: FSMContext, db: Database) 
 @router.message(MainGroup.viewing_main_menu, F.text == 'Сгенерировать 🔑')
 @router.message(MainGroup.viewing_storage, F.text == 'Сгенерировать 🔑')
 @router.message(MainGroup.viewing_record, F.text == 'Сгенерировать 🔑')
-async def gen_password(message: types.Message, arq_redis: ArqRedis) -> None:
-    password = generate_password()
-    sent_msg = await message.answer(
-        f'🔑 Твой сгенерированный пароль:\n\n<code>{password}</code>'
-    )
-    await arq_redis.enqueue_job(
-        'delete_message',
-        _defer_by=timedelta(minutes=1),
-        chat_id=message.from_user.id,
-        message_id=sent_msg.message_id,
-    )
+async def generate_password(message: types.Message, arq_redis: ArqRedis) -> None:
+    await generate(message, arq_redis)
 
 
 @router.message(MainGroup.viewing_main_menu, F.text == 'Мой профиль 👨')
