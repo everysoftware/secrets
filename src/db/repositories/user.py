@@ -2,9 +2,8 @@ from typing import Optional
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.bot.encryption import hash_data
+from src.bot.encryption import Verifying
 from src.cache import Cache
-from src.bot.encryption import verify_data
 from .repo import Repository
 from ..models import User, AuthData
 
@@ -44,9 +43,10 @@ class UserRepo(Repository[User]):
             master: str,
             last_name: Optional[str] = None,
             username: Optional[str] = None,
-    ):
-        password, salt = hash_data(password)
-        master, _ = hash_data(master, salt)
+    ) -> User:
+        salt = Verifying.generate_salt()
+        password = Verifying.get_hash(password, salt)
+        master = Verifying.get_hash(master, salt)
 
         auth_data = db.auth_data.new(
             password,
@@ -54,7 +54,7 @@ class UserRepo(Repository[User]):
             salt
         )
 
-        self.new(
+        new_user = self.new(
             user_id=user_id,
             first_name=first_name,
             last_name=last_name,
@@ -65,10 +65,23 @@ class UserRepo(Repository[User]):
 
         await cache.delete(f'user_exists:{user_id}')
 
+        return new_user
+
     async def authorize(self, user_id: int, password: str) -> bool:
         user = await self.get(user_id)
 
         if user is None:
             return False
 
-        return verify_data(password, user.auth_data.account_password, user.auth_data.salt)
+        return Verifying.verify(password, user.auth_data.account_password, user.auth_data.salt)
+
+    async def confirm_master(self, user_id: int, master: str) -> bool:
+        user = await self.get(user_id)
+
+        if user is None:
+            raise ValueError
+
+        master_from_db = user.auth_data.master_password
+        salt = user.auth_data.salt
+
+        return Verifying.verify(master, master_from_db, salt)

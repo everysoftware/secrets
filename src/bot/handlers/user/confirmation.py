@@ -3,7 +3,6 @@ from typing import Callable
 from aiogram import Router, types
 from aiogram.fsm.context import FSMContext
 
-from src.bot.encryption import verify_data
 from src.bot.fsm import LoginGroup
 from src.bot.utils.forwarding import Redirects
 from src.bot.utils.messages import Interactive
@@ -38,11 +37,9 @@ async def confirm_master(message: types.Message, redirects: Redirects, **data) -
     master = message.text
 
     async with db.session.begin():
-        user = await db.user.get(message.from_user.id)
-        master_from_db = user.auth_data.master_password
-        salt = user.auth_data.salt
+        result = await db.user.confirm_master(message.from_user.id, master)
 
-    if verify_data(master, master_from_db, salt):
+    if result:
         await Interactive.finish(
             message, state, user_data=user_data, state_clear=False,
             text='Операция подтверждена мастер-паролем ✅'

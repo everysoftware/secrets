@@ -19,6 +19,11 @@ class ProfilePasswordEditingGroup(StatesGroup):
     typing_new_password = State()
 
 
+class ProfileMasterEditingGroup(StatesGroup):
+    typing_old_password = State()
+    typing_new_password = State()
+
+
 class RecordCreationGroup(StatesGroup):
     setting_title = State()
     setting_username = State()

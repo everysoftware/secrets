@@ -1,7 +1,7 @@
 from aiogram import Router, F, types
 from aiogram.fsm.context import FSMContext
 
-from src.bot.encryption import encrypt_data
+from src.bot.encryption import Encryption
 from src.bot.fsm import MainGroup, RecordCreationGroup
 from src.bot.handlers.user.confirmation import send_confirmation_request
 from src.bot.keyboards import MAIN_MENU_KB
@@ -78,8 +78,9 @@ async def set_password(message: types.Message, state: FSMContext, db: Database) 
             text='Пароль не может быть длиннее 64 символов. Напечатай пароль на сайте ⬇️'
         )
 
-    username, salt = encrypt_data(user_data['username'], user_data['master'])
-    password, _ = encrypt_data(password, user_data['master'], salt)
+    salt = Encryption.generate_salt()
+    username = Encryption.encrypt(user_data['username'], user_data['master'], salt)
+    password = Encryption.encrypt(password, user_data['master'], salt)
 
     async with db.session.begin():
         user = await db.user.get(message.from_user.id)

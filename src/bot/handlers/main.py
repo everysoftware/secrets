@@ -4,10 +4,10 @@ from aiogram import types, Router, F
 from aiogram.fsm.context import FSMContext
 from arq import ArqRedis
 
-from src.bot.fsm import MainGroup
-from src.bot.keyboards import MAIN_MENU_KB, get_storage_kb
 from src.bot.encryption import generate_password
 from src.bot.filters import RegisterFilter
+from src.bot.fsm import MainGroup
+from src.bot.keyboards import MAIN_MENU_KB, get_storage_kb
 from src.bot.keyboards.main import PROFILE_KB
 from src.bot.middlewares import DatabaseMd
 from src.db import Database

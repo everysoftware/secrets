@@ -5,7 +5,7 @@ from aiogram import Router, F, types
 from aiogram.fsm.context import FSMContext
 from arq import ArqRedis
 
-from src.bot.encryption import decrypt_data
+from src.bot.encryption import Encryption
 from src.bot.fsm import MainGroup
 from src.bot.handlers.user.confirmation import send_confirmation_request
 from src.bot.keyboards import RECORD_KB
@@ -39,8 +39,8 @@ async def show_record(message: types.Message, state: FSMContext, db: Database, a
         record: Record = await db.record.get(user_data['record_id'])
         title = escape(record.title)
         url = escape(record.url if record.url is not None else '')
-        username = escape(decrypt_data(record.username, user_data['master'], record.salt))
-        password = escape(decrypt_data(record.password_, user_data['master'], record.salt))
+        username = escape(Encryption.decrypt(record.username, user_data['master'], record.salt))
+        password = escape(Encryption.decrypt(record.password_, user_data['master'], record.salt))
         comment = escape(record.comment.text) if record.comment is not None else ''
 
     record_msg = await message.answer(

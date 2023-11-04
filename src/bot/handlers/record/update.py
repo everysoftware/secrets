@@ -1,7 +1,7 @@
 from aiogram import Router, F, types
 from aiogram.fsm.context import FSMContext
 
-from src.bot.encryption import encrypt_data
+from src.bot.encryption import Encryption
 from src.bot.fsm import MainGroup, RecordActionsGroup, RecordEditingGroup
 from src.bot.keyboards import UPDATE_RECORD_KB
 from src.bot.utils.messages import Interactive
@@ -87,7 +87,7 @@ async def update_username(message: types.Message, state: FSMContext, db: Databas
 
     async with db.session.begin():
         record = await db.record.get(user_data['record_id'])
-        record.username = encrypt_data(text, user_data['master'], record.salt)[0]
+        record.username = Encryption.encrypt(text, user_data['master'], record.salt)
         await db.record.merge(record)
 
     await message.chat.delete_message(user_data['record_editing_message_id'])
@@ -126,7 +126,7 @@ async def update_password(message: types.Message, state: FSMContext, db: Databas
 
     async with db.session.begin():
         record = await db.record.get(user_data['record_id'])
-        record.password_ = encrypt_data(text, user_data['master'], record.salt)[0]
+        record.password_ = Encryption.encrypt(text, user_data['master'], record.salt)
         await db.record.merge(record)
 
     await message.chat.delete_message(user_data['record_editing_message_id'])

@@ -1,7 +1,7 @@
 from aiogram import Router, types, F
 from aiogram.fsm.context import FSMContext
 
-from src.bot.fsm import RegisterGroup, MainGroup
+from src.bot.fsm import RegisterGroup
 from src.bot.handlers.main import show_main_menu
 from src.bot.utils.messages import Interactive
 from src.cache import Cache

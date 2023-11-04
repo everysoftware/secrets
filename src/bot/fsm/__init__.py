@@ -5,7 +5,8 @@ from .main import (
     RecordEditingGroup,
     RecordCreationGroup,
     ProfileActionsGroup,
-    ProfilePasswordEditingGroup
+    ProfilePasswordEditingGroup,
+    ProfileMasterEditingGroup
 )
 
 __all__ = (
@@ -16,5 +17,6 @@ __all__ = (
     'RecordEditingGroup',
     'RecordCreationGroup',
     'ProfileActionsGroup',
-    'ProfilePasswordEditingGroup'
+    'ProfilePasswordEditingGroup',
+    'ProfileMasterEditingGroup'
 )
