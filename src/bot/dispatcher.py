@@ -4,7 +4,8 @@ from aiogram.fsm.storage.redis import RedisStorage
 from redis.asyncio.client import Redis
 from sqlalchemy.orm import sessionmaker
 
-from src.bot.handlers import routers, redirects
+from src.bot.handlers import routers
+from src.bot.utils.forwarding import redirects
 from src.cache import Cache
 from src.config import cfg
 
@@ -31,7 +32,6 @@ def create_dispatcher(
         redirects=redirects
     )
 
-    for router in routers:
-        dp.include_router(router)
+    dp.include_routers(*routers)
 
     return dp

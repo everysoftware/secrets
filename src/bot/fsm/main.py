@@ -5,9 +5,21 @@ class MainGroup(StatesGroup):
     viewing_main_menu = State()
     viewing_storage = State()
     viewing_record = State()
+    viewing_profile = State()
 
 
-class RecordAdditionGroup(StatesGroup):
+class ProfileActionsGroup(StatesGroup):
+    updating_password = State()
+    updating_master = State()
+    deleting_account = State()
+
+
+class ProfilePasswordEditingGroup(StatesGroup):
+    typing_old_password = State()
+    typing_new_password = State()
+
+
+class RecordCreationGroup(StatesGroup):
     setting_title = State()
     setting_username = State()
     setting_password = State()

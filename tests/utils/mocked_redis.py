@@ -19,7 +19,7 @@ class MockedRedis(Redis):
         return True
 
     async def delete(self, name: str) -> bool:
-        if not self.exists(name):
+        if not await self.exists(name):
             return False
 
         self.data.pop(name)

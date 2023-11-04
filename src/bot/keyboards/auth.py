@@ -2,7 +2,7 @@ from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
 
 REG_KB = ReplyKeyboardMarkup(
     keyboard=[
-        [KeyboardButton(text='Регистрация ✔️')]
+        [KeyboardButton(text='Регистрация ⚡️')]
     ],
     resize_keyboard=True,
     one_time_keyboard=True
@@ -10,7 +10,7 @@ REG_KB = ReplyKeyboardMarkup(
 
 LOGIN_KB = ReplyKeyboardMarkup(
     keyboard=[
-        [KeyboardButton(text='Авторизация 😇')]
+        [KeyboardButton(text='Авторизация ⚡️')]
     ],
     resize_keyboard=True,
     one_time_keyboard=True

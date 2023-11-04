@@ -5,7 +5,7 @@ from aiogram.methods import SendMessage
 from aiogram.types import User
 from sqlalchemy.orm import sessionmaker
 
-from bot.structures.keyboards import LOGIN_KB, REG_KB
+from bot.keyboards import LOGIN_KB, REG_KB
 from cache import Cache
 from db import Database
 from utils.entities import get_update, get_message, get_user
@@ -23,11 +23,11 @@ def get_users():
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
-    'is_new, user',
+    'is_registered, user',
     get_users()
 )
 async def test_start_command(
-        is_new: bool,
+        is_registered: bool,
         user: User,
         dispatcher: Dispatcher,
         bot: MockedBot,
@@ -36,15 +36,16 @@ async def test_start_command(
         pool: sessionmaker
 ):
     async with db.session.begin():
-        if not is_new:
+        if is_registered:
             await db.user.register(
                 db,
                 cache,
-                user.id,
-                user.first_name,
-                user.last_name,
-                'test',
-                'test'
+                user_id=user.id,
+                first_name=user.first_name,
+                last_name=user.last_name,
+                language_code='ru-RU',
+                password='test',
+                master='test'
             )
 
     msg = get_message(text='/start', from_user=user)
@@ -56,8 +57,8 @@ async def test_start_command(
     )
 
     assert isinstance(result, SendMessage)
-    assert is_new and result.reply_markup == REG_KB or \
-           not is_new and result.reply_markup == LOGIN_KB
+    assert not is_registered and result.reply_markup == REG_KB or \
+           is_registered and result.reply_markup == LOGIN_KB
 
 
 @pytest.mark.asyncio

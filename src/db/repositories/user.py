@@ -1,10 +1,10 @@
 from typing import Optional
 
-from aiogram import types
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.bot.encryption import verify_data, hash_data
+from src.bot.encryption import hash_data
 from src.cache import Cache
+from src.bot.encryption import verify_data
 from .repo import Repository
 from ..models import User, AuthData
 
@@ -39,12 +39,12 @@ class UserRepo(Repository[User]):
             cache: Cache,
             user_id: int,
             first_name: str,
+            language_code: str,
             password: str,
             master: str,
             last_name: Optional[str] = None,
-            language_code: Optional[str] = None,
             username: Optional[str] = None,
-    ) -> User:
+    ):
         password, salt = hash_data(password)
         master, _ = hash_data(master, salt)
 
@@ -54,7 +54,7 @@ class UserRepo(Repository[User]):
             salt
         )
 
-        new_user = self.new(
+        self.new(
             user_id=user_id,
             first_name=first_name,
             last_name=last_name,
@@ -63,12 +63,10 @@ class UserRepo(Repository[User]):
             auth_data=auth_data
         )
 
-        await cache.set(f'user_exists:{user_id}', '1')
+        await cache.delete(f'user_exists:{user_id}')
 
-        return new_user
-
-    async def login(self, from_user: types.User, password: str) -> bool:
-        user = await self.get(from_user.id)
+    async def authorize(self, user_id: int, password: str) -> bool:
+        user = await self.get(user_id)
 
         if user is None:
             return False

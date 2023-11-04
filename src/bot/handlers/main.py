@@ -4,13 +4,13 @@ from aiogram import types, Router, F
 from aiogram.fsm.context import FSMContext
 from arq import ArqRedis
 
+from src.bot.fsm import MainGroup
+from src.bot.keyboards import MAIN_MENU_KB, get_storage_kb
 from src.bot.encryption import generate_password
 from src.bot.filters import RegisterFilter
+from src.bot.keyboards.main import PROFILE_KB
 from src.bot.middlewares import DatabaseMd
-from src.bot.structures.fsm import MainGroup
-from src.bot.structures.keyboards import MAIN_MENU_KB, get_storage_kb
 from src.db import Database
-from .additional import update_last_message
 
 router = Router(name='main')
 
@@ -21,8 +21,9 @@ router.message.filter(RegisterFilter())
 router.callback_query.filter(RegisterFilter())
 
 
-async def show_main_menu(msg: types.Message, state: FSMContext) -> None:
-    await msg.answer(
+@router.message(MainGroup.viewing_profile, F.text == 'Назад ◀️')
+async def show_main_menu(message: types.Message, state: FSMContext) -> None:
+    await message.answer(
         'Ты в главном меню. Используй кнопки для навигации 🔽',
         reply_markup=MAIN_MENU_KB
     )
@@ -32,27 +33,26 @@ async def show_main_menu(msg: types.Message, state: FSMContext) -> None:
 @router.message(MainGroup.viewing_main_menu, F.text == 'Хранилище 📁')
 @router.message(MainGroup.viewing_storage, F.text == 'Хранилище 📁')
 @router.message(MainGroup.viewing_record, F.text == 'Хранилище 📁')
-async def show_storage(msg: types.Message, state: FSMContext, db: Database) -> None:
-    sent_msg = await msg.answer(
+async def show_storage(message: types.Message, state: FSMContext, db: Database) -> None:
+    await message.answer(
         '<b>Твои записи</b>',
-        reply_markup=await get_storage_kb(msg, db),
+        reply_markup=await get_storage_kb(message, db),
     )
-    await update_last_message(state, sent_msg)
     await state.set_state(MainGroup.viewing_storage)
 
 
 @router.message(MainGroup.viewing_main_menu, F.text == 'Сгенерировать 🔑')
 @router.message(MainGroup.viewing_storage, F.text == 'Сгенерировать 🔑')
 @router.message(MainGroup.viewing_record, F.text == 'Сгенерировать 🔑')
-async def gen_password(msg: types.Message, arq_redis: ArqRedis) -> None:
+async def gen_password(message: types.Message, arq_redis: ArqRedis) -> None:
     password = generate_password()
-    sent_msg = await msg.answer(
+    sent_msg = await message.answer(
         f'🔑 Твой сгенерированный пароль:\n\n<code>{password}</code>'
     )
     await arq_redis.enqueue_job(
         'delete_message',
         _defer_by=timedelta(minutes=1),
-        chat_id=msg.from_user.id,
+        chat_id=message.from_user.id,
         message_id=sent_msg.message_id,
     )
 
@@ -60,5 +60,9 @@ async def gen_password(msg: types.Message, arq_redis: ArqRedis) -> None:
 @router.message(MainGroup.viewing_main_menu, F.text == 'Мой профиль 👨')
 @router.message(MainGroup.viewing_storage, F.text == 'Мой профиль 👨')
 @router.message(MainGroup.viewing_record, F.text == 'Мой профиль 👨')
-async def show_profile(msg: types.Message) -> None:
-    await msg.answer('Меню профиля находится в разработке')
+async def show_profile(msg: types.Message, state: FSMContext) -> None:
+    await msg.answer(
+        'Ты в меню профиля. Используй кнопки для навигации 🔽',
+        reply_markup=PROFILE_KB
+    )
+    await state.set_state(MainGroup.viewing_profile)

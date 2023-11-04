@@ -5,8 +5,8 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, CallbackQuery
 from sqlalchemy.orm import sessionmaker
 
-from src.bot.structures.fsm import RegisterGroup
-from src.bot.structures.keyboards import REG_KB
+from src.bot.fsm import RegisterGroup
+from src.bot.keyboards import REG_KB
 from src.cache import Cache
 from src.db import Database
 

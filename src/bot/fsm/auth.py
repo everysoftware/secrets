@@ -9,5 +9,5 @@ class RegisterGroup(StatesGroup):
 
 class LoginGroup(StatesGroup):
     waiting_for_click = State()
-    entering_password = State()
+    typing_password = State()
     master_confirmation = State()
