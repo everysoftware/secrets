@@ -3,8 +3,8 @@ from typing import Callable
 from aiogram import Router, types, F
 from aiogram.fsm.context import FSMContext
 
-from src.bot.handlers.activities import ConfirmMasterActivity
 from src.bot.fsm import ConfirmationGroup
+from src.bot.handlers.activities import ConfirmMasterActivity
 from src.bot.keyboards.service import CANCEL_KB
 from src.bot.utils.forwarding import Redirects
 from src.db import Database

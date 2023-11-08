@@ -1,13 +1,13 @@
 from aiogram import Router, F, types
 from aiogram.fsm.context import FSMContext
 
-from src.bot.handlers.activities import UpdateUserActivity
-from src.bot.handlers.main import show_profile
 from src.bot.encryption import Encryption
 from src.bot.encryption import Verifying
 from src.bot.fsm import MainGroup
 from src.bot.fsm import ProfileMasterEditingGroup
 from src.bot.fsm import ProfilePasswordEditingGroup
+from src.bot.handlers.activities import UpdateUserActivity
+from src.bot.handlers.main import show_profile
 from src.bot.handlers.user.confirm import send_confirmation_request
 from src.bot.utils.forwarding import redirects
 from src.db import Database

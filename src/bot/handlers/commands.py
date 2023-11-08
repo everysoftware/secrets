@@ -2,8 +2,8 @@ from aiogram.types import BotCommand
 
 BOT_COMMANDS_LIST = (
     ('start', 'Перезапустить бота'),
-    ('generate', 'Сгенерировать пароль'),
-    ('logout', 'Выйти из аккаунта'),
+    ('suggest', 'Предложить пароль'),
+    ('exit', 'Выйти'),
     ('help', 'Помощь')
 )
 

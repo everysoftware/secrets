@@ -5,9 +5,9 @@ from aiogram.methods import SendMessage
 from aiogram.types import User
 from sqlalchemy.orm import sessionmaker
 
-from src.bot.keyboards.auth import LOGIN_KB, REG_KB
 from cache import Cache
 from db import Database
+from src.bot.keyboards.auth import LOGIN_KB, REG_KB
 from utils.entities import get_update, get_message, get_user
 from utils.mocked_bot import MockedBot
 

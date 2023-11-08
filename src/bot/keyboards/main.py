@@ -11,7 +11,7 @@ MAIN_MENU_KB = ReplyKeyboardMarkup(
         ],
         [
             KeyboardButton(text='Добавить ⏬'),
-            KeyboardButton(text='Сгенерировать 🔑')
+            KeyboardButton(text='Предложить 🔑')
         ]
     ],
     resize_keyboard=True,

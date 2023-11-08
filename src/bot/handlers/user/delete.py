@@ -2,9 +2,9 @@ from aiogram import Router, F, types
 from aiogram.fsm.context import FSMContext
 from sqlalchemy import text
 
+from src.bot.fsm import MainGroup, ProfileGroup
 from src.bot.handlers.activities import DeleteAccountActivity
 from src.bot.handlers.main import show_profile
-from src.bot.fsm import MainGroup, ProfileGroup
 from src.bot.handlers.start import start
 from src.bot.handlers.user.confirm import send_confirmation_request
 from src.bot.keyboards.service import YESNO_KB

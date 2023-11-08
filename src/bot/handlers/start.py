@@ -19,7 +19,7 @@ router.message.middleware(RegisterCheck())
 
 
 @router.message(Command('start'))
-@router.message(Command('logout'))
+@router.message(Command('exit'))
 async def start(
         message: types.Message,
         state: FSMContext,
@@ -45,11 +45,11 @@ async def start(
     return message
 
 
-@router.message(Command('generate'))
-async def generate(message: types.Message, arq_redis: ArqRedis) -> Message:
+@router.message(Command('suggest'))
+async def suggest(message: types.Message, arq_redis: ArqRedis) -> Message:
     password = generate_password()
     sent_msg = await message.answer(
-        f'🔑 Твой сгенерированный пароль:\n\n<code>{password}</code>'
+        f'Предлагаю пароль:\n\n<code>{password}</code>'
     )
     await arq_redis.enqueue_job(
         'delete_message',

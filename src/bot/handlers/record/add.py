@@ -1,9 +1,9 @@
 from aiogram import Router, F, types
 from aiogram.fsm.context import FSMContext
 
-from src.bot.fsm import RecordGroup
 from src.bot.encryption import Encryption
 from src.bot.fsm import MainGroup, AddRecordGroup
+from src.bot.fsm import RecordGroup
 from src.bot.handlers.activities import AddRecordActivity
 from src.bot.handlers.main import show_main_menu
 from src.bot.handlers.user.confirm import send_confirmation_request

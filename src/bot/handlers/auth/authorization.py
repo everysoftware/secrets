@@ -1,8 +1,8 @@
 from aiogram import types, Router, F
 from aiogram.fsm.context import FSMContext
 
-from src.bot.handlers.activities import AuthorizeActivity
 from src.bot.fsm import LoginGroup
+from src.bot.handlers.activities import AuthorizeActivity
 from src.bot.handlers.main import show_main_menu
 from src.db import Database
 

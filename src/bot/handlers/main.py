@@ -2,10 +2,10 @@ from aiogram import types, Router, F
 from aiogram.fsm.context import FSMContext
 from arq import ArqRedis
 
-from src.bot.fsm import RecordGroup
 from src.bot.filters import RegisterFilter
 from src.bot.fsm import MainGroup
-from src.bot.handlers.start import generate
+from src.bot.fsm import RecordGroup
+from src.bot.handlers.start import suggest
 from src.bot.keyboards.main import MAIN_MENU_KB
 from src.bot.keyboards.user import PROFILE_KB
 from src.bot.middlewares import DatabaseMd
@@ -31,11 +31,11 @@ async def show_main_menu(message: types.Message, state: FSMContext) -> None:
     await state.set_state(MainGroup.viewing_main_menu)
 
 
-@router.message(MainGroup.viewing_main_menu, F.text == 'Сгенерировать 🔑')
-@router.message(MainGroup.viewing_all_records, F.text == 'Сгенерировать 🔑')
-@router.message(RecordGroup.viewing_record, F.text == 'Сгенерировать 🔑')
-async def generate_password(message: types.Message, arq_redis: ArqRedis) -> None:
-    await generate(message, arq_redis)
+@router.message(MainGroup.viewing_main_menu, F.text == 'Предложить 🔑')
+@router.message(MainGroup.viewing_all_records, F.text == 'Предложить 🔑')
+@router.message(RecordGroup.viewing_record, F.text == 'Предложить 🔑')
+async def suggest_password(message: types.Message, arq_redis: ArqRedis) -> None:
+    await suggest(message, arq_redis)
 
 
 @router.message(MainGroup.viewing_main_menu, F.text == 'Мой профиль 👨')
