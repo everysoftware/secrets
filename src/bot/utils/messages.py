@@ -77,7 +77,7 @@ class Activity(ABC):
             text: Optional[str] = None,
             reply_markup: Optional[
                 InlineKeyboardMarkup | ReplyKeyboardMarkup | ReplyKeyboardRemove | ForceReply] = None
-    ):
+    ) -> types.Message:
         sent_msg = await call.message.answer(text, reply_markup=reply_markup)
         await cls.update_info(state, sent_msg)
 

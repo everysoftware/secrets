@@ -33,12 +33,14 @@ async def show_all_records(message: types.Message, state: FSMContext, db: Databa
 async def show_all_records_callback(call: types.CallbackQuery, state: FSMContext, db: Database) -> None:
     kb, new_offset = await get_storage_kb(call.from_user, db)
 
-    with suppress(TelegramBadRequest):
-        await call.message.edit_reply_markup(reply_markup=kb)
+    await ShowAllRecordsActivity.start_callback(
+        call, state,
+        new_state=MainGroup.viewing_all_records,
+        text='<b>Твои пароли</b>',
+        reply_markup=kb
+    )
 
     await state.update_data(offset=new_offset)
-
-    await call.answer()
 
 
 @router.callback_query(MainGroup.viewing_all_records, F.data == 'up')

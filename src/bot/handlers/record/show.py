@@ -101,4 +101,4 @@ async def back(call: types.CallbackQuery, state: FSMContext, db: Database) -> No
         call, state
     )
 
-    await show_all_records_callback(call)
+    await show_all_records_callback(call, state, db)
