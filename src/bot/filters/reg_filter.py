@@ -6,7 +6,7 @@ from aiogram.types import Message, CallbackQuery
 from sqlalchemy.orm import sessionmaker
 
 from src.bot.fsm import RegisterGroup
-from src.bot.keyboards import REG_KB
+from src.bot.keyboards.auth import REG_KB
 from src.cache import Cache
 from src.db import Database
 

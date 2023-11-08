@@ -1,11 +1,12 @@
 from typing import Callable
 
-from aiogram import Router, types
+from aiogram import Router, types, F
 from aiogram.fsm.context import FSMContext
 
-from src.bot.fsm import LoginGroup
+from src.bot.handlers.activities import ConfirmMasterActivity
+from src.bot.fsm import ConfirmationGroup
+from src.bot.keyboards.service import CANCEL_KB
 from src.bot.utils.forwarding import Redirects
-from src.bot.utils.messages import Interactive
 from src.db import Database
 
 router = Router(name='confirmation')
@@ -21,13 +22,25 @@ async def send_confirmation_request(
     await state.update_data(redirect=redirect.__name__)
     await state.update_data(save_master=save_master)
 
-    await Interactive.start(
-        message, state, LoginGroup.master_confirmation,
-        text='Для подтверждения операции введите мастер-пароль ⬇️'
+    await ConfirmMasterActivity.start(
+        message, state, ConfirmationGroup.typing_master,
+        text='Для подтверждения операции введите мастер-пароль ⬇️',
+        reply_markup=CANCEL_KB
     )
 
 
-@router.message(LoginGroup.master_confirmation)
+@router.callback_query(ConfirmationGroup.typing_master, F.data == 'back')
+async def back(call: types.CallbackQuery, state: FSMContext) -> None:
+    user_data = await state.get_data()
+    await state.set_state(user_data['last_state'])
+
+    await ConfirmMasterActivity.finish_callback(
+        call, state,
+        text='Операция отменена ❌'
+    )
+
+
+@router.message(ConfirmationGroup.typing_master)
 async def confirm_master(message: types.Message, redirects: Redirects, **data) -> None:
     state: FSMContext = data['state']
     db: Database = data['db']
@@ -40,9 +53,9 @@ async def confirm_master(message: types.Message, redirects: Redirects, **data) -
         result = await db.user.confirm_master(message.from_user.id, master)
 
     if result:
-        await Interactive.finish(
-            message, state, user_data=user_data, state_clear=False,
-            text='Операция подтверждена мастер-паролем ✅'
+        await ConfirmMasterActivity.finish(
+            message, state,
+            user_data=user_data
         )
 
         if user_data['save_master']:
@@ -51,8 +64,9 @@ async def confirm_master(message: types.Message, redirects: Redirects, **data) -
         await state.set_state(user_data['last_state'])
         await redirects.redirect(user_data['redirect'], message=message, **data)
     else:
-        await Interactive.switch(
+        await ConfirmMasterActivity.switch(
             message, state,
             user_data=user_data,
-            text='Неверный мастер-пароль. Введи мастер-пароль ⬇️'
+            text='Неверный мастер-пароль. Введи мастер-пароль ⬇️',
+            reply_markup=CANCEL_KB
         )

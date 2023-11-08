@@ -1,22 +1,18 @@
 from .auth import RegisterGroup, LoginGroup
-from .main import (
-    MainGroup,
-    RecordActionsGroup,
-    RecordEditingGroup,
-    RecordCreationGroup,
-    ProfileActionsGroup,
-    ProfilePasswordEditingGroup,
-    ProfileMasterEditingGroup
-)
+from .main import MainGroup
+from .record import RecordGroup, UpdateRecordGroup, AddRecordGroup
+from .service import ConfirmationGroup
+from .user import ProfileMasterEditingGroup, ProfileGroup, ProfilePasswordEditingGroup
 
 __all__ = (
     'RegisterGroup',
     'LoginGroup',
     'MainGroup',
-    'RecordActionsGroup',
-    'RecordEditingGroup',
-    'RecordCreationGroup',
-    'ProfileActionsGroup',
+    'RecordGroup',
+    'UpdateRecordGroup',
+    'AddRecordGroup',
+    'ProfileGroup',
     'ProfilePasswordEditingGroup',
-    'ProfileMasterEditingGroup'
+    'ProfileMasterEditingGroup',
+    'ConfirmationGroup'
 )

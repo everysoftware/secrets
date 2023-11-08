@@ -1,9 +1,9 @@
 from aiogram import types, Router, F
 from aiogram.fsm.context import FSMContext
 
+from src.bot.handlers.activities import AuthorizeActivity
 from src.bot.fsm import LoginGroup
 from src.bot.handlers.main import show_main_menu
-from src.bot.utils.messages import Interactive
 from src.db import Database
 
 router = Router(name='authorization')
@@ -11,7 +11,7 @@ router = Router(name='authorization')
 
 @router.message(F.text == 'Авторизация ⚡️', LoginGroup.waiting_for_click)
 async def type_password(message: types.Message, state: FSMContext) -> None:
-    await Interactive.start(
+    await AuthorizeActivity.start(
         message, state, LoginGroup.typing_password,
         text='Введи пароль ⬇️'
     )
@@ -23,14 +23,14 @@ async def authorize_user(message: types.Message, state: FSMContext, db: Database
         result = await db.user.authorize(message.from_user.id, message.text)
 
     if result:
-        await Interactive.finish(
+        await AuthorizeActivity.finish(
             message, state,
             text='Успешная авторизация ✅'
         )
 
         await show_main_menu(message, state)
     else:
-        await Interactive.switch(
+        await AuthorizeActivity.switch(
             message, state,
             text='Неверный пароль. Попробуй ещё раз ⬇️'
         )

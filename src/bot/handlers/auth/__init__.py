@@ -6,7 +6,7 @@ from ...middlewares import DatabaseMd
 
 routers = (
     authorization_router,
-    registration_router
+    registration_router,
 )
 
 router = Router(name='auth')

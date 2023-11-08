@@ -1,9 +1,9 @@
 from aiogram import Router, types, F
 from aiogram.fsm.context import FSMContext
 
+from src.bot.handlers.activities import RegisterActivity
 from src.bot.fsm import RegisterGroup
 from src.bot.handlers.main import show_main_menu
-from src.bot.utils.messages import Interactive
 from src.cache import Cache
 from src.db import Database
 
@@ -12,23 +12,23 @@ router = Router(name='registration')
 
 @router.message(F.text == 'Регистрация ⚡️', RegisterGroup.waiting_for_click)
 async def type_password(message: types.Message, state: FSMContext) -> None:
-    await Interactive.start(
-        message, state, RegisterGroup.entering_password,
+    await RegisterActivity.start(
+        message, state, RegisterGroup.typing_password,
         text='Придумай надежный пароль ⬇️',
     )
 
 
-@router.message(RegisterGroup.entering_password)
+@router.message(RegisterGroup.typing_password)
 async def type_master(message: types.Message, state: FSMContext) -> None:
     await state.update_data(password=message.text)
-    await Interactive.switch(
-        message, state, RegisterGroup.entering_master,
+    await RegisterActivity.switch(
+        message, state, RegisterGroup.typing_master,
         text='Придумай надежный мастер-пароль ⬇️\n\n'
              '<b>Мастер-пароль даёт доступ ко всем твоим паролям. Держи его в секрете ❗️</b>'
     )
 
 
-@router.message(RegisterGroup.entering_master)
+@router.message(RegisterGroup.typing_master)
 async def register_user(
         message: types.Message,
         state: FSMContext,
@@ -49,7 +49,7 @@ async def register_user(
             master=message.text,
         )
 
-    await Interactive.finish(
+    await RegisterActivity.finish(
         message, state, user_data=user_data,
         text='Регистрация успешно завершена! ✅'
     )

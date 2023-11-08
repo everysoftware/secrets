@@ -9,7 +9,7 @@ routers = (
     main_router,
     start_router,
     profile_router,
-    record_router
+    record_router,
 )
 
 __all__ = ('routers',)

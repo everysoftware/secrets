@@ -1,5 +1,6 @@
 import hashlib
 import os
+from typing import Optional
 
 
 class Verifying:
@@ -11,8 +12,11 @@ class Verifying:
     def get_hash(
             cls,
             data: str,
-            salt: bytes) -> str:
-        data_with_salt = data.encode('utf-8') + salt
+            salt: Optional[bytes] = None) -> str:
+        data_with_salt = data.encode('utf-8')
+
+        if salt:
+            data_with_salt += salt
 
         hashed_password = hashlib.sha256(data_with_salt).hexdigest()
 
@@ -23,6 +27,6 @@ class Verifying:
             cls,
             data: str,
             data_hash: str,
-            salt: bytes
+            salt: Optional[bytes] = None
     ) -> bool:
         return cls.get_hash(data, salt) == data_hash

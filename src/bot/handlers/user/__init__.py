@@ -1,7 +1,7 @@
 from aiogram import Router
 
-from .confirmation import router as confirmation_router
-from .removal import router as removal_router
+from .confirm import router as confirmation_router
+from .delete import router as removal_router
 from .update import router as update_router
 from ...filters import RegisterFilter
 from ...middlewares import DatabaseMd

@@ -1,78 +1,79 @@
 from aiogram import Router, F, types
 from aiogram.fsm.context import FSMContext
 
+from src.bot.fsm import RecordGroup
 from src.bot.encryption import Encryption
-from src.bot.fsm import MainGroup, RecordCreationGroup
-from src.bot.handlers.user.confirmation import send_confirmation_request
-from src.bot.keyboards import MAIN_MENU_KB
+from src.bot.fsm import MainGroup, AddRecordGroup
+from src.bot.handlers.activities import AddRecordActivity
+from src.bot.handlers.main import show_main_menu
+from src.bot.handlers.user.confirm import send_confirmation_request
 from src.bot.utils.forwarding import redirects
-from src.bot.utils.messages import Interactive
 from src.db import Database
 
-router = Router(name='record_creation')
+router = Router(name='add_record')
 
 
 @router.message(MainGroup.viewing_main_menu, F.text == 'Добавить ⏬')
-@router.message(MainGroup.viewing_storage, F.text == 'Добавить ⏬')
-@router.message(MainGroup.viewing_record, F.text == 'Добавить ⏬')
-async def add_record_confirmation(message: types.Message, state: FSMContext) -> None:
+@router.message(MainGroup.viewing_all_records, F.text == 'Добавить ⏬')
+@router.message(RecordGroup.viewing_record, F.text == 'Добавить ⏬')
+async def add_record_request(message: types.Message, state: FSMContext) -> None:
     await send_confirmation_request(message, state, add_record, save_master=True)
 
 
 @redirects.register_redirect
 async def add_record(message: types.Message, state: FSMContext) -> None:
-    await Interactive.start(
+    await AddRecordActivity.start(
         message, state,
-        new_state=RecordCreationGroup.setting_title,
+        new_state=AddRecordGroup.typing_title,
         text='Напечатай имя сайта ⬇️'
     )
 
 
-@router.message(RecordCreationGroup.setting_title)
+@router.message(AddRecordGroup.typing_title)
 async def set_title(message: types.Message, state: FSMContext) -> None:
     title = message.text.strip()
 
     if len(title) > 64:
-        return await Interactive.switch(
+        return await AddRecordActivity.switch(
             message, state,
             text='Имя сайта не может быть длиннее 64 символов. Напечатай имя сайта ⬇️'
         )
 
     await state.update_data(title=title)
 
-    await Interactive.switch(
+    await AddRecordActivity.switch(
         message, state,
-        new_state=RecordCreationGroup.setting_username,
+        new_state=AddRecordGroup.typing_username,
         text='Напечатай имя пользователя на сайте ⬇️'
     )
 
 
-@router.message(RecordCreationGroup.setting_username)
+@router.message(AddRecordGroup.typing_username)
 async def set_username(message: types.Message, state: FSMContext) -> None:
     username = message.text
 
     if len(username) > 64:
-        return await Interactive.switch(
+        return await AddRecordActivity.switch(
             message, state,
             text='Имя пользователя не может быть длиннее 64 символов. Напечатай имя пользователя на сайте ⬇️'
         )
 
     await state.update_data(username=username)
 
-    await Interactive.switch(
+    await AddRecordActivity.switch(
         message, state,
-        new_state=RecordCreationGroup.setting_password,
+        new_state=AddRecordGroup.typing_password,
         text='Напечатай пароль на сайте ⬇️'
     )
 
 
-@router.message(RecordCreationGroup.setting_password)
+@router.message(AddRecordGroup.typing_password)
 async def set_password(message: types.Message, state: FSMContext, db: Database) -> None:
     password = message.text
     user_data = await state.get_data()
 
     if len(password) > 64:
-        return await Interactive.switch(
+        return await AddRecordActivity.switch(
             message, state,
             user_data=user_data,
             text='Пароль не может быть длиннее 64 символов. Напечатай пароль на сайте ⬇️'
@@ -92,10 +93,10 @@ async def set_password(message: types.Message, state: FSMContext, db: Database) 
             salt
         )
 
-    await Interactive.finish(
+    await AddRecordActivity.finish(
         message, state,
-        new_state=MainGroup.viewing_main_menu,
         user_data=user_data,
-        text='Запись успешно добавлена в хранилище! ✅',
-        reply_markup=MAIN_MENU_KB
+        text='Запись успешно добавлена в хранилище! ✅'
     )
+
+    await show_main_menu(message, state)

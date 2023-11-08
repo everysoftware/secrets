@@ -13,5 +13,3 @@ class Base(DeclarativeBase):
         str_64: String(64),
         str_256: String(256)
     }
-
-# Base = declarative_base()

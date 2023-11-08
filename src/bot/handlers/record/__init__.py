@@ -1,19 +1,19 @@
 from aiogram import Router
 
-from .creation import router as creation_router
-from .misc import router as misc_router
-from .removal import router as removal_router
+from .add import router as creation_router
+from .delete import router as removal_router
 from .show import router as show_router
+from .show_all import router as show_all_router
 from .update import router as update_router
 from ...filters import RegisterFilter
 from ...middlewares import DatabaseMd
 
 routers = (
     creation_router,
-    misc_router,
     removal_router,
     show_router,
-    update_router
+    update_router,
+    show_all_router
 )
 
 router = Router(name='record')

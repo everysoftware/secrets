@@ -1,27 +1,21 @@
+from abc import ABC
+from contextlib import suppress
 from typing import Any, Optional
 
 from aiogram import types
+from aiogram.exceptions import TelegramBadRequest
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State
 from aiogram.types import InlineKeyboardMarkup, ReplyKeyboardMarkup, ReplyKeyboardRemove, ForceReply
 
+from src.bot.encryption import Verifying
 
-class Interactive:
+
+class Activity(ABC):
 
     @classmethod
-    async def start(
-            cls,
-            message: types.Message,
-            state: FSMContext,
-            new_state: Optional[State] = None,
-            text: Optional[str] = None,
-            **kwargs
-    ) -> None:
-        sent_msg = await message.answer(text, **kwargs)
-        await cls.update_info(state, sent_msg)
-
-        if new_state is not None:
-            await state.set_state(new_state)
+    def name(cls) -> str:
+        return cls.__name__
 
     @classmethod
     async def update_info(
@@ -30,10 +24,69 @@ class Interactive:
             message: types.Message
     ) -> None:
         await state.update_data(
-            chat_id=message.chat.id,
-            last_msg_id=message.message_id,
-            last_msg_text=message.text,
+            {
+                f'activity:{cls.name()}:message_id': message.message_id,
+                f'activity:{cls.name()}:message_hash': Verifying.get_hash(message.text)
+            }
         )
+
+    @classmethod
+    async def message_id(
+            cls,
+            state: Optional[FSMContext] = None,
+            user_data: Optional[dict[str, Any]] = None
+    ) -> int:
+        user_data = user_data or await state.get_data()
+
+        return user_data[f'activity:{cls.name()}:message_id']
+
+    @classmethod
+    async def message_hash(
+            cls,
+            state: Optional[FSMContext] = None,
+            user_data: Optional[dict[str, Any]] = None
+    ) -> str:
+        user_data = user_data or await state.get_data()
+
+        return user_data[f'activity:{cls.name()}:message_hash']
+
+    @classmethod
+    async def start(
+            cls,
+            message: types.Message,
+            state: FSMContext,
+            new_state: Optional[State] = None,
+            text: Optional[str] = None,
+            reply_markup: Optional[
+                InlineKeyboardMarkup | ReplyKeyboardMarkup | ReplyKeyboardRemove | ForceReply] = None
+    ) -> types.Message:
+        sent_msg = await message.answer(text, reply_markup=reply_markup)
+        await cls.update_info(state, sent_msg)
+
+        if new_state is not None:
+            await state.set_state(new_state)
+
+        return sent_msg
+
+    @classmethod
+    async def start_callback(
+            cls,
+            call: types.CallbackQuery,
+            state: FSMContext,
+            new_state: Optional[State] = None,
+            text: Optional[str] = None,
+            reply_markup: Optional[
+                InlineKeyboardMarkup | ReplyKeyboardMarkup | ReplyKeyboardRemove | ForceReply] = None
+    ):
+        sent_msg = await call.message.answer(text, reply_markup=reply_markup)
+        await cls.update_info(state, sent_msg)
+
+        if new_state is not None:
+            await state.set_state(new_state)
+
+        await call.answer()
+
+        return sent_msg
 
     @classmethod
     async def switch(
@@ -43,20 +96,20 @@ class Interactive:
             new_state: Optional[State] = None,
             user_data: Optional[dict[str, Any]] = None,
             text: Optional[str] = None,
-            **kwargs,
+            reply_markup: Optional[InlineKeyboardMarkup] = None
     ) -> None:
         await message.delete()
 
         user_data = user_data or await state.get_data()
 
-        if user_data['last_msg_text'] == text:
+        if Verifying.verify(text, await cls.message_hash(user_data=user_data)):
             return
 
         edited_msg = await message.bot.edit_message_text(
             text,
-            user_data['chat_id'],
-            user_data['last_msg_id'],
-            **kwargs
+            message.chat.id,
+            await cls.message_id(user_data=user_data),
+            reply_markup=reply_markup
         )
 
         await cls.update_info(state, edited_msg)
@@ -74,9 +127,11 @@ class Interactive:
         if user_data is None and state is None:
             raise ValueError
 
-        user_data = user_data or await state.get_data()
-
-        await message.bot.delete_message(user_data['chat_id'], user_data['last_msg_id'])
+        with suppress(TelegramBadRequest):
+            await message.bot.delete_message(
+                message.chat.id,
+                await cls.message_id(state=state)
+            )
 
     @classmethod
     async def finish(
@@ -85,19 +140,20 @@ class Interactive:
             state: FSMContext,
             new_state: Optional[State] = None,
             user_data: Optional[dict[str, Any]] = None,
-            state_clear: bool = True,
+            state_clear: bool = False,
             text: Optional[str] = None,
             reply_markup: Optional[
-                InlineKeyboardMarkup | ReplyKeyboardMarkup | ReplyKeyboardRemove | ForceReply] = None,
-            **kwargs
+                InlineKeyboardMarkup | ReplyKeyboardMarkup | ReplyKeyboardRemove | ForceReply] = None
     ) -> None:
         await cls.delete(message, state=state, user_data=user_data)
-        await message.delete()
+        with suppress(TelegramBadRequest):
+            await message.delete()
 
         if state_clear:
             await state.clear()
 
-        await message.answer(text, reply_markup=reply_markup, **kwargs)
+        if text:
+            await message.answer(text, reply_markup=reply_markup)
 
         if new_state is not None:
             await state.set_state(new_state)
@@ -105,21 +161,19 @@ class Interactive:
     @classmethod
     async def finish_callback(
             cls,
-            message: types.Message,
+            call: types.CallbackQuery,
             state: FSMContext,
             new_state: Optional[State] = None,
-            state_clear: bool = True,
+            state_clear: bool = False,
             text: Optional[str] = None,
-            reply_markup: Optional[
-                InlineKeyboardMarkup | ReplyKeyboardMarkup | ReplyKeyboardRemove | ForceReply] = None,
-            **kwargs
     ) -> None:
-        await message.delete()
+        with suppress(TelegramBadRequest):
+            await call.message.delete()
 
         if state_clear:
             await state.clear()
 
-        await message.answer(text, reply_markup=reply_markup, **kwargs)
+        await call.answer(text)
 
         if new_state is not None:
             await state.set_state(new_state)

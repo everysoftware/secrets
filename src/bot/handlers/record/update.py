@@ -1,46 +1,47 @@
 from aiogram import Router, F, types
 from aiogram.fsm.context import FSMContext
+from arq import ArqRedis
 
 from src.bot.encryption import Encryption
-from src.bot.fsm import MainGroup, RecordActionsGroup, RecordEditingGroup
-from src.bot.keyboards import UPDATE_RECORD_KB
-from src.bot.utils.messages import Interactive
+from src.bot.fsm import RecordGroup, UpdateRecordGroup
+from src.bot.handlers.activities import UpdateRecordActivity, TypeNewDataActivity, ShowRecordControlActivity
+from src.bot.handlers.record.show import show_record_cp
+from src.bot.keyboards.record import UPDATE_RECORD_KB
 from src.db import Database
 from src.db.models import Comment
 
-router = Router(name='record_editing')
+router = Router(name='update_record')
 
 
-@router.callback_query(F.data == 'edit_record', MainGroup.viewing_record)
-async def edit_record(call: types.CallbackQuery, state: FSMContext) -> None:
-    sent_msg = await call.message.answer(
-        'Выбери элемент, который хочешь изменить в записи 🔽',
+@router.callback_query(F.data == 'update_record', RecordGroup.viewing_record)
+async def update_record(call: types.CallbackQuery, state: FSMContext) -> None:
+    await ShowRecordControlActivity.finish_callback(
+        call, state
+    )
+    await UpdateRecordActivity.start_callback(
+        call, state,
+        RecordGroup.editing_record,
+        text='Выбери элемент, который хочешь изменить в записи 🔽',
         reply_markup=UPDATE_RECORD_KB
     )
-    await state.update_data(record_editing_message_id=sent_msg.message_id)
-    await state.set_state(RecordActionsGroup.editing_record)
-
-    await call.answer()
 
 
-@router.callback_query(F.data == 'update_title', RecordActionsGroup.editing_record)
+@router.callback_query(F.data == 'update_title', RecordGroup.editing_record)
 async def type_title(call: types.CallbackQuery, state: FSMContext) -> None:
-    await Interactive.start(
-        call.message, state,
-        new_state=RecordEditingGroup.updating_title,
+    await TypeNewDataActivity.start_callback(
+        call, state,
+        new_state=UpdateRecordGroup.updating_title,
         text='Введи новое имя сайта ⬇️'
     )
 
-    await call.answer()
 
-
-@router.message(RecordEditingGroup.updating_title)
+@router.message(UpdateRecordGroup.updating_title)
 async def update_title(message: types.Message, state: FSMContext, db: Database) -> None:
     text = message.text.strip()
     user_data = await state.get_data()
 
     if len(text) > 64:
-        return await Interactive.switch(
+        return await TypeNewDataActivity.switch(
             message, state,
             user_data=user_data,
             text='Имя веб-сайта не может быть длиннее 64 символов. Введи новое имя сайта ⬇️',
@@ -51,35 +52,30 @@ async def update_title(message: types.Message, state: FSMContext, db: Database) 
         record.title = text
         await db.record.merge(record)
 
-    await message.chat.delete_message(user_data['record_editing_message_id'])
-
-    await Interactive.finish(
+    await TypeNewDataActivity.finish(
         message, state,
         user_data=user_data,
-        new_state=MainGroup.viewing_record,
-        text='Запись успешно изменена ✅',
-        state_clear=False
+        new_state=RecordGroup.editing_record,
+        text='Запись успешно изменена ✅'
     )
 
 
-@router.callback_query(F.data == 'update_username', RecordActionsGroup.editing_record)
+@router.callback_query(F.data == 'update_username', RecordGroup.editing_record)
 async def type_username(call: types.CallbackQuery, state: FSMContext) -> None:
-    await Interactive.start(
-        call.message, state,
-        new_state=RecordEditingGroup.updating_username,
+    await TypeNewDataActivity.start_callback(
+        call, state,
+        new_state=UpdateRecordGroup.updating_username,
         text='Введи новое имя пользователя ⬇️'
     )
 
-    await call.answer()
 
-
-@router.message(RecordEditingGroup.updating_username)
+@router.message(UpdateRecordGroup.updating_username)
 async def update_username(message: types.Message, state: FSMContext, db: Database) -> None:
     text = message.text.strip()
     user_data = await state.get_data()
 
     if len(text) > 64:
-        return await Interactive.switch(
+        return await TypeNewDataActivity.switch(
             message, state,
             user_data=user_data,
             text='Имя пользователя не может быть длиннее 64 символов. Введи новое имя пользователя ⬇️',
@@ -90,35 +86,30 @@ async def update_username(message: types.Message, state: FSMContext, db: Databas
         record.username = Encryption.encrypt(text, user_data['master'], record.salt)
         await db.record.merge(record)
 
-    await message.chat.delete_message(user_data['record_editing_message_id'])
-
-    await Interactive.finish(
+    await TypeNewDataActivity.finish(
         message, state,
         user_data=user_data,
-        new_state=MainGroup.viewing_record,
-        text='Запись успешно изменена ✅',
-        state_clear=False
+        new_state=RecordGroup.editing_record,
+        text='Запись успешно изменена ✅'
     )
 
 
-@router.callback_query(F.data == 'update_password', RecordActionsGroup.editing_record)
+@router.callback_query(F.data == 'update_password', RecordGroup.editing_record)
 async def type_password(call: types.CallbackQuery, state: FSMContext) -> None:
-    await Interactive.start(
-        call.message, state,
-        new_state=RecordEditingGroup.updating_password,
+    await TypeNewDataActivity.start_callback(
+        call, state,
+        new_state=UpdateRecordGroup.updating_password,
         text='Введи новый пароль ⬇️'
     )
 
-    await call.answer()
 
-
-@router.message(RecordEditingGroup.updating_password)
+@router.message(UpdateRecordGroup.updating_password)
 async def update_password(message: types.Message, state: FSMContext, db: Database) -> None:
     text = message.text.strip()
     user_data = await state.get_data()
 
     if len(text) > 64:
-        return await Interactive.switch(
+        return await TypeNewDataActivity.switch(
             message, state,
             user_data=user_data,
             text='Пароль не может быть длиннее 64 символов. Введи новый пароль ⬇️',
@@ -129,35 +120,30 @@ async def update_password(message: types.Message, state: FSMContext, db: Databas
         record.password_ = Encryption.encrypt(text, user_data['master'], record.salt)
         await db.record.merge(record)
 
-    await message.chat.delete_message(user_data['record_editing_message_id'])
-
-    await Interactive.finish(
+    await TypeNewDataActivity.finish(
         message, state,
         user_data=user_data,
-        new_state=MainGroup.viewing_record,
+        new_state=RecordGroup.editing_record,
         text='Запись успешно изменена ✅',
-        state_clear=False
     )
 
 
-@router.callback_query(F.data == 'update_url', RecordActionsGroup.editing_record)
+@router.callback_query(F.data == 'update_url', RecordGroup.editing_record)
 async def type_url(call: types.CallbackQuery, state: FSMContext) -> None:
-    await Interactive.start(
-        call.message, state,
-        new_state=RecordEditingGroup.updating_url,
+    await TypeNewDataActivity.start_callback(
+        call, state,
+        new_state=UpdateRecordGroup.updating_url,
         text='Введи новый веб-сайт ⬇️'
     )
 
-    await call.answer()
 
-
-@router.message(RecordEditingGroup.updating_url)
+@router.message(UpdateRecordGroup.updating_url)
 async def update_url(message: types.Message, state: FSMContext, db: Database) -> None:
     text = message.text.strip()
     user_data = await state.get_data()
 
     if len(text) > 64:
-        return await Interactive.switch(
+        return await TypeNewDataActivity.switch(
             message, state,
             user_data=user_data,
             text='Веб-сайт не может быть длиннее 64 символов. Введи новый веб-сайт ⬇️'
@@ -168,35 +154,32 @@ async def update_url(message: types.Message, state: FSMContext, db: Database) ->
         record.url = text
         await db.record.merge(record)
 
-    await message.chat.delete_message(user_data['record_editing_message_id'])
-
-    await Interactive.finish(
+    await TypeNewDataActivity.finish(
         message, state,
         user_data=user_data,
-        new_state=MainGroup.viewing_record,
+        new_state=RecordGroup.editing_record,
         text='Запись успешно изменена ✅',
-        state_clear=False
     )
 
 
-@router.callback_query(F.data == 'update_comment', RecordActionsGroup.editing_record)
+@router.callback_query(F.data == 'update_comment', RecordGroup.editing_record)
 async def type_comment(call: types.CallbackQuery, state: FSMContext) -> None:
-    await Interactive.start(
+    await TypeNewDataActivity.start(
         call.message, state,
-        new_state=RecordEditingGroup.updating_comment,
+        new_state=UpdateRecordGroup.updating_comment,
         text='Введи новый комментарий ⬇️'
     )
 
     await call.answer()
 
 
-@router.message(RecordEditingGroup.updating_comment)
+@router.message(UpdateRecordGroup.updating_comment)
 async def update_comment(message: types.Message, state: FSMContext, db: Database) -> None:
     text = message.text.strip()
     user_data = await state.get_data()
 
     if len(text) > 256:
-        return await Interactive.switch(
+        return await TypeNewDataActivity.switch(
             message, state,
             user_data=user_data,
             text='Комментарий не может быть длиннее 256 символов. Введи новый комментарий ⬇️'
@@ -213,12 +196,18 @@ async def update_comment(message: types.Message, state: FSMContext, db: Database
             comment.text = text
             await db.comment.merge(comment)
 
-    await message.chat.delete_message(user_data['record_editing_message_id'])
-
-    await Interactive.finish(
+    await TypeNewDataActivity.finish(
         message, state,
         user_data=user_data,
-        new_state=MainGroup.viewing_record,
+        new_state=RecordGroup.editing_record,
         text='Запись успешно изменена ✅',
-        state_clear=False
     )
+
+
+@router.callback_query(F.data == 'back', RecordGroup.editing_record)
+async def back(call: types.CallbackQuery, state: FSMContext, arq_redis: ArqRedis) -> None:
+    await UpdateRecordActivity.finish_callback(
+        call, state,
+    )
+
+    await show_record_cp(call.message, state, arq_redis)
