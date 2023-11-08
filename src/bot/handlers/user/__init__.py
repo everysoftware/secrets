@@ -1,14 +1,14 @@
 from aiogram import Router
 
 from .confirm import router as confirmation_router
-from .delete import router as removal_router
+from .delete import router as delete_router
 from .update import router as update_router
 from ...filters import RegisterFilter
 from ...middlewares import DatabaseMd
 
 routers = (
     update_router,
-    removal_router,
+    delete_router,
     confirmation_router
 )
 

@@ -6,7 +6,7 @@ from src.bot.handlers.activities import AuthorizeActivity
 from src.bot.handlers.main import show_main_menu
 from src.db import Database
 
-router = Router(name='authorization')
+router = Router(name='authorize')
 
 
 @router.message(F.text == 'Авторизация ⚡️', LoginGroup.waiting_for_click)

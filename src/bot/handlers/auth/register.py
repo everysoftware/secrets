@@ -7,7 +7,7 @@ from src.bot.handlers.main import show_main_menu
 from src.cache import Cache
 from src.db import Database
 
-router = Router(name='registration')
+router = Router(name='register')
 
 
 @router.message(F.text == 'Регистрация ⚡️', RegisterGroup.waiting_for_click)

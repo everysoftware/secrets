@@ -1,12 +1,12 @@
 from aiogram import Router
 
-from .authorization import router as authorization_router
-from .registration import router as registration_router
+from .authorize import router as authorize_router
+from .register import router as register_router
 from ...middlewares import DatabaseMd
 
 routers = (
-    authorization_router,
-    registration_router,
+    authorize_router,
+    register_router,
 )
 
 router = Router(name='auth')
