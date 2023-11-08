@@ -4,18 +4,39 @@ from aiogram.utils.keyboard import InlineKeyboardBuilder
 from src.db import Database
 
 
-async def get_storage_kb(from_user: User, db: Database) -> InlineKeyboardMarkup:
+async def get_storage_kb(
+        from_user: User,
+        db: Database,
+        offset: int = -10,
+        count: int = 10
+) -> (InlineKeyboardMarkup, int):
     async with db.session.begin():
         user = await db.user.get(from_user.id)
         records = user.records
 
-    builder = InlineKeyboardBuilder()
-    for record in records:
-        builder.add(InlineKeyboardButton(text=record.title, callback_data=f'show_record_{record.id}'))
-    builder.add(InlineKeyboardButton(text='Назад ◀️', callback_data='back'))
+        if count > 0:
+            offset = min(len(records), offset + count)
+        else:
+            offset = max(0, offset + count)
+
+        offset %= len(records)
+
+        builder = InlineKeyboardBuilder()
+        for record in records[offset:offset + abs(count)]:
+            builder.add(InlineKeyboardButton(
+                text=record.title,
+                callback_data=f'show_record_{record.id}'
+            ))
+
     builder.adjust(1)
 
-    return builder.as_markup(resize_keyboard=True)
+    builder.row(
+        InlineKeyboardButton(text='🔼', callback_data='up'),
+        InlineKeyboardButton(text='Назад ◀️', callback_data='back'),
+        InlineKeyboardButton(text='🔽', callback_data='down')
+    )
+
+    return builder.as_markup(resize_keyboard=True), offset
 
 
 RECORD_KB = InlineKeyboardMarkup(

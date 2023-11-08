@@ -96,7 +96,7 @@ async def set_password(message: types.Message, state: FSMContext, db: Database) 
     await AddRecordActivity.finish(
         message, state,
         user_data=user_data,
-        text='Запись успешно добавлена в хранилище! ✅'
+        text='Пароль успешно добавлен! ✅'
     )
 
     await show_main_menu(message, state)
