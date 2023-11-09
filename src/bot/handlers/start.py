@@ -6,7 +6,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 from arq import ArqRedis
 
-from db import Database
+from src.db import Database
 from src.bot.fsm import LoginGroup, RegisterGroup
 from src.bot.keyboards.auth import LOGIN_KB, REG_KB
 from .commands import BOT_COMMANDS_STR
