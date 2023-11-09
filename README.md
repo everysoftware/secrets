@@ -4,7 +4,6 @@
 
 [![Lint and test](https://github.com/everysoftware/secrets-bot/actions/workflows/ci.yml/badge.svg)](https://github.com/everysoftware/secrets-bot/actions/workflows/ci.yml)
 [![Deploy to server](https://github.com/everysoftware/secrets-bot/actions/workflows/cd.yml/badge.svg)](https://github.com/everysoftware/secrets-bot/actions/workflows/cd.yml)
-![Aiogram](https://img.shields.io/badge/Aiogram-3-blue?labelColor=gray&style=flat&logo=telegram)
 
 <img src="https://github.com/everysoftware/secrets-bot/assets/22497421/9d32c2dd-d121-491f-ae7f-5f049de73a59" width="300" />  
 <img src="https://github.com/everysoftware/secrets-bot/assets/22497421/54c98de8-1c4f-42a3-bf67-b029e604d8b0" width="300" />  
