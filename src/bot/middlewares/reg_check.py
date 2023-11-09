@@ -24,6 +24,7 @@ class RegisterCheck(BaseMiddleware):
             if user_exists is None:
                 async with session.begin():
                     user_exists = int(await data['db'].user.get(event.from_user.id) is not None)
+
                 await cache.set(
                     f'user_exists:{event.from_user.id}',
                     user_exists

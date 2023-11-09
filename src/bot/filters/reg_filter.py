@@ -46,7 +46,7 @@ class RegisterFilter(Filter):
 
         if await state.get_state() not in RegisterGroup:
             await message.answer(
-                'Для совершения этого действия тебе необходимо зарегистрироваться 👇',
+                'Для совершения этого действия Вам необходимо создать аккаунт 👇',
                 reply_markup=REG_KB
             )
             await state.set_state(RegisterGroup.waiting_for_click)

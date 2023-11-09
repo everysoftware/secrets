@@ -24,7 +24,7 @@ async def type_master(message: types.Message, state: FSMContext) -> None:
     await RegisterActivity.switch(
         message, state, RegisterGroup.typing_master,
         text='Придумайте надежный мастер-пароль ⬇️\n\n'
-             '<b>Мастер-пароль даёт доступ ко всем вашим паролям. Никому его не сообщаете ❗️</b>'
+             '<b>Мастер-пароль даёт доступ ко всем вашим паролям. Никому не сообщаете его ❗️</b>'
     )
 
 
