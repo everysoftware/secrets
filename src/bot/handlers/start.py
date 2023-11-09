@@ -49,7 +49,7 @@ async def start(
 async def suggest(message: types.Message, arq_redis: ArqRedis) -> Message:
     password = generate_password()
     sent_msg = await message.answer(
-        f'Ваш случайный надёжный пароль:\n\n<code>{password}</code>'
+        f'Ваш случайный пароль:\n\n<code>{password}</code>'
     )
     await arq_redis.enqueue_job(
         'delete_message',
