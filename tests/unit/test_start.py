@@ -10,8 +10,8 @@ from bot.handlers.start import author, help_
 @pytest.mark.parametrize(
     'handler, expected_text',
     [
-        (help_, '<b>Команды бота:</b>\n\n' + BOT_COMMANDS_STR),
-        (author, 'Автор бота: @ivanstasevich 👨‍💻')
+        (help_, '<b>Способности бота:</b>\n\n' + BOT_COMMANDS_STR),
+        (author, 'Разработчик бота: @ivanstasevich 👨‍💻')
     ]
 )
 async def test_easy_handlers(handler, expected_text):
