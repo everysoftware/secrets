@@ -17,16 +17,19 @@ async def get_storage_kb(
         user = await db.user.get(from_user.id)
         records = user.records
 
+        records_len = len(user.records)
+
         if pattern:
             # TODO: Оптимизировать поиск по URL
             records = [record for record in records if pattern in record.url]
 
         if count > 0:
-            offset = min(len(records), offset + count)
+            offset = min(records_len, offset + count)
         else:
             offset = max(0, offset + count)
 
-        offset %= len(records)
+        if records_len > 0:
+            offset %= records_len
 
         builder = InlineKeyboardBuilder()
 
