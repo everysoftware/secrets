@@ -9,7 +9,6 @@ from src.bot.handlers.start import start
 from src.bot.handlers.user.confirm import send_confirmation_request
 from src.bot.keyboards.service import YESNO_KB
 from src.bot.utils.forwarding import redirects
-from src.cache import Cache
 from src.db import Database
 
 router = Router(name='delete_user')
@@ -35,8 +34,7 @@ async def delete_account_yesno(message: types.Message, state: FSMContext) -> Non
 async def delete_account_yes(
         call: types.CallbackQuery,
         state: FSMContext,
-        db: Database,
-        cache: Cache
+        db: Database
 ) -> None:
     async with db.session.begin():
         await db.session.execute(
@@ -44,14 +42,12 @@ async def delete_account_yes(
             {'user_id': call.from_user.id}
         )
 
-    await cache.delete(f'user_exists:{call.from_user.id}')
-
     await DeleteAccountActivity.finish_callback(
         call, state,
         text='Аккаунт успешно удален ✅'
     )
 
-    await start(call.message, state, cache)
+    await start(call.message, state, db)
 
 
 @router.callback_query(ProfileGroup.deleting_account, F.data == 'no')

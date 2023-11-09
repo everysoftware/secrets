@@ -2,7 +2,6 @@ from aiogram import types, Router, F
 from aiogram.fsm.context import FSMContext
 from arq import ArqRedis
 
-from src.bot.filters import RegisterFilter
 from src.bot.fsm import MainGroup
 from src.bot.fsm import RecordGroup
 from src.bot.handlers.start import suggest
@@ -14,9 +13,6 @@ router = Router(name='main')
 
 router.message.middleware(DatabaseMd())
 router.callback_query.middleware(DatabaseMd())
-
-router.message.filter(RegisterFilter())
-router.callback_query.filter(RegisterFilter())
 
 
 @router.message(MainGroup.viewing_profile, F.text == 'Назад ◀️')

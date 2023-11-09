@@ -13,7 +13,7 @@ def get_user(
         language_code='ru-RU',
         is_premium=True,
         **kwargs
-):
+) -> User:
     return User(
         id=id,
         is_bot=is_bot,
@@ -33,7 +33,7 @@ def get_chat(
         first_name=get_user().first_name,
         last_name=get_user().last_name,
         **kwargs
-):
+) -> Chat:
     return Chat(
         id=id,
         type=type,
@@ -51,7 +51,7 @@ def get_message(
         from_user=get_user(),
         text='test message',
         **kwargs
-):
+) -> Message:
     return Message(
         message_id=message_id,
         date=date,
@@ -66,7 +66,7 @@ def get_update(
         message: Optional[Message] = None,
         call: Optional[CallbackQuery] = None,
         **kwargs
-):
+) -> Update:
     return Update(
         update_id=222,
         message=message,

@@ -4,7 +4,6 @@ from aiogram.fsm.context import FSMContext
 from src.bot.fsm import RegisterGroup
 from src.bot.handlers.activities import RegisterActivity
 from src.bot.handlers.main import show_main_menu
-from src.cache import Cache
 from src.db import Database
 
 router = Router(name='register')
@@ -32,14 +31,13 @@ async def type_master(message: types.Message, state: FSMContext) -> None:
 async def register_user(
         message: types.Message,
         state: FSMContext,
-        db: Database,
-        cache: Cache
+        db: Database
 ) -> None:
     user_data = await state.get_data()
 
     async with db.session.begin():
         await db.user.register(
-            db, cache,
+            db,
             user_id=message.from_user.id,
             username=message.from_user.username,
             first_name=message.from_user.first_name,

@@ -34,12 +34,11 @@ async def test_start_command(
         db: Database,
         cache: Cache,
         pool: sessionmaker
-):
+) -> None:
     async with db.session.begin():
         if is_registered:
             await db.user.register(
                 db,
-                cache,
                 user_id=user.id,
                 first_name=user.first_name,
                 last_name=user.last_name,

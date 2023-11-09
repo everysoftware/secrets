@@ -6,16 +6,16 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 from arq import ArqRedis
 
+from db import Database
 from src.bot.fsm import LoginGroup, RegisterGroup
 from src.bot.keyboards.auth import LOGIN_KB, REG_KB
-from src.bot.middlewares import RegisterCheck
-from src.cache import Cache
 from .commands import BOT_COMMANDS_STR
 from ..encryption import generate_password
+from ..middlewares import DatabaseMd
 
 router = Router(name='start')
 
-router.message.middleware(RegisterCheck())
+router.message.middleware(DatabaseMd())
 
 
 @router.message(Command('start'))
@@ -23,11 +23,14 @@ router.message.middleware(RegisterCheck())
 async def start(
         message: types.Message,
         state: FSMContext,
-        cache: Cache,
+        db: Database
 ) -> Message:
     await state.clear()
 
-    if await cache.get(f'user_exists:{message.from_user.id}', int):
+    async with db.session.begin():
+        user_exists = await db.user.get(message.from_user.id) is not None
+
+    if user_exists:
         message = await message.answer(
             'Добро пожаловать, {first_name} {last_name}! 😊 '
             'Нажмите на кнопку, чтобы войти в аккаунт 👇'.format(

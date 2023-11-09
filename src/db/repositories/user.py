@@ -3,7 +3,6 @@ from typing import Optional
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.bot.encryption import Verifying
-from src.cache import Cache
 from .repo import Repository
 from ..models import User, AuthData
 
@@ -35,7 +34,6 @@ class UserRepo(Repository[User]):
     async def register(
             self,
             db,
-            cache: Cache,
             user_id: int,
             first_name: str,
             language_code: str,
@@ -62,8 +60,6 @@ class UserRepo(Repository[User]):
             language_code=language_code,
             auth_data=auth_data
         )
-
-        await cache.delete(f'user_exists:{user_id}')
 
         return new_user
 
