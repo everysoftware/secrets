@@ -7,8 +7,8 @@ services:
     env_file:
       - .env
     restart: on-failure
-    ports:
-      - "6379:6379"
+    expose:
+      - "6379"
   db:
     image: postgres:15-alpine
     env_file:
@@ -16,8 +16,8 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
     restart: on-failure
-    ports:
-      - "5432:5432"
+    expose:
+      - "5432"
   bot:
     build:
       context: .
