@@ -29,16 +29,16 @@ async def start(
 
     if await cache.get(f'user_exists:{message.from_user.id}', int):
         message = await message.answer(
-            'Привет, {first_name} {last_name}, мы тебя помним! 😊 '
-            'Нажми на кнопку, чтобы войти в аккаунт 👇'.format(
+            'Добро пожаловать, {first_name} {last_name}! 😊 '
+            'Нажмите на кнопку, чтобы войти в аккаунт 👇'.format(
                 first_name=message.from_user.first_name,
                 last_name=message.from_user.last_name),
             reply_markup=LOGIN_KB)
         await state.set_state(LoginGroup.waiting_for_click)
     else:
         message = await message.answer(
-            'Привет, я бот Secrets — твой быстрый и безопасный менеджер паролей 😊 '
-            'Нажми на кнопку, чтобы создать аккаунт 👇',
+            'Добро пожаловать! Я бот, который помогает управлять паролями быстро и безопасно! 😊'
+            'Давайте создадим аккаунт, для этого нажмите на кнопку 👇',
             reply_markup=REG_KB)
         await state.set_state(RegisterGroup.waiting_for_click)
 
@@ -49,7 +49,7 @@ async def start(
 async def suggest(message: types.Message, arq_redis: ArqRedis) -> Message:
     password = generate_password()
     sent_msg = await message.answer(
-        f'Предлагаю пароль:\n\n<code>{password}</code>'
+        f'Ваш случайный надёжный пароль:\n\n<code>{password}</code>'
     )
     await arq_redis.enqueue_job(
         'delete_message',
@@ -62,9 +62,9 @@ async def suggest(message: types.Message, arq_redis: ArqRedis) -> Message:
 
 @router.message(Command('help'))
 async def help_(message: types.Message) -> Message:
-    return await message.answer('<b>Команды бота:</b>\n\n' + BOT_COMMANDS_STR)
+    return await message.answer('<b>Способности бота:</b>\n\n' + BOT_COMMANDS_STR)
 
 
 @router.message(Command('author'))
 async def author(message: types.Message) -> Message:
-    return await message.answer('Автор бота: @ivanstasevich 👨‍💻')
+    return await message.answer('Разработчик бота: @ivanstasevich 👨‍💻')

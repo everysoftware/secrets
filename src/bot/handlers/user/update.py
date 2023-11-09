@@ -22,7 +22,7 @@ async def type_old_password(message: types.Message, state: FSMContext) -> None:
     await UpdateUserActivity.start(
         message, state,
         new_state=ProfilePasswordEditingGroup.typing_old_password,
-        text='Введи старый пароль ⬇️'
+        text='Введите старый пароль ⬇️'
     )
 
 
@@ -33,13 +33,13 @@ async def type_new_password(message: types.Message, state: FSMContext, db: Datab
     if not await db.user.authorize(message.from_user.id, text):
         return await UpdateUserActivity.switch(
             message, state,
-            text='Неверный пароль. Введи старый пароль ⬇️'
+            text='Неверный пароль. Введите старый пароль ⬇️'
         )
 
     await UpdateUserActivity.switch(
         message, state,
         new_state=ProfilePasswordEditingGroup.typing_new_password,
-        text='Введи новый пароль ⬇️'
+        text='Введите новый пароль ⬇️'
     )
 
 
@@ -72,7 +72,7 @@ async def type_new_master(message: types.Message, state: FSMContext) -> None:
     await UpdateUserActivity.start(
         message, state,
         new_state=ProfileMasterEditingGroup.typing_new_password,
-        text='Введи новый мастер-пароль ⬇️'
+        text='Введите новый мастер-пароль ⬇️'
     )
 
 

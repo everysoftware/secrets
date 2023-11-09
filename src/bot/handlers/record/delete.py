@@ -23,8 +23,8 @@ async def delete_record(call: types.CallbackQuery, state: FSMContext) -> None:
     await DeleteRecordActivity.start_callback(
         call, state,
         new_state=RecordGroup.deleting_record,
-        text='Внимание! Удалив запись, ты безвозвратно потеряешь все данные, содержащиеся в ней. '
-             'Ты действительно хочешь удалить запись?',
+        text='Внимание! Удалив запись, Вы безвозвратно потеряете все данные, содержащиеся в ней. '
+             'Вы действительно хотите удалить запись?',
         reply_markup=YESNO_KB
     )
 

@@ -1,3 +1,5 @@
+from typing import Optional
+
 from aiogram.types import User, InlineKeyboardMarkup, InlineKeyboardButton
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
@@ -8,11 +10,16 @@ async def get_storage_kb(
         from_user: User,
         db: Database,
         offset: int = -10,
-        count: int = 10
+        count: int = 10,
+        pattern: Optional[str] = None
 ) -> (InlineKeyboardMarkup, int):
     async with db.session.begin():
         user = await db.user.get(from_user.id)
         records = user.records
+
+        if pattern:
+            # TODO: Оптимизировать поиск по URL
+            records = [record for record in records if pattern in record.url]
 
         if count > 0:
             offset = min(len(records), offset + count)
@@ -22,6 +29,8 @@ async def get_storage_kb(
         offset %= len(records)
 
         builder = InlineKeyboardBuilder()
+
+        # TODO: Оптимизировать скроллинг паролей
         for record in records[offset:offset + abs(count)]:
             builder.add(InlineKeyboardButton(
                 text=record.title,

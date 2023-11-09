@@ -13,7 +13,7 @@ router = Router(name='authorize')
 async def type_password(message: types.Message, state: FSMContext) -> None:
     await AuthorizeActivity.start(
         message, state, LoginGroup.typing_password,
-        text='Введи пароль ⬇️'
+        text='Введите пароль ⬇️'
     )
 
 
@@ -32,5 +32,5 @@ async def authorize_user(message: types.Message, state: FSMContext, db: Database
     else:
         await AuthorizeActivity.switch(
             message, state,
-            text='Неверный пароль. Попробуй ещё раз ⬇️'
+            text='Неверный пароль. Попробуйте ещё раз ⬇️'
         )

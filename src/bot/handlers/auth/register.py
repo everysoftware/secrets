@@ -14,7 +14,7 @@ router = Router(name='register')
 async def type_password(message: types.Message, state: FSMContext) -> None:
     await RegisterActivity.start(
         message, state, RegisterGroup.typing_password,
-        text='Придумай надежный пароль ⬇️',
+        text='Придумайте надежный пароль ⬇️',
     )
 
 
@@ -23,8 +23,8 @@ async def type_master(message: types.Message, state: FSMContext) -> None:
     await state.update_data(password=message.text)
     await RegisterActivity.switch(
         message, state, RegisterGroup.typing_master,
-        text='Придумай надежный мастер-пароль ⬇️\n\n'
-             '<b>Мастер-пароль даёт доступ ко всем твоим паролям. Держи его в секрете ❗️</b>'
+        text='Придумайте надежный мастер-пароль ⬇️\n\n'
+             '<b>Мастер-пароль даёт доступ ко всем вашим паролям. Никому его не сообщаете ❗️</b>'
     )
 
 

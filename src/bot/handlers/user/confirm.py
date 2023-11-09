@@ -24,7 +24,7 @@ async def send_confirmation_request(
 
     await ConfirmMasterActivity.start(
         message, state, ConfirmationGroup.typing_master,
-        text='Для подтверждения операции введите мастер-пароль ⬇️',
+        text='Для подтверждения вашей личности введите мастер-пароль ⬇️',
         reply_markup=CANCEL_KB
     )
 
@@ -67,6 +67,6 @@ async def confirm_master(message: types.Message, redirects: Redirects, **data) -
         await ConfirmMasterActivity.switch(
             message, state,
             user_data=user_data,
-            text='Неверный мастер-пароль. Введи мастер-пароль ⬇️',
+            text='Неверный мастер-пароль. Введите мастер-пароль ⬇️',
             reply_markup=CANCEL_KB
         )

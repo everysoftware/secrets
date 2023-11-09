@@ -25,8 +25,8 @@ async def delete_account_yesno(message: types.Message, state: FSMContext) -> Non
     await DeleteAccountActivity.start(
         message, state,
         new_state=ProfileGroup.deleting_account,
-        text='Внимание! Удалив аккаунт, ты безвозвратно потеряешь все сохранённые пароли! '
-             'Ты действительно хочешь удалить аккаунт?',
+        text='Внимание! Удалив аккаунт, Вы безвозвратно потеряете все сохранённые пароли! '
+             'Вы действительно хотите удалить аккаунт?',
         reply_markup=YESNO_KB
     )
 

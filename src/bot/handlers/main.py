@@ -24,7 +24,7 @@ async def show_main_menu(message: types.Message, state: FSMContext) -> None:
     await state.clear()
 
     await message.answer(
-        'Ты в главном меню. Используй кнопки для навигации 🔽',
+        'Вы в главном меню. Выберите действие 🔽',
         reply_markup=MAIN_MENU_KB
     )
 
@@ -43,7 +43,7 @@ async def suggest_password(message: types.Message, arq_redis: ArqRedis) -> None:
 @router.message(RecordGroup.viewing_record, F.text == 'Мой профиль 👨')
 async def show_profile(message: types.Message, state: FSMContext) -> None:
     await message.answer(
-        text='Ты в меню профиля. Используй кнопки для навигации 🔽',
+        text='Вы в меню профиля. Выберите действие 🔽',
         reply_markup=PROFILE_KB
     )
     await state.set_state(MainGroup.viewing_profile)

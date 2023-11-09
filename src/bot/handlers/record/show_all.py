@@ -23,7 +23,7 @@ async def show_all_records(message: types.Message, state: FSMContext, db: Databa
     await ShowAllRecordsActivity.start(
         message, state,
         new_state=MainGroup.viewing_all_records,
-        text='<b>Твои пароли</b>',
+        text='<b>Ваши пароли</b>',
         reply_markup=kb
     )
 
@@ -36,7 +36,7 @@ async def show_all_records_callback(call: types.CallbackQuery, state: FSMContext
     await ShowAllRecordsActivity.start_callback(
         call, state,
         new_state=MainGroup.viewing_all_records,
-        text='<b>Твои пароли</b>',
+        text='<b>Ваши пароли</b>',
         reply_markup=kb
     )
 

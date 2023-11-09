@@ -21,7 +21,7 @@ async def update_record(call: types.CallbackQuery, state: FSMContext) -> None:
     await UpdateRecordActivity.start_callback(
         call, state,
         RecordGroup.editing_record,
-        text='Выбери элемент, который хочешь изменить в записи 🔽',
+        text='Выберите элемент, который Вы хотите изменить в записи 🔽',
         reply_markup=UPDATE_RECORD_KB
     )
 
@@ -31,7 +31,7 @@ async def type_title(call: types.CallbackQuery, state: FSMContext) -> None:
     await TypeNewDataActivity.start_callback(
         call, state,
         new_state=UpdateRecordGroup.updating_title,
-        text='Введи новое имя сайта ⬇️'
+        text='Введите новое имя сайта ⬇️'
     )
 
 
@@ -44,7 +44,7 @@ async def update_title(message: types.Message, state: FSMContext, db: Database) 
         return await TypeNewDataActivity.switch(
             message, state,
             user_data=user_data,
-            text='Имя веб-сайта не может быть длиннее 64 символов. Введи новое имя сайта ⬇️',
+            text='Имя веб-сайта не может быть длиннее 64 символов. Введите новое имя сайта ⬇️',
         )
 
     async with db.session.begin():
@@ -65,7 +65,7 @@ async def type_username(call: types.CallbackQuery, state: FSMContext) -> None:
     await TypeNewDataActivity.start_callback(
         call, state,
         new_state=UpdateRecordGroup.updating_username,
-        text='Введи новое имя пользователя ⬇️'
+        text='Введите новое имя пользователя ⬇️'
     )
 
 
@@ -78,7 +78,7 @@ async def update_username(message: types.Message, state: FSMContext, db: Databas
         return await TypeNewDataActivity.switch(
             message, state,
             user_data=user_data,
-            text='Имя пользователя не может быть длиннее 64 символов. Введи новое имя пользователя ⬇️',
+            text='Имя пользователя не может быть длиннее 64 символов. Введите новое имя пользователя ⬇️',
         )
 
     async with db.session.begin():
@@ -99,7 +99,7 @@ async def type_password(call: types.CallbackQuery, state: FSMContext) -> None:
     await TypeNewDataActivity.start_callback(
         call, state,
         new_state=UpdateRecordGroup.updating_password,
-        text='Введи новый пароль ⬇️'
+        text='Введите новый пароль ⬇️'
     )
 
 
@@ -112,7 +112,7 @@ async def update_password(message: types.Message, state: FSMContext, db: Databas
         return await TypeNewDataActivity.switch(
             message, state,
             user_data=user_data,
-            text='Пароль не может быть длиннее 64 символов. Введи новый пароль ⬇️',
+            text='Пароль не может быть длиннее 64 символов. Введите новый пароль ⬇️',
         )
 
     async with db.session.begin():
@@ -133,7 +133,7 @@ async def type_url(call: types.CallbackQuery, state: FSMContext) -> None:
     await TypeNewDataActivity.start_callback(
         call, state,
         new_state=UpdateRecordGroup.updating_url,
-        text='Введи новый веб-сайт ⬇️'
+        text='Введите новый веб-сайт ⬇️'
     )
 
 
@@ -146,7 +146,7 @@ async def update_url(message: types.Message, state: FSMContext, db: Database) ->
         return await TypeNewDataActivity.switch(
             message, state,
             user_data=user_data,
-            text='Веб-сайт не может быть длиннее 64 символов. Введи новый веб-сайт ⬇️'
+            text='Веб-сайт не может быть длиннее 64 символов. Введите новый веб-сайт ⬇️'
         )
 
     async with db.session.begin():
@@ -167,7 +167,7 @@ async def type_comment(call: types.CallbackQuery, state: FSMContext) -> None:
     await TypeNewDataActivity.start(
         call.message, state,
         new_state=UpdateRecordGroup.updating_comment,
-        text='Введи новый комментарий ⬇️'
+        text='Введите новый комментарий ⬇️'
     )
 
     await call.answer()
@@ -182,7 +182,7 @@ async def update_comment(message: types.Message, state: FSMContext, db: Database
         return await TypeNewDataActivity.switch(
             message, state,
             user_data=user_data,
-            text='Комментарий не может быть длиннее 256 символов. Введи новый комментарий ⬇️'
+            text='Комментарий не может быть длиннее 256 символов. Введите новый комментарий ⬇️'
         )
 
     async with db.session.begin():

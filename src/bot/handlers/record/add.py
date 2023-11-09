@@ -25,7 +25,7 @@ async def add_record(message: types.Message, state: FSMContext) -> None:
     await AddRecordActivity.start(
         message, state,
         new_state=AddRecordGroup.typing_title,
-        text='Напечатай имя сайта ⬇️'
+        text='Введите имя сайта ⬇️'
     )
 
 
@@ -36,7 +36,7 @@ async def set_title(message: types.Message, state: FSMContext) -> None:
     if len(title) > 64:
         return await AddRecordActivity.switch(
             message, state,
-            text='Имя сайта не может быть длиннее 64 символов. Напечатай имя сайта ⬇️'
+            text='Имя сайта не может быть длиннее 64 символов. Введите имя сайта ⬇️'
         )
 
     await state.update_data(title=title)
@@ -44,7 +44,7 @@ async def set_title(message: types.Message, state: FSMContext) -> None:
     await AddRecordActivity.switch(
         message, state,
         new_state=AddRecordGroup.typing_username,
-        text='Напечатай имя пользователя на сайте ⬇️'
+        text='Введите имя пользователя ⬇️'
     )
 
 
@@ -55,7 +55,7 @@ async def set_username(message: types.Message, state: FSMContext) -> None:
     if len(username) > 64:
         return await AddRecordActivity.switch(
             message, state,
-            text='Имя пользователя не может быть длиннее 64 символов. Напечатай имя пользователя на сайте ⬇️'
+            text='Имя пользователя не может быть длиннее 64 символов. Введите имя пользователя ⬇️'
         )
 
     await state.update_data(username=username)
@@ -63,7 +63,7 @@ async def set_username(message: types.Message, state: FSMContext) -> None:
     await AddRecordActivity.switch(
         message, state,
         new_state=AddRecordGroup.typing_password,
-        text='Напечатай пароль на сайте ⬇️'
+        text='Введите пароль на сайте ⬇️'
     )
 
 
@@ -76,7 +76,7 @@ async def set_password(message: types.Message, state: FSMContext, db: Database) 
         return await AddRecordActivity.switch(
             message, state,
             user_data=user_data,
-            text='Пароль не может быть длиннее 64 символов. Напечатай пароль на сайте ⬇️'
+            text='Пароль не может быть длиннее 64 символов. Введите пароль на сайте ⬇️'
         )
 
     salt = Encryption.generate_salt()

@@ -30,4 +30,5 @@ class User(Base):
         'Record',
         back_populates='user',
         lazy='selectin',
+        order_by='Record.title'
     )

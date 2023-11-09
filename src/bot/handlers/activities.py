@@ -33,6 +33,10 @@ class ShowRecordControlActivity(Activity):
     pass
 
 
+class SearchRecordActivity(Activity):
+    pass
+
+
 class ShowAllRecordsActivity(Activity):
     pass
 

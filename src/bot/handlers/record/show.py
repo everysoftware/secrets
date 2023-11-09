@@ -23,7 +23,6 @@ router = Router(name='show_record')
 
 
 @router.callback_query(F.data.startswith('show_record'), MainGroup.viewing_all_records)
-@router.callback_query(F.data.startswith('show_record'), RecordGroup.viewing_record)
 async def show_record_request(call: types.CallbackQuery, state: FSMContext) -> None:
     args = call.data.split('_')
 
@@ -44,7 +43,6 @@ async def show_record(message: types.Message, state: FSMContext, db: Database, a
     await ShowAllRecordsActivity.finish(
         message, state,
         user_data=user_data,
-        state_clear=False  # Нужен record_id
     )
 
     async with db.session.begin():
@@ -77,7 +75,7 @@ async def show_record_cp(message: types.Message, state: FSMContext, arq_redis: A
     cp_msg = await ShowRecordControlActivity.start(
         message, state,
         RecordGroup.viewing_record,
-        text='Ты в меню управления записью. Выбери действие 🔽',
+        text='Вы в меню управления записью. Выберите действие 🔽',
         reply_markup=RECORD_KB
     )
 
