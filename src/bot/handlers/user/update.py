@@ -9,7 +9,7 @@ from src.bot.fsm import ProfilePasswordEditingGroup
 from src.bot.handlers.activities import UpdateUserActivity
 from src.bot.handlers.main import show_profile
 from src.bot.handlers.user.confirm import send_confirmation_request
-from src.bot.utils.forwarding import redirects
+from src.bot.utils.forwarding import confirmation_center
 from src.db import Database
 from src.db.models import AuthData
 from src.db.models import Record
@@ -67,7 +67,7 @@ async def update_master_request(message: types.Message, state: FSMContext) -> No
     await send_confirmation_request(message, state, type_new_master, save_master=True)
 
 
-@redirects.register_redirect
+@confirmation_center.redirect
 async def type_new_master(message: types.Message, state: FSMContext) -> None:
     await UpdateUserActivity.start(
         message, state,

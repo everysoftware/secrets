@@ -1,4 +1,5 @@
 from datetime import timedelta
+from html import escape
 
 from aiogram import types, Router
 from aiogram.filters import Command
@@ -52,7 +53,7 @@ async def start(
 async def suggest(message: types.Message, arq_redis: ArqRedis) -> Message:
     password = generate_password()
     sent_msg = await message.answer(
-        f'Ваш случайный пароль:\n\n<code>{password}</code>'
+        f'Ваш случайный пароль:\n\n<code>{escape(password)}</code>'
     )
     await arq_redis.enqueue_job(
         'delete_message',

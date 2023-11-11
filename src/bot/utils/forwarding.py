@@ -1,21 +1,23 @@
 import inspect
-from typing import Callable
+from typing import Callable, Any
 
 
-class Redirects:
-    callback_map: dict[str, Callable] = {}
+class RedirectionCenter:
+    def __init__(self):
+        self.callback_map: dict[str, Callable] = {}
 
-    def register_redirect(self, func):
+    def redirect(self, func):
         self.callback_map[func.__name__] = func
+
         return func
 
-    async def redirect(self, name: str, **data) -> None:
+    async def make_redirect_async(self, name: str, **data) -> Any:
         callback = self.callback_map[name]
 
         sig = inspect.signature(callback)
         args = [param.name for param in sig.parameters.values()]
 
-        await callback(**{arg: data[arg] for arg in args})
+        return await callback(**{arg: data[arg] for arg in args})
 
 
-redirects = Redirects()
+confirmation_center = RedirectionCenter()

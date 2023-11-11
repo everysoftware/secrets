@@ -5,7 +5,7 @@ from src.bot.schemes.models import DecryptedRecord
 
 
 class DecryptedRecordHandle:
-    def __init__(self, record: DecryptedRecord) -> None:
+    def __init__(self, record: DecryptedRecord):
         self.record = record
 
     def html(self) -> str:

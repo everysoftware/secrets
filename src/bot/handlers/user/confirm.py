@@ -6,7 +6,7 @@ from aiogram.fsm.context import FSMContext
 from src.bot.fsm import ConfirmationGroup
 from src.bot.handlers.activities import ConfirmMasterActivity
 from src.bot.keyboards.service import CANCEL_KB
-from src.bot.utils.forwarding import Redirects
+from src.bot.utils.forwarding import RedirectionCenter
 from src.db import Database
 
 router = Router(name='confirmation')
@@ -41,7 +41,7 @@ async def back(call: types.CallbackQuery, state: FSMContext) -> None:
 
 
 @router.message(ConfirmationGroup.typing_master)
-async def confirm_master(message: types.Message, redirects: Redirects, **data) -> None:
+async def confirm_master(message: types.Message, redirects: RedirectionCenter, **data) -> None:
     state: FSMContext = data['state']
     db: Database = data['db']
 
@@ -62,7 +62,7 @@ async def confirm_master(message: types.Message, redirects: Redirects, **data) -
             await state.update_data(master=master)
 
         await state.set_state(user_data['last_state'])
-        await redirects.redirect(user_data['redirect'], message=message, **data)
+        await redirects.make_redirect_async(user_data['redirect'], message=message, **data)
     else:
         await ConfirmMasterActivity.switch(
             message, state,

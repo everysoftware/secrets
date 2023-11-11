@@ -11,20 +11,20 @@ class User(Base):
     __tablename__ = 'users'
 
     id: Mapped[int] = mapped_column(Identity(), unique=True)
-
     user_id: Mapped[int] = mapped_column(primary_key=True, unique=True)
     first_name: Mapped[str]
+
+    created_at: Mapped[datetime.datetime] = mapped_column(default=datetime.datetime.utcnow)
     last_name: Mapped[Optional[str]]
     language_code: Mapped[Optional[str]]
     username: Mapped[Optional[str]]
+
     auth_data = relationship(
         'AuthData',
         back_populates='user',
         uselist=False,
         lazy='joined',
     )
-
-    reg_date: Mapped[datetime.datetime] = mapped_column(default=datetime.datetime.now())
 
     records = relationship(
         'Record',

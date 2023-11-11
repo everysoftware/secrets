@@ -8,7 +8,7 @@ from src.bot.handlers.main import show_profile
 from src.bot.handlers.start import start
 from src.bot.handlers.user.confirm import send_confirmation_request
 from src.bot.keyboards.service import YESNO_KB
-from src.bot.utils.forwarding import redirects
+from src.bot.utils.forwarding import confirmation_center
 from src.db import Database
 
 router = Router(name='delete_user')
@@ -19,7 +19,7 @@ async def delete_account_confirmation(message: types.Message, state: FSMContext)
     await send_confirmation_request(message, state, delete_account_yesno)
 
 
-@redirects.register_redirect
+@confirmation_center.redirect
 async def delete_account_yesno(message: types.Message, state: FSMContext) -> None:
     await DeleteAccountActivity.start(
         message, state,

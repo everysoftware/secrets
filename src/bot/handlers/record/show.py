@@ -15,7 +15,7 @@ from src.bot.handlers.user.confirm import send_confirmation_request
 from src.bot.keyboards.record import RECORD_KB
 from src.bot.schemes.handle import DecryptedRecordHandle
 from src.bot.schemes.models import DecryptedRecord
-from src.bot.utils.forwarding import redirects
+from src.bot.utils.forwarding import confirmation_center
 from src.db import Database
 from src.db.models import Record
 
@@ -37,7 +37,7 @@ async def show_record_request(call: types.CallbackQuery, state: FSMContext) -> N
         await call.answer()
 
 
-@redirects.register_redirect
+@confirmation_center.redirect
 async def show_record(message: types.Message, state: FSMContext, db: Database, arq_redis: ArqRedis) -> None:
     user_data = await state.get_data()
     await ShowAllRecordsActivity.finish(

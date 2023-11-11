@@ -36,16 +36,10 @@ async def register_user(
     user_data = await state.get_data()
 
     async with db.session.begin():
-        await db.user.register(
-            db,
-            user_id=message.from_user.id,
-            username=message.from_user.username,
-            first_name=message.from_user.first_name,
-            last_name=message.from_user.last_name,
-            language_code=message.from_user.language_code,
-            password=user_data['password'],
-            master=message.text,
-        )
+        await db.user.register(db, user_id=message.from_user.id, first_name=message.from_user.first_name,
+                               password=user_data['password'], master=message.text,
+                               language_code=message.from_user.language_code, last_name=message.from_user.last_name,
+                               username=message.from_user.username)
 
     await RegisterActivity.finish(
         message, state, user_data=user_data,

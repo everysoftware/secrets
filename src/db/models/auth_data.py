@@ -11,11 +11,11 @@ class AuthData(Base):
         'users.user_id',
         ondelete='cascade'
     ), primary_key=True)
+    account_password: Mapped[str_64]
+    master_password: Mapped[str_64]
+    salt: Mapped[bytes]
+
     user = relationship(
         'User',
         back_populates='auth_data',
     )
-
-    account_password: Mapped[str_64]
-    master_password: Mapped[str_64]
-    salt: Mapped[bytes]

@@ -16,7 +16,7 @@ class UserRepo(Repository[User]):
             user_id: int,
             first_name: str,
             auth_data: AuthData,
-            language_code: str,
+            language_code: Optional[str] = None,
             last_name: Optional[str] = None,
             username: Optional[str] = None,
     ) -> User:
@@ -36,11 +36,11 @@ class UserRepo(Repository[User]):
             db,
             user_id: int,
             first_name: str,
-            language_code: str,
             password: str,
             master: str,
+            language_code: Optional[str] = None,
             last_name: Optional[str] = None,
-            username: Optional[str] = None,
+            username: Optional[str] = None
     ) -> User:
         salt = Verifying.generate_salt()
         password = Verifying.get_hash(password, salt)

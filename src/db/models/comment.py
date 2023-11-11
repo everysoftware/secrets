@@ -1,4 +1,4 @@
-from typing import Optional
+import datetime
 
 from sqlalchemy.orm import Mapped, relationship, mapped_column
 from sqlalchemy.sql.schema import ForeignKey
@@ -13,11 +13,12 @@ class Comment(Base):
         'records.id',
         ondelete='cascade'
     ), primary_key=True)
+    text: Mapped[str_256]
+
+    created_at: Mapped[datetime.datetime] = mapped_column(default=datetime.datetime.utcnow)
 
     record = relationship(
         'Record',
         back_populates='comment',
         lazy='joined',
     )
-
-    text: Mapped[Optional[str_256]]

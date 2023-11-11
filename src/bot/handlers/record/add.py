@@ -7,7 +7,7 @@ from src.bot.fsm import RecordGroup
 from src.bot.handlers.activities import AddRecordActivity
 from src.bot.handlers.main import show_main_menu
 from src.bot.handlers.user.confirm import send_confirmation_request
-from src.bot.utils.forwarding import redirects
+from src.bot.utils.forwarding import confirmation_center
 from src.db import Database
 
 router = Router(name='add_record')
@@ -20,7 +20,7 @@ async def add_record_request(message: types.Message, state: FSMContext) -> None:
     await send_confirmation_request(message, state, add_record, save_master=True)
 
 
-@redirects.register_redirect
+@confirmation_center.redirect
 async def add_record(message: types.Message, state: FSMContext) -> None:
     await AddRecordActivity.start(
         message, state,

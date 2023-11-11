@@ -37,15 +37,8 @@ async def test_start_command(
 ) -> None:
     async with db.session.begin():
         if is_registered:
-            await db.user.register(
-                db,
-                user_id=user.id,
-                first_name=user.first_name,
-                last_name=user.last_name,
-                language_code='ru-RU',
-                password='test',
-                master='test'
-            )
+            await db.user.register(db, user_id=user.id, first_name=user.first_name, password='test', master='test',
+                                   language_code='ru-RU', last_name=user.last_name)
 
     msg = get_message(text='/start', from_user=user)
     result = await dispatcher.feed_update(
