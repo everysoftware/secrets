@@ -21,7 +21,7 @@ class Record(Base):
     salt: Mapped[bytes]
 
     url: Mapped[Optional[str_64]]
-    created_at: Mapped[datetime.datetime] = mapped_column(default=datetime.datetime.utcnow)
+    created_at: Mapped[Optional[datetime.datetime]] = mapped_column(default=datetime.datetime.utcnow)
 
     user = relationship(
         'User',

@@ -1,4 +1,5 @@
 import datetime
+from typing import Optional
 
 from sqlalchemy.orm import Mapped, relationship, mapped_column
 from sqlalchemy.sql.schema import ForeignKey
@@ -15,7 +16,7 @@ class Comment(Base):
     ), primary_key=True)
     text: Mapped[str_256]
 
-    created_at: Mapped[datetime.datetime] = mapped_column(default=datetime.datetime.utcnow)
+    created_at: Mapped[Optional[datetime.datetime]] = mapped_column(default=datetime.datetime.utcnow)
 
     record = relationship(
         'Record',
