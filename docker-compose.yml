@@ -7,8 +7,8 @@ services:
     env_file:
       - .env
     restart: on-failure
-    expose:
-      - "6379"
+    ports:
+      - "6379:6379"
   db:
     image: postgres:15-alpine
     env_file:
@@ -16,8 +16,8 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
     restart: on-failure
-    expose:
-      - "5432"
+    ports:
+      - "5435:5432"
   bot:
     build:
       context: .
@@ -41,7 +41,6 @@ services:
     command: /bin/bash -c "source venv/bin/activate && arq src.scheduler.main.WorkerSettings"
     depends_on:
       - redis
-      - bot
 
 volumes:
   pgdata:
