@@ -13,7 +13,7 @@ from src.db import Database
 from src.db.enums import UserRole
 from src.db.models import User
 from .commands import BOT_COMMANDS_STR
-from ..encryption import generate_password
+from ..security import generate_password
 from ..middlewares import DatabaseMd
 
 router = Router()

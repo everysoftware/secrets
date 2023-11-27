@@ -2,7 +2,7 @@ from aiogram import types, Router, F
 from aiogram.fsm.context import FSMContext
 from sqlalchemy.orm import joinedload
 
-from src.bot.encryption import DataVerification
+from src.bot.security import DataVerification
 from src.bot.fsm import LoginGroup
 from src.bot.handlers.activities import AuthorizeActivity
 from src.bot.handlers.main import show_main_menu

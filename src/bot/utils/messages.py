@@ -8,7 +8,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State
 from aiogram.types import InlineKeyboardMarkup, ReplyKeyboardMarkup, ReplyKeyboardRemove, ForceReply
 
-from src.bot.encryption import DataVerification
+from src.bot.security import DataVerification
 
 
 class Activity(ABC):

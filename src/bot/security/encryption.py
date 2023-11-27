@@ -7,9 +7,8 @@ from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 
 
 class Encryption:
-    @classmethod
+    @staticmethod
     def _derive_key(
-            cls,
             master: bytes,
             salt: bytes,
     ) -> bytes:
@@ -68,8 +67,8 @@ class Encryption:
         # Возвращение расшифрованных данных
         return plaintext
 
-    @classmethod
-    def generate_salt(cls) -> bytes:
+    @staticmethod
+    def generate_salt() -> bytes:
         return os.urandom(16)
 
     @classmethod

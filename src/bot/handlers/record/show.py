@@ -7,16 +7,16 @@ from aiogram.fsm.context import FSMContext
 from arq import ArqRedis
 from sqlalchemy.orm import joinedload
 
-from src.bot.encryption import Encryption
+from src.bot.security import Encryption
 from src.bot.fsm import MainGroup
 from src.bot.fsm import RecordGroup
 from src.bot.handlers.activities import ShowRecordControlActivity, ShowAllRecordsActivity
 from src.bot.handlers.record.show_all import show_all_records_callback
-from src.bot.handlers.user.confirm import send_confirmation_request
+from src.bot.handlers.user.confirm import id_verification_request
 from src.bot.keyboards.record import RECORD_KB
 from src.bot.schemes.handle import DecryptedRecordHandle
 from src.bot.schemes.models import DecryptedRecord
-from src.bot.utils.forwarding import confirmation_center
+from src.bot.utils.callback_manager import manager
 from src.db import Database
 from src.db.models import Record
 
@@ -33,12 +33,12 @@ async def show_record_request(call: types.CallbackQuery, state: FSMContext) -> N
         pass
     else:
         await state.update_data(record_id=record_id)
-        await send_confirmation_request(call.message, state, show_record, save_master=True)
+        await id_verification_request(call.message, state, show_record, save_master=True)
     finally:
         await call.answer()
 
 
-@confirmation_center.redirect
+@manager.callback
 async def show_record(message: types.Message, state: FSMContext, db: Database, arq_redis: ArqRedis) -> None:
     user_data = await state.get_data()
     await ShowAllRecordsActivity.finish(

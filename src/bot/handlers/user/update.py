@@ -2,15 +2,15 @@ from aiogram import Router, F, types
 from aiogram.fsm.context import FSMContext
 from sqlalchemy.orm import joinedload, selectinload
 
-from src.bot.encryption import DataVerification
-from src.bot.encryption import Encryption
+from src.bot.security import DataVerification
+from src.bot.security import Encryption
 from src.bot.fsm import MainGroup
 from src.bot.fsm import ProfileMasterEditingGroup
 from src.bot.fsm import ProfilePasswordEditingGroup
 from src.bot.handlers.activities import UpdateUserActivity
 from src.bot.handlers.main import show_profile
-from src.bot.handlers.user.confirm import send_confirmation_request
-from src.bot.utils.forwarding import confirmation_center
+from src.bot.handlers.user.confirm import id_verification_request
+from src.bot.utils.callback_manager import manager
 from src.db import Database
 from src.db.models import AuthData
 from src.db.models import Record
@@ -64,10 +64,10 @@ async def update_password(message: types.Message, state: FSMContext, db: Databas
 
 @router.message(MainGroup.viewing_profile, F.text == 'Сменить мастер-пароль 🗝')
 async def update_master_request(message: types.Message, state: FSMContext) -> None:
-    await send_confirmation_request(message, state, type_new_master, save_master=True)
+    await id_verification_request(message, state, type_new_master, save_master=True)
 
 
-@confirmation_center.redirect
+@manager.callback
 async def type_new_master(message: types.Message, state: FSMContext) -> None:
     await UpdateUserActivity.start(
         message, state,

@@ -1,13 +1,13 @@
 from aiogram import Router, F, types
 from aiogram.fsm.context import FSMContext
 
-from src.bot.encryption import Encryption
+from src.bot.security import Encryption
 from src.bot.fsm import MainGroup, AddRecordGroup
 from src.bot.fsm import RecordGroup
 from src.bot.handlers.activities import AddRecordActivity
 from src.bot.handlers.main import show_main_menu
-from src.bot.handlers.user.confirm import send_confirmation_request
-from src.bot.utils.forwarding import confirmation_center
+from src.bot.handlers.user.confirm import id_verification_request
+from src.bot.utils.callback_manager import manager
 from src.db import Database
 from src.db.models import Record
 
@@ -18,10 +18,10 @@ router = Router()
 @router.message(MainGroup.viewing_all_records, F.text == 'Добавить ⏬')
 @router.message(RecordGroup.viewing_record, F.text == 'Добавить ⏬')
 async def add_record_request(message: types.Message, state: FSMContext) -> None:
-    await send_confirmation_request(message, state, add_record, save_master=True)
+    await id_verification_request(message, state, add_record, save_master=True)
 
 
-@confirmation_center.redirect
+@manager.callback
 async def add_record(message: types.Message, state: FSMContext) -> None:
     await AddRecordActivity.start(
         message, state,

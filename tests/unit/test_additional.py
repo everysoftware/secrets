@@ -2,7 +2,7 @@ import pytest
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.storage.base import StorageKey
 
-from bot.encryption import DataVerification
+from bot.security import DataVerification
 from src.bot.utils.messages import Activity
 from utils.entities import get_message, get_user, get_chat
 

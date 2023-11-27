@@ -3,7 +3,7 @@ from aiogram.fsm.context import FSMContext
 from arq import ArqRedis
 from sqlalchemy.orm import joinedload
 
-from src.bot.encryption import Encryption
+from src.bot.security import Encryption
 from src.bot.fsm import RecordGroup, UpdateRecordGroup
 from src.bot.handlers.activities import UpdateRecordActivity, TypeNewDataActivity, ShowRecordControlActivity
 from src.bot.handlers.record.show import show_record_cp

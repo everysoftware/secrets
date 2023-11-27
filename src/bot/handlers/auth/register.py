@@ -1,7 +1,7 @@
 from aiogram import Router, types, F
 from aiogram.fsm.context import FSMContext
 
-from src.bot.encryption import DataVerification
+from src.bot.security import DataVerification
 from src.bot.fsm import RegisterGroup
 from src.bot.handlers.activities import RegisterActivity
 from src.bot.handlers.main import show_main_menu

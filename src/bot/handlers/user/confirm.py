@@ -4,25 +4,25 @@ from aiogram import Router, types, F
 from aiogram.fsm.context import FSMContext
 from sqlalchemy.orm import joinedload
 
-from src.bot.encryption import DataVerification
 from src.bot.fsm import ConfirmationGroup
 from src.bot.handlers.activities import ConfirmMasterActivity
 from src.bot.keyboards.service import CANCEL_KB
-from src.bot.utils.forwarding import RedirectionCenter
+from src.bot.security import DataVerification
+from src.bot.utils.callback_manager import CallbackManager
 from src.db import Database
 from src.db.models import User
 
 router = Router()
 
 
-async def send_confirmation_request(
+async def id_verification_request(
         message: types.Message,
         state: FSMContext,
         redirect: Callable,
         save_master: bool = False
 ) -> None:
     await state.update_data(last_state=await state.get_state())
-    await state.update_data(redirect=redirect.__name__)
+    await state.update_data(redirect=hash(redirect))
     await state.update_data(save_master=save_master)
 
     await ConfirmMasterActivity.start(
@@ -46,7 +46,7 @@ async def back(call: types.CallbackQuery, state: FSMContext) -> None:
 @router.message(ConfirmationGroup.typing_master)
 async def confirm_master(
         message: types.Message,
-        redirects: RedirectionCenter,
+        manager: CallbackManager,
         state: FSMContext,
         db: Database,
         **data
@@ -69,7 +69,7 @@ async def confirm_master(
             await state.update_data(master=master)
 
         await state.set_state(user_data['last_state'])
-        await redirects.make_redirect_async(user_data['redirect'], **data)
+        await manager.invoke(user_data['redirect'], **data)
     else:
         await ConfirmMasterActivity.switch(
             message, state,

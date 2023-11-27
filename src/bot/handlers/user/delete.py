@@ -4,20 +4,20 @@ from aiogram.fsm.context import FSMContext
 from src.bot.fsm import MainGroup, ProfileGroup
 from src.bot.handlers.activities import DeleteAccountActivity
 from src.bot.handlers.main import show_profile
-from src.bot.handlers.user.confirm import send_confirmation_request
+from src.bot.handlers.user.confirm import id_verification_request
 from src.bot.keyboards.service import YESNO_KB
-from src.bot.utils.forwarding import confirmation_center
+from src.bot.utils.callback_manager import manager
 from src.db import Database
 
 router = Router()
 
 
 @router.message(MainGroup.viewing_profile, F.text == 'Удалить аккаунт ❌')
-async def delete_account_confirmation(message: types.Message, state: FSMContext) -> None:
-    await send_confirmation_request(message, state, delete_account_yesno)
+async def request(message: types.Message, state: FSMContext) -> None:
+    await id_verification_request(message, state, delete_account_yesno)
 
 
-@confirmation_center.redirect
+@manager.callback
 async def delete_account_yesno(message: types.Message, state: FSMContext) -> None:
     await DeleteAccountActivity.start(
         message, state,
