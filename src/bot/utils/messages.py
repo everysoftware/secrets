@@ -8,7 +8,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State
 from aiogram.types import InlineKeyboardMarkup, ReplyKeyboardMarkup, ReplyKeyboardRemove, ForceReply
 
-from src.bot.encryption import Verifying
+from src.bot.encryption import DataVerification
 
 
 class Activity(ABC):
@@ -26,7 +26,7 @@ class Activity(ABC):
         await state.update_data(
             {
                 f'activity:{cls.name()}:message_id': message.message_id,
-                f'activity:{cls.name()}:message_hash': Verifying.get_hash(message.text)
+                f'activity:{cls.name()}:message_hash': DataVerification.hash(message.text)
             }
         )
 
@@ -102,7 +102,7 @@ class Activity(ABC):
 
         user_data = user_data or await state.get_data()
 
-        if Verifying.verify(text, await cls.message_hash(user_data=user_data)):
+        if DataVerification.verify(text, await cls.message_hash(user_data=user_data)):
             return
 
         edited_msg = await message.bot.edit_message_text(

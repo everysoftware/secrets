@@ -5,6 +5,7 @@ from aiogram import Router, F, types
 from aiogram.exceptions import TelegramBadRequest
 from aiogram.fsm.context import FSMContext
 from arq import ArqRedis
+from sqlalchemy.orm import joinedload
 
 from src.bot.encryption import Encryption
 from src.bot.fsm import MainGroup
@@ -19,7 +20,7 @@ from src.bot.utils.forwarding import confirmation_center
 from src.db import Database
 from src.db.models import Record
 
-router = Router(name='show_record')
+router = Router()
 
 
 @router.callback_query(F.data.startswith('show_record'), MainGroup.viewing_all_records)
@@ -46,7 +47,7 @@ async def show_record(message: types.Message, state: FSMContext, db: Database, a
     )
 
     async with db.session.begin():
-        record: Record = await db.record.get(user_data['record_id'])
+        record = await db.record.get(user_data['record_id'], options=[joinedload(Record.comment)])
         decrypted = DecryptedRecord(
             record.title,
             Encryption.decrypt(record.username, user_data['master'], record.salt),

@@ -10,41 +10,54 @@ from arq import ArqRedis
 from src.bot.fsm import LoginGroup, RegisterGroup
 from src.bot.keyboards.auth import LOGIN_KB, REG_KB
 from src.db import Database
+from src.db.enums import UserRole
+from src.db.models import User
 from .commands import BOT_COMMANDS_STR
 from ..encryption import generate_password
 from ..middlewares import DatabaseMd
 
-router = Router(name='start')
+router = Router()
 
 router.message.middleware(DatabaseMd())
 
 
 @router.message(Command('start'))
-@router.message(Command('exit'))
 async def start(
         message: types.Message,
         state: FSMContext,
         db: Database
 ) -> Message:
-    await state.clear()
-
     async with db.session.begin():
-        user_exists = await db.user.get(message.from_user.id) is not None
+        user = await db.user.get(message.from_user.id)
 
-    if user_exists:
-        message = await message.answer(
-            'Добро пожаловать, {first_name} {last_name}! 😊 '
-            'Нажмите на кнопку, чтобы войти в аккаунт 👇'.format(
+        if user is None:
+            user = db.user.new(User(
+                id=message.from_user.id,
                 first_name=message.from_user.first_name,
-                last_name=message.from_user.last_name),
-            reply_markup=LOGIN_KB)
-        await state.set_state(LoginGroup.waiting_for_click)
-    else:
-        message = await message.answer(
-            'Добро пожаловать! Я бот, который помогает быстро и безопасно управлять паролями! 😊 '
-            'Давайте создадим аккаунт, для этого нажмите на кнопку 👇',
-            reply_markup=REG_KB)
-        await state.set_state(RegisterGroup.waiting_for_click)
+                last_name=message.from_user.last_name,
+                username=message.from_user.username,
+                language_code=message.from_user.language_code,
+            ))
+
+    match user.role:
+        case UserRole.GUEST:
+            message = await message.answer(
+                'Добро пожаловать! Я бот, который помогает быстро и безопасно управлять паролями! 😊 '
+                'Давайте создадим аккаунт, для этого нажмите на кнопку 👇',
+                reply_markup=REG_KB)
+            await state.set_state(RegisterGroup.in_lobby)
+        case UserRole.USER:
+            message = await message.answer(
+                f'Добро пожаловать, {user.first_name} {user.last_name}! 😊 '
+                f'Нажмите на кнопку, чтобы войти в аккаунт 👇',
+                reply_markup=LOGIN_KB)
+            await state.set_state(LoginGroup.in_lobby)
+        case UserRole.ADMIN:
+            message = await message.answer(
+                f'Добро пожаловать, {user.first_name} {user.last_name}! 😊 '
+                f'Вы администратор! 👨‍💻 Нажмите на кнопку, чтобы войти в аккаунт 👇')
+        case _:
+            raise ValueError(f'Unknown user role: {user.role}')
 
     return message
 
@@ -69,6 +82,6 @@ async def help_(message: types.Message) -> Message:
     return await message.answer('<b>Способности бота:</b>\n\n' + BOT_COMMANDS_STR)
 
 
-@router.message(Command('author'))
+@router.message(Command('about'))
 async def author(message: types.Message) -> Message:
-    return await message.answer('Разработчик бота: @ivanstasevich 👨‍💻')
+    return await message.answer('👨‍💻 @ivanstasevich')

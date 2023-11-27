@@ -1,8 +1,8 @@
-import abc
-from typing import Generic, TypeVar
+from typing import Generic, TypeVar, Sequence
 
-from sqlalchemy import delete, select
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm.interfaces import ORMOption
 
 from ..models import Base
 
@@ -17,20 +17,19 @@ class Repository(Generic[AbstractModel]):
         self.type_model = type_model
         self.session = session
 
-    async def get(self, ident: int | str) -> AbstractModel:
-        return await self.session.get(entity=self.type_model, ident=ident)
+    async def get(self, ident: int | str, options: Sequence[ORMOption] | None = None) -> AbstractModel:
+        return await self.session.get(entity=self.type_model, ident=ident, options=options)
 
     async def get_by_where(self, where_clause) -> AbstractModel | None:
         statement = select(self.type_model).where(where_clause)
         return (await self.session.execute(statement)).one_or_none()
 
-    async def delete(self, where_clause) -> None:
-        statement = delete(self.type_model).where(where_clause)
-        await self.session.execute(statement)
+    async def delete(self, model: AbstractModel) -> None:
+        return await self.session.delete(model)
 
     async def merge(self, model: AbstractModel) -> AbstractModel:
         return await self.session.merge(model)
 
-    @abc.abstractmethod
-    def new(self, *args, **kwargs) -> None:
-        ...
+    def new(self, model: AbstractModel) -> AbstractModel:
+        self.session.add(model)
+        return model

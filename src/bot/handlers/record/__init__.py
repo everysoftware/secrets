@@ -15,7 +15,7 @@ routers = (
     show_all_router
 )
 
-router = Router(name='record')
+router = Router()
 router.include_routers(*routers)
 
 router.message.middleware(DatabaseMd())

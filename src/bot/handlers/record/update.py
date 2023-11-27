@@ -1,6 +1,7 @@
 from aiogram import Router, F, types
 from aiogram.fsm.context import FSMContext
 from arq import ArqRedis
+from sqlalchemy.orm import joinedload
 
 from src.bot.encryption import Encryption
 from src.bot.fsm import RecordGroup, UpdateRecordGroup
@@ -9,8 +10,9 @@ from src.bot.handlers.record.show import show_record_cp
 from src.bot.keyboards.record import UPDATE_RECORD_KB
 from src.db import Database
 from src.db.models import Comment
+from src.db.models import Record
 
-router = Router(name='update_record')
+router = Router()
 
 
 @router.callback_query(F.data == 'update_record', RecordGroup.viewing_record)
@@ -186,13 +188,13 @@ async def update_comment(message: types.Message, state: FSMContext, db: Database
         )
 
     async with db.session.begin():
-        record = await db.record.get(user_data['record_id'])
+        record = await db.record.get(user_data['record_id'], options=[joinedload(Record.comment)])
 
         if record.comment is None:
             record.comment = db.comment.new(text=text)
             await db.record.merge(record)
         else:
-            comment: Comment = record.comment
+            comment: Comment = record.comment  # type: ignore
             comment.text = text
             await db.comment.merge(comment)
 

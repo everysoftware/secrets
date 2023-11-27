@@ -1,15 +1,18 @@
 from aiogram import Router, types, F
 from aiogram.fsm.context import FSMContext
 
+from src.bot.encryption import DataVerification
 from src.bot.fsm import RegisterGroup
 from src.bot.handlers.activities import RegisterActivity
 from src.bot.handlers.main import show_main_menu
 from src.db import Database
+from src.db.enums import UserRole
+from src.db.models import AuthData
 
-router = Router(name='register')
+router = Router()
 
 
-@router.message(F.text == 'Регистрация ⚡️', RegisterGroup.waiting_for_click)
+@router.message(F.text == 'Регистрация ⚡️', RegisterGroup.in_lobby)
 async def type_password(message: types.Message, state: FSMContext) -> None:
     await RegisterActivity.start(
         message, state, RegisterGroup.typing_password,
@@ -36,10 +39,15 @@ async def register_user(
     user_data = await state.get_data()
 
     async with db.session.begin():
-        await db.user.register(db, user_id=message.from_user.id, first_name=message.from_user.first_name,
-                               password=user_data['password'], master=message.text,
-                               language_code=message.from_user.language_code, last_name=message.from_user.last_name,
-                               username=message.from_user.username)
+        user = await db.user.get(message.from_user.id)
+        salt = DataVerification.generate_salt()
+        db.auth_data.new(AuthData(
+            account_password=DataVerification.hash(user_data['password'], salt),
+            master_password=DataVerification.hash(message.text, salt),
+            salt=salt,
+            user=user
+        ))
+        user.role = UserRole.USER
 
     await RegisterActivity.finish(
         message, state, user_data=user_data,

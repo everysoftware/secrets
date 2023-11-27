@@ -2,14 +2,17 @@ from typing import Callable
 
 from aiogram import Router, types, F
 from aiogram.fsm.context import FSMContext
+from sqlalchemy.orm import joinedload
 
+from src.bot.encryption import DataVerification
 from src.bot.fsm import ConfirmationGroup
 from src.bot.handlers.activities import ConfirmMasterActivity
 from src.bot.keyboards.service import CANCEL_KB
 from src.bot.utils.forwarding import RedirectionCenter
 from src.db import Database
+from src.db.models import User
 
-router = Router(name='confirmation')
+router = Router()
 
 
 async def send_confirmation_request(
@@ -41,17 +44,21 @@ async def back(call: types.CallbackQuery, state: FSMContext) -> None:
 
 
 @router.message(ConfirmationGroup.typing_master)
-async def confirm_master(message: types.Message, redirects: RedirectionCenter, **data) -> None:
-    state: FSMContext = data['state']
-    db: Database = data['db']
-
-    user_data = await state.get_data()
+async def confirm_master(
+        message: types.Message,
+        redirects: RedirectionCenter,
+        state: FSMContext,
+        db: Database,
+        **data
+) -> None:
+    data |= {'message': message, 'db': db, 'state': state}
 
     master = message.text
-
     async with db.session.begin():
-        result = await db.user.confirm_master(message.from_user.id, master)
+        user = await db.user.get(message.from_user.id, options=[joinedload(User.auth_data)])
+        result = DataVerification.verify(master, user.auth_data.master_password, user.auth_data.salt)
 
+    user_data = await state.get_data()
     if result:
         await ConfirmMasterActivity.finish(
             message, state,
@@ -62,7 +69,7 @@ async def confirm_master(message: types.Message, redirects: RedirectionCenter, *
             await state.update_data(master=master)
 
         await state.set_state(user_data['last_state'])
-        await redirects.make_redirect_async(user_data['redirect'], message=message, **data)
+        await redirects.make_redirect_async(user_data['redirect'], **data)
     else:
         await ConfirmMasterActivity.switch(
             message, state,

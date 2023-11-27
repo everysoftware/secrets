@@ -2,7 +2,7 @@ import pytest
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.storage.base import StorageKey
 
-from bot.encryption import Verifying
+from bot.encryption import DataVerification
 from src.bot.utils.messages import Activity
 from utils.entities import get_message, get_user, get_chat
 
@@ -19,4 +19,4 @@ async def test_activity_update_info(storage, bot):
     user_data = await state.get_data()
 
     assert await Activity.message_id(user_data=user_data) == msg.message_id
-    assert Verifying.verify(msg.text, await Activity.message_hash(user_data=user_data))
+    assert DataVerification.verify(msg.text, await Activity.message_hash(user_data=user_data))

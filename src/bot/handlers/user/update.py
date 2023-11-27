@@ -1,8 +1,9 @@
 from aiogram import Router, F, types
 from aiogram.fsm.context import FSMContext
+from sqlalchemy.orm import joinedload, selectinload
 
+from src.bot.encryption import DataVerification
 from src.bot.encryption import Encryption
-from src.bot.encryption import Verifying
 from src.bot.fsm import MainGroup
 from src.bot.fsm import ProfileMasterEditingGroup
 from src.bot.fsm import ProfilePasswordEditingGroup
@@ -13,8 +14,9 @@ from src.bot.utils.forwarding import confirmation_center
 from src.db import Database
 from src.db.models import AuthData
 from src.db.models import Record
+from src.db.models import User
 
-router = Router(name='update_user')
+router = Router()
 
 
 @router.message(MainGroup.viewing_profile, F.text == 'Сменить пароль 🔑')
@@ -28,29 +30,28 @@ async def type_old_password(message: types.Message, state: FSMContext) -> None:
 
 @router.message(ProfilePasswordEditingGroup.typing_old_password)
 async def type_new_password(message: types.Message, state: FSMContext, db: Database) -> None:
-    text = message.text
+    async with db.session.begin():
+        user = await db.user.get(message.from_user.id, options=[joinedload(User.auth_data)])
 
-    if not await db.user.authorize(message.from_user.id, text):
+    if DataVerification.verify(message.text, user.auth_data.account_password, user.auth_data.salt):
+        await UpdateUserActivity.switch(
+            message, state,
+            new_state=ProfilePasswordEditingGroup.typing_new_password,
+            text='Введите новый пароль ⬇️'
+        )
+    else:
         return await UpdateUserActivity.switch(
             message, state,
             text='Неверный пароль. Введите старый пароль ⬇️'
         )
 
-    await UpdateUserActivity.switch(
-        message, state,
-        new_state=ProfilePasswordEditingGroup.typing_new_password,
-        text='Введите новый пароль ⬇️'
-    )
-
 
 @router.message(ProfilePasswordEditingGroup.typing_new_password)
 async def update_password(message: types.Message, state: FSMContext, db: Database) -> None:
-    text = message.text
-
     async with db.session.begin():
-        user = await db.user.get(message.from_user.id)
+        user = await db.user.get(message.from_user.id, options=[joinedload(User.auth_data)])
         auth_data: AuthData = user.auth_data
-        auth_data.account_password = Verifying.get_hash(text, auth_data.salt)
+        auth_data.account_password = DataVerification.hash(message.text, auth_data.salt)
         await db.auth_data.merge(auth_data)
 
     await UpdateUserActivity.finish(
@@ -58,7 +59,6 @@ async def update_password(message: types.Message, state: FSMContext, db: Databas
         new_state=MainGroup.viewing_profile,
         text='Пароль успешно изменён ✅'
     )
-
     await show_profile(message, state)
 
 
@@ -81,10 +81,15 @@ async def update_master(message: types.Message, state: FSMContext, db: Database)
     new_master = message.text
     user_data = await state.get_data()
 
+    await message.answer('Подождите, это может занять какое-то время... ⏳')
+
     async with db.session.begin():
-        user = await db.user.get(message.from_user.id)
+        user = await db.user.get(message.from_user.id, options=[
+            joinedload(User.auth_data),
+            selectinload(User.records)
+        ])
         auth_data: AuthData = user.auth_data
-        auth_data.master_password = Verifying.get_hash(new_master, auth_data.salt)
+        auth_data.master_password = DataVerification.hash(new_master, auth_data.salt)
         await db.auth_data.merge(auth_data)
 
         for record in user.records:

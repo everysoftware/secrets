@@ -4,7 +4,7 @@ from aiogram.fsm.context import FSMContext
 from bot.handlers.activities import SearchRecordActivity
 from src.bot.fsm import MainGroup
 
-router = Router(name='search_record')
+router = Router()
 
 
 @router.callback_query(F.data == 'search_record', MainGroup.viewing_all_records)

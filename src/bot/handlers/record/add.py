@@ -9,8 +9,9 @@ from src.bot.handlers.main import show_main_menu
 from src.bot.handlers.user.confirm import send_confirmation_request
 from src.bot.utils.forwarding import confirmation_center
 from src.db import Database
+from src.db.models import Record
 
-router = Router(name='add_record')
+router = Router()
 
 
 @router.message(MainGroup.viewing_main_menu, F.text == 'Добавить ⏬')
@@ -85,13 +86,13 @@ async def set_password(message: types.Message, state: FSMContext, db: Database) 
 
     async with db.session.begin():
         user = await db.user.get(message.from_user.id)
-        db.record.new(
-            user,
-            user_data['title'],
-            username,
-            password,
-            salt
-        )
+        db.record.new(Record(
+            user=user,
+            title=user_data['title'],
+            username=username,
+            password_=password,
+            salt=salt
+        ))
 
     await AddRecordActivity.finish(
         message, state,

@@ -1,34 +1,35 @@
-import datetime
-from typing import Optional
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
 
 from sqlalchemy.orm import relationship, Mapped, mapped_column
-from sqlalchemy.sql.schema import Identity
 
-from .base import Base
+from .base import Base, int_pk, created_at, updated_at
+from ..enums import UserRole
+
+if TYPE_CHECKING:
+    from .auth_data import AuthData
+    from .record import Record
 
 
 class User(Base):
     __tablename__ = 'users'
 
-    id: Mapped[int] = mapped_column(Identity(), unique=True)
-    user_id: Mapped[int] = mapped_column(primary_key=True, unique=True)
+    id: Mapped[int_pk]
     first_name: Mapped[str]
+    last_name: Mapped[str | None]
+    language_code: Mapped[str | None]
+    username: Mapped[str | None]
+    role: Mapped[UserRole] = mapped_column(default=UserRole.GUEST)
+    created_at: Mapped[created_at]
+    updated_at: Mapped[updated_at]
 
-    created_at: Mapped[datetime.datetime] = mapped_column(default=datetime.datetime.utcnow)
-    last_name: Mapped[Optional[str]]
-    language_code: Mapped[Optional[str]]
-    username: Mapped[Optional[str]]
-
-    auth_data = relationship(
-        'AuthData',
+    auth_data: Mapped[AuthData] = relationship(
         back_populates='user',
-        uselist=False,
-        lazy='joined',
+        cascade='delete'
     )
-
-    records = relationship(
-        'Record',
+    records: Mapped[list[Record]] = relationship(
         back_populates='user',
-        lazy='selectin',
+        cascade='delete',
         order_by='Record.title'
     )

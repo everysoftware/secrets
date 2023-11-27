@@ -1,5 +1,5 @@
 from .encryption import Encryption
 from .password_generator import generate_password
-from .verifying import Verifying
+from .verification import DataVerification
 
-__all__ = ('Encryption', 'Verifying', 'generate_password')
+__all__ = ('Encryption', 'DataVerification', 'generate_password')

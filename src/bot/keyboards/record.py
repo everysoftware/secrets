@@ -1,44 +1,38 @@
-from typing import Optional
-
-from aiogram.types import User, InlineKeyboardMarkup, InlineKeyboardButton
+from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
-from src.db import Database
+from src.db.models import Record
 
 
 async def get_storage_kb(
-        from_user: User,
-        db: Database,
-        offset: int = -10,
-        count: int = 10,
-        pattern: Optional[str] = None
-) -> (InlineKeyboardMarkup, int):
-    async with db.session.begin():
-        user = await db.user.get(from_user.id)
-        records = user.records
+        records: list[Record]
+) -> InlineKeyboardMarkup:
+    # async with db.session.begin():
+    #     user = await db.user.get(from_user.id, options=[selectinload(User.records)])
+    #     records = user.records
+    #
+    #     records_len = len(user.records)
+    #
+    #     if pattern:
+    #         # TODO: Оптимизировать поиск по URL
+    #         records = [record for record in records if pattern in record.url]
+    #
+    #     if count > 0:
+    #         offset = min(records_len, offset + count)
+    #     else:
+    #         offset = max(0, offset + count)
+    #
+    #     if records_len > 0:
+    #         offset %= records_len
 
-        records_len = len(user.records)
+    builder = InlineKeyboardBuilder()
 
-        if pattern:
-            # TODO: Оптимизировать поиск по URL
-            records = [record for record in records if pattern in record.url]
-
-        if count > 0:
-            offset = min(records_len, offset + count)
-        else:
-            offset = max(0, offset + count)
-
-        if records_len > 0:
-            offset %= records_len
-
-        builder = InlineKeyboardBuilder()
-
-        # TODO: Оптимизировать скроллинг паролей
-        for record in records[offset:offset + abs(count)]:
-            builder.add(InlineKeyboardButton(
-                text=record.title,
-                callback_data=f'show_record_{record.id}'
-            ))
+    # TODO: Оптимизировать скроллинг паролей
+    for record in records:
+        builder.add(InlineKeyboardButton(
+            text=record.title,
+            callback_data=f'show_record_{record.id}'
+        ))
 
     builder.adjust(1)
 
@@ -48,7 +42,7 @@ async def get_storage_kb(
         InlineKeyboardButton(text='🔽', callback_data='down')
     )
 
-    return builder.as_markup(resize_keyboard=True), offset
+    return builder.as_markup(resize_keyboard=True)
 
 
 RECORD_KB = InlineKeyboardMarkup(

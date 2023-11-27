@@ -11,7 +11,7 @@ routers = (
     confirmation_router
 )
 
-router = Router(name='user')
+router = Router()
 router.include_routers(*routers)
 
 router.message.middleware(DatabaseMd())

@@ -10,9 +10,8 @@ from src.bot.handlers.activities import DeleteRecordActivity
 from src.bot.handlers.record.show import show_record_cp, back
 from src.bot.keyboards.service import YESNO_KB
 from src.db import Database
-from src.db.models import Record
 
-router = Router(name='delete_record')
+router = Router()
 
 
 @router.callback_query(F.data == 'delete_record', RecordGroup.viewing_record)
@@ -34,13 +33,13 @@ async def delete_record_yes(call: types.CallbackQuery, state: FSMContext, db: Da
     user_data = await state.get_data()
 
     async with db.session.begin():
-        await db.record.delete(Record.id == user_data['record_id'])
+        record = await db.record.get(user_data['record_id'])
+        await db.record.delete(record)
 
     await DeleteRecordActivity.finish_callback(
-        call, state,
-        text='Запись успешно удалена ✅',
-        state_clear=False
+        call, state
     )
+    await call.message.answer('Запись успешно удалена ✅')
     await back(call, state, db)
 
 
