@@ -1,15 +1,14 @@
-from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
+from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
-PROFILE_KB = ReplyKeyboardMarkup(
-    keyboard=[
+PROFILE_KB = InlineKeyboardMarkup(
+    inline_keyboard=[
         [
-            KeyboardButton(text='Сменить пароль 🔑'),
-            KeyboardButton(text='Сменить мастер-пароль 🗝'),
+            InlineKeyboardButton(text='Сменить пароль 🔑', callback_data='change_password'),
+            InlineKeyboardButton(text='Сменить мастер-пароль 🗝', callback_data='change_master'),
         ],
         [
-            KeyboardButton(text='Удалить аккаунт ❌'),
-            KeyboardButton(text='Назад ◀️')
+            InlineKeyboardButton(text='Удалить аккаунт ❌', callback_data='delete_account'),
+            InlineKeyboardButton(text='Назад ◀️', callback_data='back')
         ],
     ],
-    resize_keyboard=True,
 )

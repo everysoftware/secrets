@@ -1,10 +1,9 @@
 from aiogram import Router, types, F
 from aiogram.fsm.context import FSMContext
 
-from src.bot.security import DataVerification
 from src.bot.fsm import RegisterGroup
-from src.bot.handlers.activities import RegisterActivity
 from src.bot.handlers.main import show_main_menu
+from src.bot.security import DataVerification
 from src.db import Database
 from src.db.enums import UserRole
 from src.db.models import AuthData
@@ -14,20 +13,20 @@ router = Router()
 
 @router.message(F.text == 'Регистрация ⚡️', RegisterGroup.in_lobby)
 async def type_password(message: types.Message, state: FSMContext) -> None:
-    await RegisterActivity.start(
-        message, state, RegisterGroup.typing_password,
-        text='Придумайте надежный пароль ⬇️',
-    )
+    await message.answer('Введите пароль ⬇️')
+    await state.set_state(RegisterGroup.typing_password)
 
 
 @router.message(RegisterGroup.typing_password)
 async def type_master(message: types.Message, state: FSMContext) -> None:
+    await message.delete()
     await state.update_data(password=message.text)
-    await RegisterActivity.switch(
-        message, state, RegisterGroup.typing_master,
-        text='Придумайте надежный мастер-пароль ⬇️\n\n'
-             '<b>Мастер-пароль даёт доступ ко всем вашим паролям. Никому не сообщаете его ❗️</b>'
+    await message.answer(
+        'Введите мастер-пароль ⬇️\n\n'
+        'Мастер-пароль позволяет вам управлять всеми вашими паролями. '
+        'Не подвергайте опасности свои данные и не сообщайте его ни при каких обстоятельствах! ❗️</b>'
     )
+    await state.set_state(RegisterGroup.typing_master)
 
 
 @router.message(RegisterGroup.typing_master)
@@ -36,6 +35,7 @@ async def register_user(
         state: FSMContext,
         db: Database
 ) -> None:
+    await message.delete()
     user_data = await state.get_data()
 
     async with db.session.begin():
@@ -49,9 +49,5 @@ async def register_user(
         ))
         user.role = UserRole.USER
 
-    await RegisterActivity.finish(
-        message, state, user_data=user_data,
-        text='Регистрация успешно завершена! ✅'
-    )
-
+    await message.answer('Регистрация прошла успешно ✅')
     await show_main_menu(message, state)

@@ -1,19 +1,14 @@
-from datetime import timedelta
-from html import escape
-
 from aiogram import types, Router
 from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
-from aiogram.types import Message
-from arq import ArqRedis
+from aiogram.types import Message, ReplyKeyboardRemove
 
 from src.bot.fsm import LoginGroup, RegisterGroup
-from src.bot.keyboards.auth import LOGIN_KB, REG_KB
+from src.bot.keyboards.auth import REG_KB
 from src.db import Database
 from src.db.enums import UserRole
 from src.db.models import User
 from .commands import BOT_COMMANDS_STR
-from ..security import generate_password
 from ..middlewares import DatabaseMd
 
 router = Router()
@@ -49,32 +44,21 @@ async def start(
         case UserRole.USER:
             message = await message.answer(
                 f'Добро пожаловать, {user.first_name} {user.last_name}! 😊 '
-                f'Нажмите на кнопку, чтобы войти в аккаунт 👇',
-                reply_markup=LOGIN_KB)
-            await state.set_state(LoginGroup.in_lobby)
+                f'Чтобы войти в аккаунт, введите пароль ⬇️',
+                reply_markup=ReplyKeyboardRemove()
+            )
+            await state.set_state(LoginGroup.typing_password)
         case UserRole.ADMIN:
             message = await message.answer(
-                f'Добро пожаловать, {user.first_name} {user.last_name}! 😊 '
-                f'Вы администратор! 👨‍💻 Нажмите на кнопку, чтобы войти в аккаунт 👇')
+                f'Добро пожаловать, {user.first_name} {user.last_name}! 😊'
+                f'Вы администратор! 👨‍💻 Чтобы войти в аккаунт, введите пароль ⬇️',
+                reply_markup=ReplyKeyboardRemove()
+            )
+            await state.set_state(LoginGroup.typing_password)
         case _:
             raise ValueError(f'Unknown user role: {user.role}')
 
     return message
-
-
-@router.message(Command('suggest'))
-async def suggest(message: types.Message, arq_redis: ArqRedis) -> Message:
-    password = generate_password()
-    sent_msg = await message.answer(
-        f'Ваш случайный пароль:\n\n<code>{escape(password)}</code>'
-    )
-    await arq_redis.enqueue_job(
-        'delete_message',
-        _defer_by=timedelta(minutes=1),
-        chat_id=message.from_user.id,
-        message_id=sent_msg.message_id,
-    )
-    return sent_msg
 
 
 @router.message(Command('help'))
@@ -84,4 +68,4 @@ async def help_(message: types.Message) -> Message:
 
 @router.message(Command('about'))
 async def author(message: types.Message) -> Message:
-    return await message.answer('👨‍💻 @ivanstasevich')
+    return await message.answer('👨‍💻 Разработчик: @ivanstasevich')

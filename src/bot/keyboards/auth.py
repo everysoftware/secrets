@@ -8,10 +8,3 @@ REG_KB = ReplyKeyboardMarkup(
     one_time_keyboard=True
 )
 
-LOGIN_KB = ReplyKeyboardMarkup(
-    keyboard=[
-        [KeyboardButton(text='Авторизация ⚡️')]
-    ],
-    resize_keyboard=True,
-    one_time_keyboard=True
-)

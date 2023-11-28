@@ -14,8 +14,8 @@ class AddRecordGroup(StatesGroup):
 
 
 class UpdateRecordGroup(StatesGroup):
-    updating_title = State()
-    updating_username = State()
-    updating_password = State()
-    updating_url = State()
-    updating_comment = State()
+    typing_title = State()
+    typing_username = State()
+    typing_password = State()
+    typing_url = State()
+    typing_comment = State()
