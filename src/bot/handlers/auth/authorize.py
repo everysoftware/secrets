@@ -11,7 +11,7 @@ from src.db.models import User
 router = Router()
 
 
-@router.message(LoginGroup.typing_password)
+@router.message(LoginGroup.type_password)
 async def authorize_user(message: types.Message, state: FSMContext, db: Database) -> None:
     async with db.session.begin():
         user = await db.user.get(message.from_user.id, options=[joinedload(User.auth_data)])

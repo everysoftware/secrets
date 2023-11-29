@@ -4,7 +4,7 @@ from aiogram import Router, types, F
 from aiogram.fsm.context import FSMContext
 from sqlalchemy.orm import joinedload
 
-from src.bot.fsm import ConfirmationGroup
+from src.bot.fsm import VerificationGroup
 from src.bot.keyboards.service import CANCEL_KB
 from src.bot.security import DataVerification
 from src.bot.utils.callback_manager import CallbackManager
@@ -25,10 +25,10 @@ async def id_verification_request(
     await state.update_data(save_master=save_master)
 
     await message.answer('Для подтверждения вашей личности введите мастер-пароль ⬇️', reply_markup=CANCEL_KB)
-    await state.set_state(ConfirmationGroup.typing_master)
+    await state.set_state(VerificationGroup.typing_master)
 
 
-@router.callback_query(ConfirmationGroup.typing_master, F.data == 'back')
+@router.callback_query(VerificationGroup.typing_master, F.data == 'back')
 async def back(call: types.CallbackQuery, state: FSMContext) -> None:
     user_data = await state.get_data()
     await state.set_state(user_data['last_state'])
@@ -37,7 +37,7 @@ async def back(call: types.CallbackQuery, state: FSMContext) -> None:
     await call.answer()
 
 
-@router.message(ConfirmationGroup.typing_master)
+@router.message(VerificationGroup.typing_master)
 async def confirm_master(
         message: types.Message,
         manager: CallbackManager,

@@ -2,20 +2,21 @@ from aiogram.fsm.state import StatesGroup, State
 
 
 class RecordGroup(StatesGroup):
-    viewing_record = State()
-    deleting_record = State()
-    editing_record = State()
+    view_record = State()
+    delete_record = State()
+    edit_record = State()
+    find_record = State()
 
 
 class AddRecordGroup(StatesGroup):
-    typing_title = State()
-    typing_username = State()
-    typing_password = State()
+    type_title = State()
+    type_username = State()
+    type_password = State()
 
 
-class UpdateRecordGroup(StatesGroup):
-    typing_title = State()
-    typing_username = State()
-    typing_password = State()
-    typing_url = State()
-    typing_comment = State()
+class EditRecordGroup(StatesGroup):
+    type_title = State()
+    type_username = State()
+    type_password = State()
+    type_url = State()
+    type_comment = State()

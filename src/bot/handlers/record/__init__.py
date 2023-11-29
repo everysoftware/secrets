@@ -1,6 +1,6 @@
 from aiogram import Router
 
-from .add import router as add_router
+from .create import router as add_router
 from .delete import router as delete_router
 from .get import router as get_router
 from .get_all import router as get_all_router

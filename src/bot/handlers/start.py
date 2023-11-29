@@ -1,3 +1,5 @@
+from html import escape as e
+
 from aiogram import types, Router
 from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
@@ -43,18 +45,18 @@ async def start(
             await state.set_state(RegisterGroup.in_lobby)
         case UserRole.USER:
             message = await message.answer(
-                f'Добро пожаловать, {user.first_name} {user.last_name}! 😊 '
+                f'Добро пожаловать, {e(user.first_name)} {e(user.last_name)}! 😊 '
                 f'Чтобы войти в аккаунт, введите пароль ⬇️',
                 reply_markup=ReplyKeyboardRemove()
             )
-            await state.set_state(LoginGroup.typing_password)
+            await state.set_state(LoginGroup.type_password)
         case UserRole.ADMIN:
             message = await message.answer(
-                f'Добро пожаловать, {user.first_name} {user.last_name}! 😊'
+                f'Добро пожаловать, {e(user.first_name)} {e(user.last_name)}! 😊'
                 f'Вы администратор! 👨‍💻 Чтобы войти в аккаунт, введите пароль ⬇️',
                 reply_markup=ReplyKeyboardRemove()
             )
-            await state.set_state(LoginGroup.typing_password)
+            await state.set_state(LoginGroup.type_password)
         case _:
             raise ValueError(f'Unknown user role: {user.role}')
 
@@ -63,9 +65,12 @@ async def start(
 
 @router.message(Command('help'))
 async def help_(message: types.Message) -> Message:
-    return await message.answer('<b>Способности бота:</b>\n\n' + BOT_COMMANDS_STR)
+    return await message.answer('<b>Что может бот?</b>\n\n' + BOT_COMMANDS_STR)
 
 
 @router.message(Command('about'))
 async def author(message: types.Message) -> Message:
-    return await message.answer('👨‍💻 Разработчик: @ivanstasevich')
+    return await message.answer(
+        '<b>Менеджер паролей Secrets</b>\n\n 👨‍💻 '
+        'Разработчик: @ivanstasevich'
+    )

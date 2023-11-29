@@ -1,25 +1,33 @@
 from aiogram import Router, types, F
 from aiogram.fsm.context import FSMContext
 
-from src.db import Database
+from src.bot.schemes import User
 from src.bot.fsm import MainGroup, RecordGroup
+from src.bot.handlers.main import show_main_menu
 from src.bot.keyboards.user import PROFILE_KB
+from src.db import Database
 
 router = Router()
 
 
-@router.message(MainGroup.viewing_main_menu, F.text == 'Мой профиль 👨')
-@router.message(MainGroup.viewing_all_records, F.text == 'Мой профиль 👨')
-@router.message(RecordGroup.viewing_record, F.text == 'Мой профиль 👨')
-async def show_user(message: types.Message, state: FSMContext, db: Database) -> None:
+async def show_user(update: types.Message | types.CallbackQuery, state: FSMContext, db: Database) -> None:
     async with db.session.begin():
-        user = await db.user.get(message.from_user.id)
+        user = await db.user.get(update.from_user.id)
 
-    await message.answer(
-        f'Пользователь {user.first_name} {user.last_name} (#{user.id})\n\n'
-        f'Имя пользователя: @{user.username}\n'
-        f'Язык: {user.language_code}\n'
-        f'Дата регистрации: {user.created_at}',
-        reply_markup=PROFILE_KB
-    )
-    await state.set_state(MainGroup.viewing_profile)
+    message = update if isinstance(update, types.Message) else update.message
+    await message.answer(User.model_validate(user).html(), reply_markup=PROFILE_KB)
+    await state.set_state(MainGroup.view_user)
+
+
+@router.message(MainGroup.view_main_menu, F.text == 'Мой профиль 👨')
+@router.message(MainGroup.view_all_records, F.text == 'Мой профиль 👨')
+@router.message(RecordGroup.view_record, F.text == 'Мой профиль 👨')
+@router.message(MainGroup.view_user, F.text == 'Мой профиль 👨')
+async def process_message(message: types.Message, state: FSMContext, db: Database) -> None:
+    await show_user(message, state, db)
+
+
+@router.callback_query(F.data == 'back', MainGroup.view_user)
+async def back_to_menu(call: types.CallbackQuery, state: FSMContext) -> None:
+    await show_main_menu(call.message, state)
+    await call.answer()

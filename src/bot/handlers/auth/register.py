@@ -14,22 +14,22 @@ router = Router()
 @router.message(F.text == 'Регистрация ⚡️', RegisterGroup.in_lobby)
 async def type_password(message: types.Message, state: FSMContext) -> None:
     await message.answer('Введите пароль ⬇️')
-    await state.set_state(RegisterGroup.typing_password)
+    await state.set_state(RegisterGroup.type_password)
 
 
-@router.message(RegisterGroup.typing_password)
+@router.message(RegisterGroup.type_password)
 async def type_master(message: types.Message, state: FSMContext) -> None:
     await message.delete()
     await state.update_data(password=message.text)
     await message.answer(
         'Введите мастер-пароль ⬇️\n\n'
-        'Мастер-пароль позволяет вам управлять всеми вашими паролями. '
-        'Не подвергайте опасности свои данные и не сообщайте его ни при каких обстоятельствах! ❗️</b>'
+        '<b>Мастер-пароль позволяет вам управлять всеми вашими паролями. '
+        'Не подвергайте опасности свои данные и не сообщайте его ни при каких обстоятельствах! ❗</b>'
     )
-    await state.set_state(RegisterGroup.typing_master)
+    await state.set_state(RegisterGroup.type_master)
 
 
-@router.message(RegisterGroup.typing_master)
+@router.message(RegisterGroup.type_master)
 async def register_user(
         message: types.Message,
         state: FSMContext,

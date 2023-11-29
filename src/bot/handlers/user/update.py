@@ -2,9 +2,11 @@ from aiogram import Router, F, types
 from aiogram.fsm.context import FSMContext
 from sqlalchemy.orm import joinedload, selectinload
 
+from src.bot.middlewares import TypingMd
 from src.bot.fsm import MainGroup
 from src.bot.fsm import ProfileMasterEditingGroup
 from src.bot.fsm import ProfilePasswordEditingGroup
+from src.bot.handlers.user.get import show_user
 from src.bot.handlers.user.verify_id import id_verification_request
 from src.bot.security import DataVerification
 from src.bot.security import Encryption
@@ -15,12 +17,15 @@ from src.db.models import Record
 from src.db.models import User
 
 router = Router()
+router.message.middleware(TypingMd())
 
 
-@router.message(MainGroup.viewing_profile, F.text == 'Сменить пароль 🔑')
-async def type_old_password(message: types.Message, state: FSMContext) -> None:
-    await message.answer('Введите старый пароль ⬇️')
+@router.callback_query(F.data == 'change_password', MainGroup.view_user)
+async def type_old_password(call: types.CallbackQuery, state: FSMContext) -> None:
+    await call.message.answer('Получен запрос на смену пароля 🔑')
+    await call.message.answer('Введите старый пароль ⬇️')
     await state.set_state(ProfilePasswordEditingGroup.typing_old_password)
+    await call.answer()
 
 
 @router.message(ProfilePasswordEditingGroup.typing_old_password)
@@ -48,12 +53,14 @@ async def update_password(message: types.Message, state: FSMContext, db: Databas
         await db.auth_data.merge(auth_data)
 
     await message.answer('Пароль успешно изменён ✅')
-    await state.set_state(MainGroup.viewing_profile)
+    await show_user(message, state, db)
 
 
-@router.message(MainGroup.viewing_profile, F.text == 'Сменить мастер-пароль 🗝')
-async def change_master_request(message: types.Message, state: FSMContext) -> None:
-    await id_verification_request(message, state, type_new_master, save_master=True)
+@router.callback_query(F.data == 'change_master', MainGroup.view_user)
+async def change_master_request(call: types.CallbackQuery, state: FSMContext) -> None:
+    await call.message.answer('Получен запрос на смену мастер-пароля 🔑')
+    await id_verification_request(call.message, state, type_new_master, save_master=True)
+    await call.answer()
 
 
 @manager.callback
@@ -62,7 +69,7 @@ async def type_new_master(message: types.Message, state: FSMContext) -> None:
     await state.set_state(ProfileMasterEditingGroup.typing_new_password)
 
 
-@router.message(ProfileMasterEditingGroup.typing_new_password)
+@router.message(ProfileMasterEditingGroup.typing_new_password, flags={'chat_action': 'typing'})
 async def update_master(message: types.Message, state: FSMContext, db: Database) -> None:
     await message.delete()
     await message.answer('Подождите, это может занять какое-то время... ⏳')
@@ -95,4 +102,4 @@ async def update_master(message: types.Message, state: FSMContext, db: Database)
             await db.record.merge(record)
 
     await message.answer('Мастер-пароль успешно изменён ✅')
-    await state.set_state(MainGroup.viewing_profile)
+    await show_user(message, state, db)

@@ -3,13 +3,15 @@ from typing import Callable, Any
 
 
 class CallbackManager:
-    callback_map: dict[int, Callable]
+    callback_map: dict[int, tuple[Callable, tuple[str]]]
 
     def __init__(self):
         self.callback_map = {}
 
     def callback(self, func):
-        self.callback_map[hash(func)] = func
+        sig = inspect.signature(func)
+        args = tuple(param.name for param in sig.parameters.values())
+        self.callback_map[hash(func)] = func, args
 
         return func
 
@@ -17,10 +19,7 @@ class CallbackManager:
         if redirect_hash not in self.callback_map:
             raise ValueError(f"Callback {redirect_hash} not found")
 
-        f = self.callback_map[redirect_hash]
-        sig = inspect.signature(f)
-        args = [param.name for param in sig.parameters.values()]
-
+        f, args = self.callback_map[redirect_hash]
         return await f(**{arg: data[arg] for arg in args})
 
 

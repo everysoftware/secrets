@@ -11,9 +11,10 @@ from src.bot.security import generate_password
 router = Router()
 
 
-@router.message(MainGroup.viewing_main_menu, F.text == 'Предложить 🔑')
-@router.message(MainGroup.viewing_all_records, F.text == 'Предложить 🔑')
-@router.message(RecordGroup.viewing_record, F.text == 'Предложить 🔑')
+@router.message(MainGroup.view_main_menu, F.text == 'Предложить 🔑')
+@router.message(MainGroup.view_all_records, F.text == 'Предложить 🔑')
+@router.message(RecordGroup.view_record, F.text == 'Предложить 🔑')
+@router.message(MainGroup.view_user, F.text == 'Предложить 🔑')
 @router.message(Command('suggest'))
 async def suggest_password(message: types.Message, arq_redis: ArqRedis) -> types.Message:
     password = generate_password()

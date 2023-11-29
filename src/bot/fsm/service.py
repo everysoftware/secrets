@@ -1,5 +1,5 @@
 from aiogram.fsm.state import StatesGroup, State
 
 
-class ConfirmationGroup(StatesGroup):
+class VerificationGroup(StatesGroup):
     typing_master = State()
