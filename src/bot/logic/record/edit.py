@@ -7,9 +7,9 @@ from arq import ArqRedis
 from sqlalchemy.orm import joinedload
 
 from src.bot.fsm import RecordGroup, EditRecordGroup
-from src.bot.handlers.record.get import show_record
 from src.bot.keyboards.record import EDIT_RECORD_KB
-from src.bot.security import Encryption
+from src.bot.logic.record.get import show_record
+from src.bot.utils.security import Encryption
 from src.db import Database
 from src.db.models import Comment
 from src.db.models import Record
@@ -52,7 +52,7 @@ def make_update_handler(
         callback: Callable[..., Awaitable] = None
 ) -> Callable[..., Awaitable]:
     @router.message(*filters)
-    async def handler(message: types.Message, state: FSMContext, db: Database, arq_redis: ArqRedis) -> None:
+    async def handler(message: types.Message, state: FSMContext, db: Database, rq: ArqRedis) -> None:
         await message.delete()
         user_data = await state.get_data()
 
@@ -69,7 +69,7 @@ def make_update_handler(
 
         db.session.expunge_all()
         await message.answer('Запись успешно изменена ✅')
-        await show_record(message, state, db, arq_redis)
+        await show_record(message, state, db, rq)
 
     return handler
 
@@ -90,14 +90,14 @@ def make_handlers(
 
 make_handlers(
     'title',
-    'Введите новое имя пароля ⬇️ Например, "Google"',
+    'Введите новое имя пароля ⬇️ Например, <code>Google</code>',
     EditRecordGroup.type_title,
     lambda message: len(message.text) <= 64
 )
 
 make_handlers(
     'username',
-    'Введите новое имя пользователя ⬇️ Например, "admin"',
+    'Введите новое имя пользователя ⬇️ Например, <code>admin</code>',
     EditRecordGroup.type_username,
     lambda message: len(message.text) <= 64,
     encrypt=True
@@ -105,7 +105,7 @@ make_handlers(
 
 make_handlers(
     'password',
-    'Введите новый пароль ⬇️ Например, "qwerty123"',
+    'Введите новый пароль ⬇️ Например, <code>qwerty123</code>',
     EditRecordGroup.type_password,
     lambda message: len(message.text) <= 64,
     encrypt=True
@@ -113,7 +113,7 @@ make_handlers(
 
 make_handlers(
     'url',
-    'Введите новый веб-сайт ⬇️ Например, "https://google.com"',
+    'Введите новый веб-сайт ⬇️ Например, <code>https://google.com</code>',
     EditRecordGroup.type_url,
     lambda message: len(message.text) <= 64
 )
@@ -133,20 +133,20 @@ async def edit_comment_callback(message: types.Message, db: Database, user_data:
 
 make_handlers(
     'comment',
-    'Введите новый комментарий ⬇️ Например, "Это мой пароль от Google"',
+    'Введите новый комментарий ⬇️ Например, <code>Это мой пароль от Google</code>',
     EditRecordGroup.type_comment,
     lambda message: len(message.text) <= 256,
     callback=edit_comment_callback
 )
 
 
-@router.message(lambda *_, state: state in EditRecordGroup)
+@router.message(*EditRecordGroup.__all_states__)
 async def message_too_long(message: types.Message) -> None:
     await message.delete()
     await message.answer('Слишком длинное сообщение. Попробуйте ещё раз ⬇️')
 
 
 @router.callback_query(F.data == 'back', RecordGroup.edit_record)
-async def back_to_record(call: types.CallbackQuery, state: FSMContext, db: Database, arq_redis: ArqRedis) -> None:
-    await show_record(call, state, db, arq_redis)
+async def back_to_record(call: types.CallbackQuery, state: FSMContext, db: Database, rq: ArqRedis) -> None:
+    await show_record(call, state, db, rq)
     await call.answer()

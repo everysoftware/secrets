@@ -2,9 +2,9 @@ from aiogram import Router, F, types
 from aiogram.fsm.context import FSMContext
 
 from src.bot.fsm import MainGroup, ProfileGroup
-from src.bot.handlers.user.get import show_user
-from src.bot.handlers.user.verify_id import id_verification_request
 from src.bot.keyboards.service import YESNO_KB
+from src.bot.logic.user.get import show_user
+from src.bot.logic.user.verify_id import id_verification_request
 from src.bot.utils.callback_manager import manager
 from src.db import Database
 

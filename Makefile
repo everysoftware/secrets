@@ -8,7 +8,7 @@ help:
 	@echo "  rd         Start bot dependencies"
 	@echo "  stop       Stop bot"
 	@echo "  test       Run tests"
-	@echo "  lint       Run flake8"
+	@echo "  lint       Run ruff"
 	@echo "  logs       Show logs"
 	@echo "  freeze     Make requirements.txt"
 	@echo "  reqs       Show requirements"
@@ -50,7 +50,7 @@ test:
 
 .PHONY: lint
 lint:
-	flake8 src
+	ruff src
 
 .PHONY: freeze
 freeze:

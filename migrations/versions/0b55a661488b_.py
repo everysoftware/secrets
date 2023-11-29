@@ -72,4 +72,7 @@ def downgrade() -> None:
     op.drop_table('records')
     op.drop_table('auth_data')
     op.drop_table('users')
+
+    old_type = sa.Enum(name='userrole')
+    old_type.drop(op.get_bind(), checkfirst=False)
     # ### end Alembic commands ###

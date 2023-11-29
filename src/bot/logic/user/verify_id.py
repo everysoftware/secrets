@@ -6,8 +6,8 @@ from sqlalchemy.orm import joinedload
 
 from src.bot.fsm import VerificationGroup
 from src.bot.keyboards.service import CANCEL_KB
-from src.bot.security import DataVerification
 from src.bot.utils.callback_manager import CallbackManager
+from src.bot.utils.security import DataVerification
 from src.db import Database
 from src.db.models import User
 

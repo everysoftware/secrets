@@ -2,8 +2,8 @@ from aiogram import Router, F, types
 from aiogram.fsm.context import FSMContext
 
 from src.bot.fsm import RecordGroup
-from src.bot.handlers.record.get import back_to_all_records
 from src.bot.keyboards.service import YESNO_KB
+from src.bot.logic.record.get import back_to_all_records
 from src.db import Database
 
 router = Router()

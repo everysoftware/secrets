@@ -2,8 +2,8 @@ from aiogram import Router, types, F
 from aiogram.fsm.context import FSMContext
 
 from src.bot.fsm import RegisterGroup
-from src.bot.handlers.main import show_main_menu
-from src.bot.security import DataVerification
+from src.bot.logic.main import show_main_menu
+from src.bot.utils.security import DataVerification
 from src.db import Database
 from src.db.enums import UserRole
 from src.db.models import AuthData

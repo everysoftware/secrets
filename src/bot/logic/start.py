@@ -5,12 +5,12 @@ from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, ReplyKeyboardRemove
 
+from src.bot.commands import BOT_COMMANDS_STR
 from src.bot.fsm import LoginGroup, RegisterGroup
 from src.bot.keyboards.auth import REG_KB
 from src.db import Database
 from src.db.enums import UserRole
 from src.db.models import User
-from .commands import BOT_COMMANDS_STR
 from ..middlewares import DatabaseMd
 
 router = Router()
@@ -52,8 +52,8 @@ async def start(
             await state.set_state(LoginGroup.type_password)
         case UserRole.ADMIN:
             message = await message.answer(
-                f'Добро пожаловать, {e(user.first_name)} {e(user.last_name)}! 😊'
-                f'Вы администратор! 👨‍💻 Чтобы войти в аккаунт, введите пароль ⬇️',
+                f'Добро пожаловать, супер-кот {e(user.first_name)} {e(user.last_name)}! 😊'
+                f'Чтобы войти в аккаунт, введите пароль ⬇️',
                 reply_markup=ReplyKeyboardRemove()
             )
             await state.set_state(LoginGroup.type_password)

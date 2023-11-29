@@ -2,15 +2,15 @@ from aiogram import Router, F, types
 from aiogram.fsm.context import FSMContext
 from sqlalchemy.orm import joinedload, selectinload
 
-from src.bot.middlewares import TypingMd
 from src.bot.fsm import MainGroup
 from src.bot.fsm import ProfileMasterEditingGroup
 from src.bot.fsm import ProfilePasswordEditingGroup
-from src.bot.handlers.user.get import show_user
-from src.bot.handlers.user.verify_id import id_verification_request
-from src.bot.security import DataVerification
-from src.bot.security import Encryption
+from src.bot.logic.user.get import show_user
+from src.bot.logic.user.verify_id import id_verification_request
+from src.bot.middlewares import TypingMd
 from src.bot.utils.callback_manager import manager
+from src.bot.utils.security import DataVerification
+from src.bot.utils.security import Encryption
 from src.db import Database
 from src.db.models import AuthData
 from src.db.models import Record

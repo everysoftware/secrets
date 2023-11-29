@@ -8,7 +8,6 @@ from src.bot.middlewares import DatabaseMd
 router = Router()
 
 router.message.middleware(DatabaseMd())
-router.callback_query.middleware(DatabaseMd())
 
 
 async def show_main_menu(message: types.Message, state: FSMContext) -> None:

@@ -1,9 +1,9 @@
 from aiogram import Router
 
 from .delete import router as delete_router
+from .get import router as get_router
 from .update import router as update_router
 from .verify_id import router as verify_id_router
-from .get import router as get_router
 from ...middlewares import DatabaseMd
 
 routers = (

@@ -5,11 +5,11 @@ from aiogram.fsm.context import FSMContext
 from arq import ArqRedis
 from sqlalchemy.orm import joinedload
 
-from src.bot.factories import ShowRecordData
 from src.bot.fsm import RecordGroup, MainGroup
-from src.bot.handlers.record.get_all import show_all_records
-from src.bot.handlers.user.verify_id import id_verification_request
+from src.bot.keyboards.factories import ShowRecordData
 from src.bot.keyboards.record import RECORD_KB
+from src.bot.logic.record.get_all import show_all_records
+from src.bot.logic.user.verify_id import id_verification_request
 from src.bot.utils.callback_manager import manager
 from src.db import Database
 from src.db.models import Record
@@ -29,7 +29,7 @@ async def show_record(
         update: types.Message | types.CallbackQuery,
         state: FSMContext,
         db: Database,
-        arq_redis: ArqRedis
+        rq: ArqRedis
 ) -> None:
     user_data = await state.get_data()
 
@@ -45,7 +45,7 @@ async def show_record(
     record_msg = await message.answer(decrypted.html(), reply_markup=RECORD_KB)
     await state.set_state(RecordGroup.view_record)
 
-    await arq_redis.enqueue_job(
+    await rq.enqueue_job(
         'delete_message',
         _defer_by=timedelta(minutes=2),
         chat_id=update.from_user.id,
@@ -54,8 +54,8 @@ async def show_record(
 
 
 @manager.callback
-async def process_callback(message: types.Message, state: FSMContext, db: Database, arq_redis: ArqRedis) -> None:
-    await show_record(message, state, db, arq_redis)
+async def process_callback(message: types.Message, state: FSMContext, db: Database, rq: ArqRedis) -> None:
+    await show_record(message, state, db, rq)
 
 
 @router.callback_query(F.data == 'back', RecordGroup.view_record)

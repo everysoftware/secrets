@@ -1,7 +1,7 @@
 from aiogram import Router, F, types
 from aiogram.fsm.context import FSMContext
 
-from src.bot.fsm import MainGroup
+from src.bot.fsm import RecordGroup, MainGroup
 
 router = Router()
 
@@ -10,5 +10,5 @@ router = Router()
 async def type_query(call: types.CallbackQuery, state: FSMContext) -> None:
     # TODO: Реализовать поиск по записям.
     await call.message.answer('Введите запрос ⬇️ Например, "Google", "Google.com"')
-    await state.set_state(MainGroup.searching_record)
+    await state.set_state(RecordGroup.find_record)
     await call.answer()

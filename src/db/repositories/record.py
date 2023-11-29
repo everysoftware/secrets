@@ -1,7 +1,7 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.bot.security import Encryption
 from src.bot.schemes import DecryptedRecord
+from src.bot.utils.security import Encryption
 from .repo import Repository
 from ..models import Record
 

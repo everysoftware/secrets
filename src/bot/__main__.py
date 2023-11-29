@@ -9,7 +9,6 @@ from aiohttp import web
 from src.cache import Cache
 from src.config import cfg
 from src.db import create_async_engine, get_session_maker
-from .api import generate_secret, on_startup, on_shutdown
 from .dispatcher import create_dispatcher, create_redis_storage
 
 
@@ -17,13 +16,13 @@ def start_polling(bot: Bot, dp: Dispatcher) -> None:
     asyncio.run(dp.start_polling(bot))
 
 
-def start_webhook(bot: Bot, dp: Dispatcher, secret: str) -> None:
+def start_webhook(bot: Bot, dp: Dispatcher) -> None:
     app = web.Application()
 
     webhook_requests_handler = SimpleRequestHandler(
         dispatcher=dp,
         bot=bot,
-        secret_token=secret
+        secret_token=dp['secret_token']
     )
 
     webhook_requests_handler.register(app, path=cfg.webhook.path)
@@ -36,24 +35,13 @@ def main() -> None:
     logging.basicConfig(level=cfg.logging_level, stream=sys.stdout)
 
     bot = Bot(cfg.bot.tg_token, parse_mode='HTML')
-
     cache = Cache()
     storage = create_redis_storage(cache.client)
     session_maker = get_session_maker(create_async_engine(cfg.db.build_connection_str()))
-    secret = generate_secret() if cfg.webhook.on else ''
-
-    dp = create_dispatcher(
-        storage,
-        cache,
-        session_maker,
-        secret
-    )
-
-    dp.startup.register(on_startup)
-    dp.shutdown.register(on_shutdown)
+    dp = create_dispatcher(storage, cache, session_maker)
 
     if cfg.webhook.on:
-        start_webhook(bot, dp, secret)
+        start_webhook(bot, dp)
     else:
         start_polling(bot, dp)
 

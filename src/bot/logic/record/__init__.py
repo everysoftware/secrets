@@ -2,9 +2,9 @@ from aiogram import Router
 
 from .create import router as add_router
 from .delete import router as delete_router
+from .edit import router as update_router
 from .get import router as get_router
 from .get_all import router as get_all_router
-from .update import router as update_router
 from ...middlewares import DatabaseMd
 
 routers = (

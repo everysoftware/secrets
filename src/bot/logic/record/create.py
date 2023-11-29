@@ -3,10 +3,10 @@ from aiogram.fsm.context import FSMContext
 
 from src.bot.fsm import MainGroup, AddRecordGroup
 from src.bot.fsm import RecordGroup
-from src.bot.handlers.main import show_main_menu
-from src.bot.handlers.user.verify_id import id_verification_request
-from src.bot.security import Encryption
+from src.bot.logic.main import show_main_menu
+from src.bot.logic.user.verify_id import id_verification_request
 from src.bot.utils.callback_manager import manager
+from src.bot.utils.security import Encryption
 from src.db import Database
 from src.db.models import Record
 
@@ -23,7 +23,7 @@ async def add_record_request(message: types.Message, state: FSMContext) -> None:
 
 @manager.callback
 async def type_title(message: types.Message, state: FSMContext) -> None:
-    await message.answer('Введите имя пароля ⬇️ Например, "Google"')
+    await message.answer('Введите имя пароля ⬇️ Например, <code>Google</code>')
     await state.set_state(AddRecordGroup.type_title)
 
 
@@ -39,7 +39,7 @@ async def message_too_long(message: types.Message) -> None:
 async def type_username(message: types.Message, state: FSMContext) -> None:
     await message.delete()
     await state.update_data(title=message.text)
-    await message.answer('Введите имя пользователя ⬇️ Например, "admin"')
+    await message.answer('Введите имя пользователя ⬇️ Например, <code>admin</code>')
     await state.set_state(AddRecordGroup.type_username)
 
 
@@ -47,7 +47,7 @@ async def type_username(message: types.Message, state: FSMContext) -> None:
 async def type_password(message: types.Message, state: FSMContext) -> None:
     await message.delete()
     await state.update_data(username=message.text)
-    await message.answer('Введите пароль ⬇️ Например, "qwerty123"')
+    await message.answer('Введите пароль ⬇️ Например, <code>qwerty123</code>')
     await state.set_state(AddRecordGroup.type_password)
 
 

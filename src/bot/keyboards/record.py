@@ -1,11 +1,13 @@
+from typing import Sequence
+
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
-from src.bot.factories import ShowRecordData
+from src.bot.keyboards.factories import ShowRecordData
 from src.db.models import Record
 
 
-async def get_storage_kb(records: list[Record]) -> InlineKeyboardMarkup:
+async def get_storage_kb(records: Sequence[Record]) -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
 
     # TODO: Оптимизировать скроллинг паролей
