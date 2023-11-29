@@ -5,9 +5,9 @@
 [![Lint and test](https://github.com/everysoftware/secrets-bot/actions/workflows/ci.yml/badge.svg)](https://github.com/everysoftware/secrets-bot/actions/workflows/ci.yml)
 [![Deploy to server](https://github.com/everysoftware/secrets-bot/actions/workflows/cd.yml/badge.svg)](https://github.com/everysoftware/secrets-bot/actions/workflows/cd.yml)
 
-<img src="https://github.com/everysoftware/secrets-bot/assets/22497421/9d32c2dd-d121-491f-ae7f-5f049de73a59" width="300" />  
-<img src="https://github.com/everysoftware/secrets-bot/assets/22497421/54c98de8-1c4f-42a3-bf67-b029e604d8b0" width="300" />  
-<img src="https://github.com/everysoftware/secrets-bot/assets/22497421/d600fd4e-85da-4496-8eb7-106252e229b6" width="300" />  
+<img src="https://github.com/everysoftware/secrets-bot/assets/22497421/9d32c2dd-d121-491f-ae7f-5f049de73a59" width="250" />  
+<img src="https://github.com/everysoftware/secrets-bot/assets/22497421/54c98de8-1c4f-42a3-bf67-b029e604d8b0" width="250" />  
+<img src="https://github.com/everysoftware/secrets-bot/assets/22497421/d600fd4e-85da-4496-8eb7-106252e229b6" width="250" />  
 
 
 ## Начало работы
