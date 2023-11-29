@@ -33,11 +33,11 @@ jobs:
         python -m venv venv
         source venv/bin/activate
         pip install -r requirements.txt
-    - name: Lint with flake8
+    - name: Lint with Ruff
       run: |
         source venv/bin/activate
-        pip install flake8
-        flake8 src --count --statistics
+        pip install ruff
+        ruff src
     - name: Test with pytest
       run: |
         source venv/bin/activate
