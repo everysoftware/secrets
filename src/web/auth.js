@@ -20,7 +20,6 @@ Telegram.WebApp.onEvent("mainButtonClicked", function(){
 		tg.sendData(passwordInput.value);
 		passwordInput.value = '';
 	}
-
 });
 
 let user_card = document.getElementById("user_card");
