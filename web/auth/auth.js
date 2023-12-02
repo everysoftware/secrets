@@ -1,9 +1,6 @@
 document.addEventListener("DOMContentLoaded", function() {
     var tg = window.Telegram.WebApp;
 
-    let authHeader = document.getElementById("authHeader");
-    authHeader.color = tg.headerColor;
-
     tg.MainButton.textColor = '#FFFFFF';
     tg.MainButton.color = '#2cab37';
     tg.MainButton.setText("Войти");
