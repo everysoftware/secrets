@@ -36,12 +36,12 @@ jobs:
     - name: Lint with Ruff
       run: |
         source venv/bin/activate
-        ruff src
+        make lint
     - name: Run mypy
       run: |
         source venv/bin/activate
-        mypy src
+        make mypy
     - name: Test with pytest
       run: |
         source venv/bin/activate
-        pytest -s -v
+        make test
