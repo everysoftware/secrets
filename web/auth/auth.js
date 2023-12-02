@@ -2,7 +2,7 @@ document.addEventListener("DOMContentLoaded", function() {
     var tg = window.Telegram.WebApp;
 
     tg.MainButton.textColor = '#FFFFFF';
-    tg.MainButton.color = '#82E0AA';
+    tg.MainButton.color = '#52BE80';
     tg.MainButton.setText("Войти");
     tg.MainButton.disable();
     tg.MainButton.show();
