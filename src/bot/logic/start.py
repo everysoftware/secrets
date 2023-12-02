@@ -2,11 +2,11 @@ from aiogram import Router, types
 from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import default_state
-from aiogram.types import Message, ReplyKeyboardRemove
+from aiogram.types import Message
 
 from src.bot.commands import BOT_COMMANDS_STR
 from src.bot.fsm import LoginGroup, RegisterGroup
-from src.bot.keyboards.auth import REG_KB, AUTH_KB
+from src.bot.keyboards.auth import AUTH_KB, REG_KB
 from src.bot.schemes import User as UserScheme
 from src.db import Database
 from src.db.enums import UserRole

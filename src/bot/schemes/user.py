@@ -30,16 +30,14 @@ class User(Base):
     def welcome(self) -> str:
         match self.role:
             case UserRole.GUEST:
-                return (
-                    "Добро пожаловать! Я бот, который помогает быстро и безопасно управлять паролями! 😊 "
-                )
+                return "Добро пожаловать! Я бот, который помогает быстро и безопасно управлять паролями! 😊 "
             case UserRole.USER:
-                return (
-                    "Добро пожаловать, {first_name} {last_name}! 😊 ".format(**self.dump())
+                return "Добро пожаловать, {first_name} {last_name}! 😊 ".format(
+                    **self.dump()
                 )
             case UserRole.ADMIN:
-                return (
-                    "Добро пожаловать, супер-кот {first_name} {last_name}! 😊".format(**self.dump())
+                return "Добро пожаловать, супер-кот {first_name} {last_name}! 😊".format(
+                    **self.dump()
                 )
             case _:
                 raise ValueError(f"Unknown user role: {self.role}")
