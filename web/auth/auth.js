@@ -2,7 +2,7 @@ document.addEventListener("DOMContentLoaded", function() {
     var tg = window.Telegram.WebApp;
 
     tg.MainButton.textColor = '#FFFFFF';
-    tg.MainButton.color = '#2cab37';
+    tg.MainButton.color = '#82E0AA';
     tg.MainButton.setText("Войти");
     tg.MainButton.disable();
     tg.MainButton.show();
@@ -12,8 +12,10 @@ document.addEventListener("DOMContentLoaded", function() {
     passwordInput.addEventListener("input", function(e) {
         e.preventDefault();
         if (passwordInput.value) {
+            tg.MainButton.color = '#2cab37';
             tg.MainButton.enable();
         } else {
+            tg.MainButton.color = '#82E0AA';
             tg.MainButton.disable();
         }
     });
