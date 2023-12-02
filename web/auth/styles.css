@@ -34,7 +34,7 @@ body {
 
 .container h1 {
     font-size: 16px;
-    color: var(--tg-theme-text-color)
+    color: var(--tg-theme-text-color);
     margin-top: 20px;
 }
 
