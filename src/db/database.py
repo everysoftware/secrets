@@ -1,6 +1,6 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from .repositories import CommentRepo, RecordRepo, UserRepo, AuthDataRepo
+from .repositories import CommentRepo, CredentialsRepo, RecordRepo, UserRepo
 
 
 class Database:
@@ -8,18 +8,18 @@ class Database:
     user: UserRepo
     record: RecordRepo
     comment: CommentRepo
-    auth_data: AuthDataRepo
+    credentials: CredentialsRepo
 
     def __init__(
-            self,
-            session: AsyncSession,
-            user: UserRepo = None,
-            record: RecordRepo = None,
-            comment: CommentRepo = None,
-            auth_data: AuthDataRepo = None,
+        self,
+        session: AsyncSession,
+        user: UserRepo | None = None,
+        record: RecordRepo | None = None,
+        comment: CommentRepo | None = None,
+        credentials: CredentialsRepo | None = None,
     ):
         self.session = session
         self.user = user or UserRepo(session=session)
         self.record = record or RecordRepo(session=session)
         self.comment = comment or CommentRepo(session=session)
-        self.auth_data = auth_data or AuthDataRepo(session=session)
+        self.credentials = credentials or CredentialsRepo(session=session)

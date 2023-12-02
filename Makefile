@@ -9,9 +9,12 @@ help:
 	@echo "  stop       Stop bot"
 	@echo "  test       Run tests"
 	@echo "  lint       Run ruff"
+	@echo "  format     Run black"
+	@echo "  mypy       Run mypy"
+	@echo "  isort      Run isort"
+	@echo "  check      Run all checks"
 	@echo "  logs       Show logs"
 	@echo "  freeze     Make requirements.txt"
-	@echo "  reqs       Show requirements"
 	@echo "  generate   Generate migration"
 	@echo "  migrate    Run migrations"
 	@echo "  upgrade    Upgrade pip"
@@ -52,13 +55,29 @@ test:
 lint:
 	ruff src
 
+.PHONY: format
+format:
+	black src
+
+.PHONY: mypy
+mypy:
+	mypy src
+
+.PHONY: isort
+isort:
+	isort src
+
+.PHONY: check
+check:
+	make format
+	make isort
+	make lint
+	make mypy
+	make test
+
 .PHONY: freeze
 freeze:
 	pip freeze > requirements.txt
-
-.PHONY: reqs
-reqs:
-	pip freeze
 
 .PHONY: generate
 generate:

@@ -11,7 +11,7 @@ from sqlalchemy.orm import sessionmaker
 from bot.dispatcher import create_dispatcher
 from cache import Cache
 from config import cfg
-from db import get_session_maker, create_async_engine
+from db import async_session_factory, create_async_engine
 from utils.alembic import alembic_config_from_url
 from utils.mocked_bot import MockedBot
 from utils.mocked_db import MockedDatabase
@@ -62,7 +62,7 @@ async def setup_db(engine):
 
 @pytest_asyncio.fixture(scope='session')
 async def pool(engine):
-    yield get_session_maker(engine)
+    yield async_session_factory(engine)
 
 
 @pytest_asyncio.fixture(scope='session')

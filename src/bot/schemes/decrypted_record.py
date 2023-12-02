@@ -1,12 +1,9 @@
 import datetime
-from html import escape as e
 
-from pydantic import ConfigDict, BaseModel
+from .base import Base
 
 
-class DecryptedRecord(BaseModel):
-    model_config = ConfigDict(from_attributes=True)
-
+class DecryptedRecord(Base):
     id: int
     title: str
     username: str
@@ -17,15 +14,15 @@ class DecryptedRecord(BaseModel):
     updated_at: datetime.datetime
 
     def html(self) -> str:
-        empty = 'нет'
         result = (
-            f'<b>Пароль {e(self.title)} (#{self.id})</b>\n\n'
-            f'👨 Имя пользователя: <code>{e(self.username)}</code>\n'
-            f'🔑 Пароль: <code>{e(self.password)}</code>\n'
-            f'🔗 Веб-сайт: {e(self.url) if self.url else empty}\n'
-            f'💬 Комментарий: {e(self.comment) if self.comment else empty}\n'
-            f'📅 Дата создания: {self.created_at}\n'
-            f'📅 Дата обновления: {self.updated_at}\n'
-        )
+            "<b>Пароль {title}</b>\n\n"
+            "👨 Имя пользователя: <code>{username}</code>\n"
+            "🔑 Пароль: <code>{password}</code>\n"
+            "🔗 Веб-сайт: {url}\n"
+            "💬 Комментарий: {comment}\n"
+            "📅 Создан: {created_at}\n"
+            "📅 Изменён: {updated_at}\n"
+            "🔢 ID: {id}"
+        ).format(**self.dump())
 
         return result

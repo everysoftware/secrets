@@ -3,12 +3,14 @@ import logging
 import sys
 
 from aiogram import Bot, Dispatcher
-from aiogram.webhook.aiohttp_server import SimpleRequestHandler, setup_application
+from aiogram.webhook.aiohttp_server import (SimpleRequestHandler,
+                                            setup_application)
 from aiohttp import web
 
 from src.cache import Cache
 from src.config import cfg
-from src.db import create_async_engine, get_session_maker
+from src.db import async_session_factory, create_async_engine
+
 from .dispatcher import create_dispatcher, create_redis_storage
 
 
@@ -20,9 +22,7 @@ def start_webhook(bot: Bot, dp: Dispatcher) -> None:
     app = web.Application()
 
     webhook_requests_handler = SimpleRequestHandler(
-        dispatcher=dp,
-        bot=bot,
-        secret_token=dp['secret_token']
+        dispatcher=dp, bot=bot, secret_token=dp["secret_token"]
     )
 
     webhook_requests_handler.register(app, path=cfg.webhook.path)
@@ -34,11 +34,11 @@ def start_webhook(bot: Bot, dp: Dispatcher) -> None:
 def main() -> None:
     logging.basicConfig(level=cfg.logging_level, stream=sys.stdout)
 
-    bot = Bot(cfg.bot.tg_token, parse_mode='HTML')
+    bot = Bot(cfg.bot.tg_token, parse_mode="HTML")
     cache = Cache()
     storage = create_redis_storage(cache.client)
-    session_maker = get_session_maker(create_async_engine(cfg.db.build_connection_str()))
-    dp = create_dispatcher(storage, cache, session_maker)
+    pool = async_session_factory(create_async_engine(cfg.db.build_connection_str()))
+    dp = create_dispatcher(storage, cache, pool)
 
     if cfg.webhook.on:
         start_webhook(bot, dp)
@@ -46,8 +46,8 @@ def main() -> None:
         start_polling(bot, dp)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     try:
         main()
     except (KeyboardInterrupt, SystemExit):
-        logging.info('Bot stopped')
+        logging.info("Bot stopped")

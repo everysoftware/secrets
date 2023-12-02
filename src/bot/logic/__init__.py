@@ -11,7 +11,7 @@ routers = (
     start_router,
     user_router,
     record_router,
-    generator_router
+    generator_router,
 )
 
-__all__ = ('routers',)
+__all__ = ("routers",)

@@ -1,4 +1,4 @@
-from aiogram import types, Router
+from aiogram import Router, types
 from aiogram.fsm.context import FSMContext
 from sqlalchemy.orm import joinedload
 
@@ -12,14 +12,20 @@ router = Router()
 
 
 @router.message(LoginGroup.type_password)
-async def authorize_user(message: types.Message, state: FSMContext, db: Database) -> None:
+async def authorize_user(
+    message: types.Message, state: FSMContext, db: Database
+) -> None:
     async with db.session.begin():
-        user = await db.user.get(message.from_user.id, options=[joinedload(User.auth_data)])
+        user = await db.user.get(
+            message.from_user.id, options=[joinedload(User.credentials)]
+        )
 
     await message.delete()
 
-    if DataVerification.verify(message.text, user.auth_data.account_password, user.auth_data.salt):
-        await message.answer('Авторизация прошла успешно ✅')
+    if DataVerification.verify(
+        message.text, user.credentials.password, user.credentials.salt
+    ):
+        await message.answer("Авторизация прошла успешно ✅")
         await show_main_menu(message, state)
     else:
-        await message.answer('Неверный пароль. Попробуйте ещё раз ⬇️')
+        await message.answer("Неверный пароль. Попробуйте ещё раз ⬇️")

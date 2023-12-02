@@ -1,9 +1,9 @@
-from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 CANCEL_KB = InlineKeyboardMarkup(
     inline_keyboard=[
         [
-            InlineKeyboardButton(text='Отмена ❌', callback_data='back'),
+            InlineKeyboardButton(text="Отмена ❌", callback_data="back"),
         ]
     ]
 )
@@ -11,8 +11,8 @@ CANCEL_KB = InlineKeyboardMarkup(
 YESNO_KB = InlineKeyboardMarkup(
     inline_keyboard=[
         [
-            InlineKeyboardButton(text='Да ✅', callback_data='yes'),
-            InlineKeyboardButton(text='Нет ❌', callback_data='no')
+            InlineKeyboardButton(text="Да ✅", callback_data="yes"),
+            InlineKeyboardButton(text="Нет ❌", callback_data="no"),
         ]
     ]
 )

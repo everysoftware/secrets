@@ -1,11 +1,9 @@
 import asyncio
-from typing import Any, Optional, TypeVar
+from typing import Any
 
 from redis.asyncio.client import Redis
 
 from src.config import cfg
-
-KeyLike = TypeVar("KeyLike", str, int)
 
 
 def build_redis_client() -> Redis:
@@ -22,25 +20,25 @@ def build_redis_client() -> Redis:
 class Cache:
     client: Redis
 
-    def __init__(self, redis: Optional[Redis] = None):
+    def __init__(self, redis: Redis | None = None):
         self.client = redis or build_redis_client()
 
     @property
     def redis_client(self) -> Redis:
         return self.client
 
-    async def get(self, key: KeyLike, type_: Any = None) -> Any:
-        result = await self.client.get(str(key))
+    async def get(self, key: str, type_: Any = None) -> Any:
+        result = await self.client.get(key)
 
         if result is None:
             return result
 
         return type_(result) if type_ is not None else result
 
-    async def set(self, key: KeyLike, value: Any):
-        return await self.client.set(name=str(key), value=value)
+    async def set(self, key: str, value: Any):
+        return await self.client.set(name=key, value=value)
 
-    async def delete(self, key: KeyLike):
+    async def delete(self, key: str):
         return await self.client.delete(key)
 
     async def on_startup(self):

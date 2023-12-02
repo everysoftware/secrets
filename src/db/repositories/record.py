@@ -2,8 +2,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.bot.schemes import DecryptedRecord
 from src.bot.utils.security import Encryption
-from .repo import Repository
+
 from ..models import Record
+from .repo import Repository
 
 
 class RecordRepo(Repository[Record]):
@@ -16,9 +17,9 @@ class RecordRepo(Repository[Record]):
             id=record.id,
             title=record.title,
             username=Encryption.decrypt(record.username, master, record.salt),
-            password=Encryption.decrypt(record.password_, master, record.salt),
+            password=Encryption.decrypt(record.password, master, record.salt),
             url=record.url,
             comment=record.comment.text if record.comment else None,
             created_at=record.created_at,
-            updated_at=record.updated_at
+            updated_at=record.updated_at,
         )

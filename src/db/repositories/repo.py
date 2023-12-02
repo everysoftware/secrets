@@ -1,28 +1,30 @@
-from typing import Generic, TypeVar, Sequence
+from typing import Generic, Sequence, TypeVar
 
-from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm.interfaces import ORMOption
 
 from ..models import Base
 
-AbstractModel = TypeVar('AbstractModel')
+AbstractModel = TypeVar("AbstractModel", bound=Base)
 
 
 class Repository(Generic[AbstractModel]):
-    type_model: type[Base]
+    type_model: type[AbstractModel]
     session: AsyncSession
 
-    def __init__(self, type_model: type[Base], session: AsyncSession):
+    def __init__(self, type_model: type[AbstractModel], session: AsyncSession):
         self.type_model = type_model
         self.session = session
 
-    async def get(self, ident: int | str, options: Sequence[ORMOption] | None = None) -> AbstractModel:
-        return await self.session.get(entity=self.type_model, ident=ident, options=options)
+    async def get(
+        self, ident: int | str, options: Sequence[ORMOption] | None = None
+    ) -> AbstractModel | None:
+        return await self.session.get(
+            entity=self.type_model, ident=ident, options=options
+        )
 
     async def get_by_where(self, where_clause) -> AbstractModel | None:
-        statement = select(self.type_model).where(where_clause)
-        return (await self.session.execute(statement)).one_or_none()
+        raise NotImplementedError
 
     async def delete(self, model: AbstractModel) -> None:
         return await self.session.delete(model)

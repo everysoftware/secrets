@@ -9,8 +9,8 @@ from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 class Encryption:
     @staticmethod
     def _derive_key(
-            master: bytes,
-            salt: bytes,
+        master: bytes,
+        salt: bytes,
     ) -> bytes:
         """Генерация ключа из мастер-пароля с помощью PBKDF2"""
         kdf = PBKDF2HMAC(
@@ -18,17 +18,12 @@ class Encryption:
             salt=salt,
             iterations=100000,  # количество итераций хеширования
             backend=default_backend(),
-            length=32
+            length=32,
         )
         return kdf.derive(master)
 
     @classmethod
-    def _encrypt(
-            cls,
-            data: bytes,
-            master: bytes,
-            salt: bytes
-    ) -> bytes:
+    def _encrypt(cls, data: bytes, master: bytes, salt: bytes) -> bytes:
         key = cls._derive_key(master, salt)
 
         # Генерация случайного инициализирующего вектора
@@ -45,12 +40,7 @@ class Encryption:
         return iv + ciphertext
 
     @classmethod
-    def _decrypt(
-            cls,
-            data: bytes,
-            master: bytes,
-            salt: bytes
-    ) -> bytes:
+    def _decrypt(cls, data: bytes, master: bytes, salt: bytes) -> bytes:
         key = cls._derive_key(master, salt)
 
         # Извлечение инициализирующего вектора
@@ -72,27 +62,9 @@ class Encryption:
         return os.urandom(16)
 
     @classmethod
-    def encrypt(
-            cls,
-            data: str,
-            master: str,
-            salt: bytes
-    ) -> bytes:
-        return cls._encrypt(
-            data.encode('utf-8'),
-            master.encode('utf-8'),
-            salt
-        )
+    def encrypt(cls, data: str, master: str, salt: bytes) -> bytes:
+        return cls._encrypt(data.encode("utf-8"), master.encode("utf-8"), salt)
 
     @classmethod
-    def decrypt(
-            cls,
-            data: bytes,
-            master: str,
-            salt: bytes
-    ):
-        return cls._decrypt(
-            data,
-            master.encode('utf-8'),
-            salt
-        ).decode('utf-8')
+    def decrypt(cls, data: bytes, master: str, salt: bytes):
+        return cls._decrypt(data, master.encode("utf-8"), salt).decode("utf-8")

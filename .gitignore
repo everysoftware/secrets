@@ -240,3 +240,4 @@ cython_debug/
 #.idea/
 
 .dev.env
+qodana.yaml

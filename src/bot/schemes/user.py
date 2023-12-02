@@ -1,14 +1,11 @@
 import datetime
-from html import escape as e
-
-from pydantic import BaseModel, ConfigDict
 
 from src.db.enums import UserRole
 
+from .base import Base
 
-class User(BaseModel):
-    model_config = ConfigDict(from_attributes=True)
 
+class User(Base):
     id: int
     first_name: str
     last_name: str | None
@@ -19,13 +16,33 @@ class User(BaseModel):
     updated_at: datetime.datetime
 
     def html(self) -> str:
-        empty = 'нет'
         result = (
-            f'<b>Пользователь {e(self.first_name)} {e(self.last_name)} (#{self.id})</b>\n\n'
-            f'👨 Имя пользователя: @{e(self.username) if self.username else empty}\n'
-            f'🟢 Роль: {self.role.name}\n'
-            f'🌍 Язык: {e(self.language_code) if self.language_code else empty}\n'
-            f'📅 Дата регистрации: {self.created_at}'
-        )
+            "<b>{first_name} {last_name}</b>\n\n"
+            "👨 Имя пользователя: @{username}\n"
+            "🟢 Роль: {role}\n"
+            "🌍 Язык: {language_code}\n"
+            "📅 Зарегистрирован: {created_at}\n"
+            "🔢 ID: {id}"
+        ).format(**self.dump())
 
         return result
+
+    def welcome(self) -> str:
+        match self.role:
+            case UserRole.GUEST:
+                return (
+                    "Добро пожаловать! Я бот, который помогает быстро и безопасно управлять паролями! 😊 "
+                    "Давайте создадим аккаунт, для этого нажмите на кнопку 👇"
+                )
+            case UserRole.USER:
+                return (
+                    "Добро пожаловать, {first_name} {last_name}! 😊 "
+                    "Чтобы войти в аккаунт, введите пароль ⬇️".format(**self.dump())
+                )
+            case UserRole.ADMIN:
+                return (
+                    "Добро пожаловать, супер-кот {first_name} {last_name}! 😊"
+                    "Чтобы войти в аккаунт, введите пароль ⬇️".format(**self.dump())
+                )
+            case _:
+                raise ValueError(f"Unknown user role: {self.role}")

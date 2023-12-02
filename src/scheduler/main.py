@@ -4,20 +4,20 @@ from src.config import cfg
 
 
 async def startup(ctx) -> None:
-    ctx['bot'] = Bot(token=cfg.bot.tg_token)
+    ctx["bot"] = Bot(token=cfg.bot.tg_token)
 
 
 async def shutdown(ctx) -> None:
-    await ctx['bot'].session.close()
+    await ctx["bot"].session.close()
 
 
 async def send_message(ctx, chat_id: int, text: str) -> None:
-    bot: Bot = ctx['bot']
+    bot: Bot = ctx["bot"]
     await bot.send_message(chat_id, text)
 
 
 async def delete_message(ctx, chat_id: int, message_id: int) -> None:
-    bot: Bot = ctx['bot']
+    bot: Bot = ctx["bot"]
     await bot.delete_message(chat_id, message_id)
 
 

@@ -1,18 +1,22 @@
-from typing import Callable, Any, Awaitable
+from typing import Any, Awaitable, Callable
 
 from aiogram import BaseMiddleware
-from aiogram.types import Message, CallbackQuery
+from aiogram.types import CallbackQuery, Message, TelegramObject
 
 from src.db.database import Database
 
 
 class DatabaseMd(BaseMiddleware):
     async def __call__(
-            self,
-            handler: Callable[[Message, dict[str, Any]], Awaitable[Any]],
-            event: Message | CallbackQuery,
-            data: dict[str, Any]
+        self,
+        handler: Callable[[Message | CallbackQuery, dict[str, Any]], Awaitable[Any]],
+        event: Message | CallbackQuery | TelegramObject,
+        data: dict[str, Any],
     ) -> Any:
-        async with data['pool']() as session:
-            data['db'] = Database(session)
+        if not isinstance(event, (Message, CallbackQuery)):
+            raise ValueError(
+                "Database middleware works only with messages and callback queries."
+            )
+        async with data["pool"]() as session:
+            data["db"] = Database(session)
             return await handler(event, data)
