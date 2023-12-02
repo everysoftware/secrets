@@ -22,3 +22,9 @@ Telegram.WebApp.onEvent("mainButtonClicked", function(){
 	}
 
 });
+
+let user_card = document.getElementById("user_card");
+let p = document.createElement("p");
+p.innerText = `${tg.initDataUnsafe.user.first_name}
+${tg.initDataUnsafe.user.last_name}`;
+user_card.appendChild(p);
