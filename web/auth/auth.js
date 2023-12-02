@@ -12,10 +12,10 @@ document.addEventListener("DOMContentLoaded", function() {
     passwordInput.addEventListener("input", function(e) {
         e.preventDefault();
         if (passwordInput.value) {
-            tg.MainButton.color = '#52BE80';
+            tg.MainButton.color = '#2cab37';
             tg.MainButton.enable();
         } else {
-            tg.MainButton.color = '#82E0AA';
+            tg.MainButton.color = '#52BE80';
             tg.MainButton.disable();
         }
     });
