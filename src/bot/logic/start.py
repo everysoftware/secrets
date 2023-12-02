@@ -6,7 +6,7 @@ from aiogram.types import Message, ReplyKeyboardRemove
 
 from src.bot.commands import BOT_COMMANDS_STR
 from src.bot.fsm import LoginGroup, RegisterGroup
-from src.bot.keyboards.auth import REG_KB
+from src.bot.keyboards.auth import REG_KB, AUTH_KB
 from src.bot.schemes import User as UserScheme
 from src.db import Database
 from src.db.enums import UserRole
@@ -48,7 +48,7 @@ async def start(message: types.Message, state: FSMContext, db: Database) -> Mess
             message = await message.answer(welcome, reply_markup=REG_KB)
             await state.set_state(RegisterGroup.in_lobby)
         case UserRole.USER | UserRole.ADMIN:
-            message = await message.answer(welcome, reply_markup=ReplyKeyboardRemove())
+            message = await message.answer(welcome, reply_markup=AUTH_KB)
             await state.set_state(LoginGroup.type_password)
         case _:
             raise ValueError(f"Unknown user role: {user.role}")

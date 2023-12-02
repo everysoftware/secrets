@@ -8,5 +8,4 @@ class RegisterGroup(StatesGroup):
 
 
 class LoginGroup(StatesGroup):
-    in_lobby = State()
     type_password = State()
