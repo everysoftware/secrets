@@ -14,6 +14,11 @@ document.addEventListener("DOMContentLoaded", function() {
         e.preventDefault();
         tg.MainButton.setText("Войти");
         tg.MainButton.show();
+
+        if (passwordInput.value) {
+            tg.sendData(passwordInput.value);
+            passwordInput.value = '';
+        }
     });
 
     Telegram.WebApp.onEvent("mainButtonClicked", function(){
