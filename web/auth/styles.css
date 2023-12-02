@@ -2,7 +2,6 @@ body {
     justify-content: center;
     align-items: center;
     height: 100vh;
-    /*background: linear-gradient(to right, #ff7e5f, #feb47b);*/
     font-family: Arial, sans-serif;
 }
 
@@ -17,7 +16,6 @@ body {
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
     text-align: center;
 }
-
 
 .container form {
     gap: 10px;
@@ -36,7 +34,6 @@ body {
 
 .container h1 {
     font-size: 16px;
-    /*color: #333;*/
     margin-top: 20px;
 }
 
@@ -49,5 +46,4 @@ body {
 .container {
     display: block;
     width: 100%;
-    /*margin-bottom: 30px;*/
 }

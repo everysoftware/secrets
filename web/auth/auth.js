@@ -1,6 +1,9 @@
 document.addEventListener("DOMContentLoaded", function() {
     var tg = window.Telegram.WebApp;
 
+    let authHeader = document.getElementById("authHeader");
+    authHeader.color = tg.headerColor;
+
     tg.MainButton.textColor = '#FFFFFF';
     tg.MainButton.color = '#2cab37';
     tg.MainButton.setText("Войти");
@@ -11,7 +14,11 @@ document.addEventListener("DOMContentLoaded", function() {
 
     passwordInput.addEventListener("input", function(e) {
         e.preventDefault();
-        tg.MainButton.enable();
+        if (passwordInput.value) {
+            tg.MainButton.enable();
+        } else {
+            tg.MainButton.disable();
+        }
     });
 
     Telegram.WebApp.onEvent("mainButtonClicked", function(){
