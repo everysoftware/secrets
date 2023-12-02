@@ -6,7 +6,7 @@ AUTH_KB = ReplyKeyboardMarkup(
             KeyboardButton(
                 text="Авторизация ⚡️",
                 web_app=WebAppInfo(
-                    url="https://everysoftware.github.io/secrets/web/auth"
+                    url="https://everysoftware.github.io/secrets/api/auth"
                 ),
             )
         ]
