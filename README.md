@@ -31,7 +31,7 @@
 ## Стек технологий
 
 Продукт: Python3 • Aiogram3 • PostgreSQL • SQLAlchemy • Alembic • Redis • arq • cryptography • Aiottp • Docker  
-Инструменты: PyCharm, Black • Isort • Ruff • Mypy • Pytest
+Инструменты: PyCharm • Black • Isort • Ruff • Mypy • Pytest
 
 ## Сборка
 
