@@ -2,13 +2,13 @@ body {
     justify-content: center;
     align-items: center;
     height: 100vh;
-    background: linear-gradient(to right, #ff7e5f, #feb47b);
+    /*background: linear-gradient(to right, #ff7e5f, #feb47b);*/
     font-family: Arial, sans-serif;
 }
 
 .container {
     width: 100%;
-    max-width: 300px;
+    max-width: 350px;
     margin: 0 auto;
     padding: 20px;
     box-sizing: border-box;
