@@ -20,4 +20,5 @@ Telegram.WebApp.onEvent("mainButtonClicked", function(){
 		tg.sendData(passwordInput.value);
 		passwordInput.value = '';
 	}
+
 });
