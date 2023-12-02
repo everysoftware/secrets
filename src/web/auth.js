@@ -13,7 +13,8 @@ let submitBtn = document.getElementById("submitBtn");
 
 submitBtn.addEventListener("click", function(e) {
 	e.preventDefault();
-	tg.MainButton.show();
+	tg.MainButton.setText("Войти");
+    tg.MainButton.show();
 });
 
 
