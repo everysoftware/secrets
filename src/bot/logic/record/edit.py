@@ -65,7 +65,9 @@ def make_update_handler(
                     decrypted_value = Encryption.encrypt(
                         value, user_data["master"], record.salt
                     )
-                setattr(record, field_name, decrypted_value)
+                    setattr(record, field_name, decrypted_value)
+                else:
+                    setattr(record, field_name, value)
                 await db.record.merge(record)
 
         db.session.expunge_all()
