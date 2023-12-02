@@ -30,7 +30,8 @@
 
 ## Стек технологий
 
-Python3 • Aiogram3 • PostgreSQL • SQLAlchemy 2 • Alembic • Redis • arq • cryptography • Aiottp • Docker • Flake8 • Pytest
+Продукт: Python3 • Aiogram3 • PostgreSQL • SQLAlchemy • Alembic • Redis • arq • cryptography • Aiottp • Docker  
+Инструменты: PyCharm • Black • Isort • Ruff • Mypy • Pytest
 
 ## Сборка
 
