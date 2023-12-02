@@ -2,8 +2,8 @@ version: '3.7'
 services:
   redis:
     build:
-      context: buildfiles
-      dockerfile: RedisDockerfile
+      context: docker
+      dockerfile: Redis.Dockerfile
     env_file:
       - .env
     restart: on-failure
@@ -21,8 +21,8 @@ services:
   bot:
     build:
       context: .
-      dockerfile: buildfiles/Dockerfile
-    command: /bin/bash -c "source venv/bin/activate && make migrate && python -m src.bot"
+      dockerfile: docker/Bot.Dockerfile
+    command: /bin/bash -c "source venv/bin/activate && make migrate && python -m bot"
     env_file:
       - .env
     restart: always
@@ -34,11 +34,11 @@ services:
   scheduler:
     build:
       context: .
-      dockerfile: buildfiles/Scheduler.Dockerfile
+      dockerfile: docker/Scheduler.Dockerfile
     env_file:
       - .env
     restart: always
-    command: /bin/bash -c "source venv/bin/activate && arq src.scheduler.main.WorkerSettings"
+    command: /bin/bash -c "source venv/bin/activate && arq services.scheduler.main.WorkerSettings"
     depends_on:
       - redis
 

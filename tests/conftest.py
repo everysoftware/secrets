@@ -9,9 +9,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import sessionmaker
 
 from bot.dispatcher import create_dispatcher
-from cache import Cache
-from config import cfg
-from db import async_session_factory, create_async_engine
+from services.cache import Cache
+from services.config import cfg
+from services.db import async_session_factory, create_async_engine
 from utils.alembic import alembic_config_from_url
 from utils.mocked_bot import MockedBot
 from utils.mocked_db import MockedDatabase

@@ -4,21 +4,24 @@ help:
 	@echo "  make <commands>"
 	@echo ""
 	@echo "AVAILABLE COMMANDS"
-	@echo "  run        Start bot"
-	@echo "  rd         Start bot dependencies"
-	@echo "  stop       Stop bot"
-	@echo "  test       Run tests"
-	@echo "  lint       Run ruff"
-	@echo "  format     Run black"
-	@echo "  mypy       Run mypy"
-	@echo "  isort      Run isort"
-	@echo "  check      Run all checks"
-	@echo "  logs       Show logs"
-	@echo "  freeze     Make requirements.txt"
-	@echo "  generate   Generate migration"
-	@echo "  migrate    Run migrations"
-	@echo "  upgrade    Upgrade pip"
-	@echo "  venv       Create virtual environment"
+	@echo "  run             Start"
+	@echo "  run-bot         Start bot"
+	@echo "  run-api         Start api"
+	@echo "  run-deps        Start services"
+	@echo "  run-deps-alone  Start services without bot and api"
+	@echo "  stop            Stop all"
+	@echo "  test            Run tests"
+	@echo "  enhance         Enhance code (lint, format, mypy, isort)"
+	@echo "  lint            Run ruff"
+	@echo "  format          Run black"
+	@echo "  mypy            Run mypy"
+	@echo "  isort           Run isort"
+	@echo "  logs            Show logs"
+	@echo "  freeze          Make requirements.txt"
+	@echo "  generate        Generate migration"
+	@echo "  migrate         Run migrations"
+	@echo "  upgrade         Upgrade pip"
+	@echo "  venv            Create virtual environment"
 
 .PHONY: venv
 venv:
@@ -29,18 +32,34 @@ venv:
 upgrade:
 	python.exe -m pip install --upgrade pip
 
-.PHONY: run
-run:
-	docker-compose up -d --build
+.PHONY: run-deps
+run-deps:
+	@echo "Running dependencies"
+	docker-compose up -d db redis scheduler
+
+.PHONY: run-deps-alone
+run-deps-alone:
+	@echo "Running dependencies alone"
+	@echo "Stop bot"
+	docker-compose stop bot
+	@echo "Stop api"
+	make run-deps
+
+.PHONY: run-bot
+run-bot:
+	make run-deps
+	@echo "Running bot"
+	docker-compose build bot
+	docker-compose up -d bot
+
+.PHONY: run-api
+run-api:
+	make run-deps
+	@echo "Running api"
 
 .PHONY: stop
 stop:
 	docker-compose stop
-
-.PHONY: rd
-rd:
-	docker-compose stop bot
-	docker-compose up -d db redis scheduler
 
 .PHONY: logs
 logs:
@@ -48,32 +67,31 @@ logs:
 
 .PHONY: test
 test:
-	make rd
+	make run-deps
 	pytest -s -v
 
 .PHONY: lint
 lint:
-	ruff src
+	ruff api bot services
 
 .PHONY: format
 format:
-	black src
+	black api bot services
 
 .PHONY: mypy
 mypy:
-	mypy src
+	mypy api bot services
 
 .PHONY: isort
 isort:
-	isort src
+	isort api bot services
 
-.PHONY: check
-check:
+.PHONY: enhance
+enhance:
 	make format
 	make isort
 	make lint
 	make mypy
-	make test
 
 .PHONY: freeze
 freeze:
