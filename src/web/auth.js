@@ -1,24 +1,17 @@
 document.addEventListener("DOMContentLoaded", function() {
     var tg = window.Telegram.WebApp;
 
-    // Расширяем на весь экран.
-    tg.expand();
-
     tg.MainButton.textColor = '#FFFFFF';
     tg.MainButton.color = '#2cab37';
+    tg.MainButton.setText("Войти");
+    tg.MainButton.disable();
+    tg.MainButton.show();
 
     let passwordInput = document.getElementById("password");
-    let submitBtn = document.getElementById("submitBtn");
 
-    submitBtn.addEventListener("click", function(e) {
+    passwordInput.addEventListener("input", function(e) {
         e.preventDefault();
-        tg.MainButton.setText("Войти");
-        tg.MainButton.show();
-
-        if (passwordInput.value) {
-            tg.sendData(passwordInput.value);
-            passwordInput.value = '';
-        }
+        tg.MainButton.enable();
     });
 
     Telegram.WebApp.onEvent("mainButtonClicked", function(){
