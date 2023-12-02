@@ -6,6 +6,8 @@ tg.expand();
 tg.MainButton.textColor = '#FFFFFF';
 tg.MainButton.color = '#2cab37';
 
+tg.MainButton.setText("Войти");
+
 let passwordInput = document.getElementById("password");
 let submitBtn = document.getElementById("submitBtn");
 
