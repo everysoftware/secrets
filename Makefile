@@ -7,8 +7,8 @@ help:
 	@echo "  run             Start"
 	@echo "  run-bot         Start bot"
 	@echo "  run-api         Start api"
-	@echo "  run-deps        Start services"
-	@echo "  run-deps-alone  Start services without bot and api"
+	@echo "  run-deps        Start dependencies"
+	@echo "  run-deps-alone  Start dependencies without bot and api"
 	@echo "  stop            Stop all"
 	@echo "  test            Run tests"
 	@echo "  enhance         Enhance code (lint, format, mypy, isort)"
@@ -72,19 +72,19 @@ test:
 
 .PHONY: lint
 lint:
-	ruff api bot services
+	ruff api bot cache db
 
 .PHONY: format
 format:
-	black api bot services
+	black api bot cache db
 
 .PHONY: mypy
 mypy:
-	mypy api bot services
+	mypy api bot cache db
 
 .PHONY: isort
 isort:
-	isort api bot services
+	isort api bot cache db
 
 .PHONY: enhance
 enhance:

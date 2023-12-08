@@ -9,10 +9,10 @@ from typing import Optional
 
 from alembic.config import Config
 
-from services.config import cfg
+from core.config import cfg
 
 PROJECT_PATH = Path(__file__).parent.parent.parent.resolve()
-DEFAULT_PG_URL = cfg.db.build_connection_str()
+DEFAULT_PG_URL = cfg.db.dsl
 
 
 def make_alembic_config(

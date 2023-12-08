@@ -1,7 +1,7 @@
 """Mocked Database."""
 from sqlalchemy import MetaData
 
-from services.db import Base, Database
+from app.core import Base, Database
 
 
 class MockedDatabase(Database):

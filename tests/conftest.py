@@ -8,10 +8,10 @@ from alembic.command import upgrade as alembic_upgrade
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import sessionmaker
 
-from bot.dispatcher import create_dispatcher
-from services.cache import Cache
-from services.config import cfg
-from services.db import async_session_factory, create_async_engine
+from app.bot import create_dispatcher
+from app.cache import Cache
+from core.config import cfg
+from app.core import get_async_session_maker, get_async_engine
 from utils.alembic import alembic_config_from_url
 from utils.mocked_bot import MockedBot
 from utils.mocked_db import MockedDatabase
@@ -52,7 +52,7 @@ def cache():
 
 @pytest.fixture(scope='session')
 def engine():
-    return create_async_engine(cfg.db.build_connection_str())
+    return get_async_engine(cfg.db.dsl)
 
 
 @pytest_asyncio.fixture(scope='session', autouse=True)
@@ -62,7 +62,7 @@ async def setup_db(engine):
 
 @pytest_asyncio.fixture(scope='session')
 async def pool(engine):
-    yield async_session_factory(engine)
+    yield get_async_session_maker(engine)
 
 
 @pytest_asyncio.fixture(scope='session')
@@ -80,7 +80,7 @@ async def db(session: AsyncSession):
 
 @pytest.fixture(scope='session')
 def alembic_config():
-    return alembic_config_from_url(cfg.db.build_connection_str())
+    return alembic_config_from_url(cfg.db.dsl)
 
 
 @pytest.fixture(scope='session', autouse=True)
