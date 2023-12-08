@@ -1,6 +1,6 @@
 import datetime
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 
 class CommentRead(BaseModel):
@@ -9,6 +9,8 @@ class CommentRead(BaseModel):
     text: str
     created_at: datetime.datetime
     updated_at: datetime.datetime
+
+    model_config = ConfigDict(from_attributes=True)
 
 
 class RecordRead(BaseModel):
@@ -21,9 +23,13 @@ class RecordRead(BaseModel):
     created_at: datetime.datetime
     updated_at: datetime.datetime
 
+    model_config = ConfigDict(from_attributes=True)
+
 
 class CommentCreate(BaseModel):
     text: str
+
+    model_config = ConfigDict(from_attributes=True)
 
 
 class RecordCreate(BaseModel):
@@ -33,17 +39,23 @@ class RecordCreate(BaseModel):
     url: str | None = None
     comment: CommentCreate | None = None
 
+    model_config = ConfigDict(from_attributes=True)
+
 
 class CommentUpdate(BaseModel):
     text: str | None
 
+    model_config = ConfigDict(from_attributes=True)
 
-class RecordUpdate(RecordCreate):
+
+class RecordUpdate(BaseModel):
     name: str | None
     username: str | None
     password: str | None
     url: str | None = None
     comment: CommentUpdate | None = None
+
+    model_config = ConfigDict(from_attributes=True)
 
 
 class RecordsRead(BaseModel):
@@ -51,3 +63,5 @@ class RecordsRead(BaseModel):
     total: int
     page: int
     per_page: int
+
+    model_config = ConfigDict(from_attributes=True)

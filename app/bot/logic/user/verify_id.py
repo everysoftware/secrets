@@ -3,13 +3,11 @@ from typing import Callable
 from aiogram import F, Router, types
 from aiogram.fsm.context import FSMContext
 from sqlalchemy.orm import joinedload
-
-from app.bot import VerificationGroup
-from app.bot.keyboards.service import CANCEL_KB
-from app.bot import CallbackManager
 from utils import DataVerification
-from app.core import Database
-from app.core import User
+
+from app.bot import CallbackManager, VerificationGroup
+from app.bot.keyboards.service import CANCEL_KB
+from app.core import Database, User
 
 router = Router()
 

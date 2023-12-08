@@ -1,5 +1,4 @@
 from aiogram import Bot
-
 from core.config import cfg
 
 

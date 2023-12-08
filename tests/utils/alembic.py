@@ -9,7 +9,7 @@ from typing import Optional
 
 from alembic.config import Config
 
-from core.config import cfg
+from app.core.config import cfg
 
 PROJECT_PATH = Path(__file__).parent.parent.parent.resolve()
 DEFAULT_PG_URL = cfg.db.dsl

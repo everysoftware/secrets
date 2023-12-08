@@ -1,16 +1,12 @@
 from aiogram import F, Router, types
 from aiogram.fsm.context import FSMContext
 from sqlalchemy.orm import joinedload, selectinload
+from utils import DataVerification, Encryption
 
 from app.bot import (MainGroup, ProfileMasterEditingGroup,
-                     ProfilePasswordEditingGroup)
-from app.bot.logic.user import show_user
-from app.bot.logic.user import id_verification_request
-from app.bot import TypingMd
-from app.bot import manager
-from utils import DataVerification, Encryption
-from app.core import Database
-from app.core import Credentials, User
+                     ProfilePasswordEditingGroup, TypingMd, manager)
+from app.bot.logic.user import id_verification_request, show_user
+from app.core import Credentials, Database, User
 
 router = Router()
 router.message.middleware(TypingMd())
@@ -55,7 +51,9 @@ async def update_password(
             message.from_user.id, options=[joinedload(User.credentials)]
         )
         auth_data: Credentials = user.credentials
-        auth_data.password = DataVerification.hash_with_salt(message.text, auth_data.salt)
+        auth_data.password = DataVerification.hash_with_salt(
+            message.text, auth_data.salt
+        )
         await db.credentials.merge(auth_data)
 
     await message.answer("Пароль успешно изменён ✅")
@@ -95,7 +93,9 @@ async def update_master(
             options=[joinedload(User.credentials), selectinload(User.records)],
         )
         auth_data: Credentials = user.credentials
-        auth_data.master_password = DataVerification.hash_with_salt(new_master, auth_data.salt)
+        auth_data.master_password = DataVerification.hash_with_salt(
+            new_master, auth_data.salt
+        )
         await db.credentials.merge(auth_data)
 
         for record in user.records:

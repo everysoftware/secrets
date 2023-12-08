@@ -1,12 +1,11 @@
 from aiogram import F, Router, types
 from aiogram.fsm.context import FSMContext
+from utils import DataVerification
 
 from app.bot import RegisterGroup
 from app.bot.logic.main import show_main_menu
-from utils import DataVerification
-from app.core import Database
+from app.core import Credentials, Database
 from app.core.enums import UserRole
-from app.core import Credentials
 
 router = Router()
 

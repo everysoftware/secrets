@@ -1,7 +1,7 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from .base import Repository
 from ..models import Record
+from .base import Repository
 
 
 class RecordRepo(Repository[Record]):

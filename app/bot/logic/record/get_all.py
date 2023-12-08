@@ -8,8 +8,7 @@ from sqlalchemy import func, select
 from app.bot import MainGroup, RecordGroup
 from app.bot.keyboards.record import get_storage_kb
 from app.bot.logic.main import show_main_menu
-from app.core import Database
-from app.core import Record
+from app.core import Database, Record
 
 router = Router()
 

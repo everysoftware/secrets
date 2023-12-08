@@ -32,4 +32,6 @@ class Record(Base):
         user: Mapped[User] = relationship(
             back_populates="records",
         )
-        comment: Mapped[Comment] = relationship(back_populates="record", cascade="delete")
+        comment: Mapped[Comment] = relationship(
+            back_populates="record", cascade="delete"
+        )

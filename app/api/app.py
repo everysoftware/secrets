@@ -1,4 +1,5 @@
 import os
+from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, HTTPException
 from fastapi_cache import FastAPICache
@@ -7,9 +8,18 @@ from starlette.responses import JSONResponse
 from starlette.staticfiles import StaticFiles
 
 from app.cache.adapter import get_cache
+
 from .routers import routers
 
-app = FastAPI(title="Secrets")
+
+@asynccontextmanager
+async def lifespan(_: FastAPI):
+    cache = await get_cache()
+    FastAPICache.init(RedisBackend(cache.client), prefix="fastapi-cache")
+    yield
+
+
+app = FastAPI(title="Secrets", lifespan=lifespan)
 current_dir = os.path.dirname(os.path.realpath(__file__))
 app.mount("/static", StaticFiles(directory=current_dir + "/static"), name="static")
 
@@ -28,9 +38,3 @@ async def http_exception_handler(_, exc):
 @app.get("/status")
 async def status():
     return {"message": "Hello World"}
-
-
-@app.on_event("startup")
-async def startup_event():
-    cache = await get_cache()
-    FastAPICache.init(RedisBackend(cache.client), prefix="fastapi-cache")

@@ -1,14 +1,16 @@
 from typing import AsyncGenerator, Optional
 
 from fastapi import Depends, Request
-from fastapi_users import (BaseUserManager, IntegerIDMixin, schemas, models, exceptions)
+from fastapi_users import (BaseUserManager, IntegerIDMixin, exceptions, models,
+                           schemas)
 
 from app.core.config import cfg
 from app.core.models import User
 from app.core.repositories import get_user_db
 from app.tasks import send_email
-from .email import thank_you
+
 from ..utils import SHA256
+from .email import thank_you
 
 
 class UserManager(IntegerIDMixin, BaseUserManager[User, int]):
@@ -16,10 +18,10 @@ class UserManager(IntegerIDMixin, BaseUserManager[User, int]):
     verification_token_secret = cfg.api.secret_auth
 
     async def create(
-            self,
-            user_create: schemas.UC,
-            safe: bool = False,
-            request: Optional[Request] = None,
+        self,
+        user_create: schemas.UC,
+        safe: bool = False,
+        request: Optional[Request] = None,
     ) -> models.UP:
         await self.validate_password(user_create.password, user_create)
 
@@ -51,5 +53,7 @@ class UserManager(IntegerIDMixin, BaseUserManager[User, int]):
         send_email.delay(thank_you(user))
 
 
-async def get_user_manager(user_db=Depends(get_user_db)) -> AsyncGenerator[UserManager, None]:
+async def get_user_manager(
+    user_db=Depends(get_user_db),
+) -> AsyncGenerator[UserManager, None]:
     yield UserManager(user_db)

@@ -72,19 +72,19 @@ test:
 
 .PHONY: lint
 lint:
-	ruff api bot cache db
+	ruff app
 
 .PHONY: format
 format:
-	black api bot cache db
+	black app
 
 .PHONY: mypy
 mypy:
-	mypy api bot cache db
+	mypy app
 
 .PHONY: isort
 isort:
-	isort api bot cache db
+	isort app
 
 .PHONY: enhance
 enhance:

@@ -1,11 +1,9 @@
 from aiogram import F, Router, types
 from aiogram.fsm.context import FSMContext
 
-from app.bot import MainGroup, ProfileGroup
+from app.bot import MainGroup, ProfileGroup, manager
 from app.bot.keyboards.service import YESNO_KB
-from app.bot.logic.user import show_user
-from app.bot.logic.user import id_verification_request
-from app.bot import manager
+from app.bot.logic.user import id_verification_request, show_user
 from app.core import Database
 
 router = Router()

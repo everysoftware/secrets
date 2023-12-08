@@ -5,13 +5,12 @@ from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State
 from arq import ArqRedis
 from sqlalchemy.orm import joinedload
+from utils import Encryption
 
 from app.bot import EditRecordGroup, RecordGroup
 from app.bot.keyboards.record import EDIT_RECORD_KB
 from app.bot.logic.record.get import show_record
-from utils import Encryption
-from app.core import Database
-from app.core import Comment, Record
+from app.core import Comment, Database, Record
 
 router = Router()
 

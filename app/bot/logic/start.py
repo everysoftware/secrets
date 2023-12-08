@@ -4,13 +4,12 @@ from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import default_state
 from aiogram.types import Message
 
-from app.bot.schemes import User as UserScheme
-from app.bot.commands import BOT_COMMANDS_STR
 from app.bot import LoginGroup, RegisterGroup
+from app.bot.commands import BOT_COMMANDS_STR
 from app.bot.keyboards.auth import AUTH_KB, REG_KB
-from app.core import Database
+from app.bot.schemes import User as UserScheme
+from app.core import Database, User
 from app.core.enums import UserRole
-from app.core import User
 
 from ..middlewares import DatabaseMd
 from .main import show_main_menu

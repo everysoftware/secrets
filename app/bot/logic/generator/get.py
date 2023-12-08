@@ -4,9 +4,9 @@ from html import escape
 from aiogram import F, Router, types
 from aiogram.filters import Command
 from arq import ArqRedis
+from utils import generate_password
 
 from app.bot import MainGroup, RecordGroup
-from utils import generate_password
 
 router = Router()
 

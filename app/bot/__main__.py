@@ -6,10 +6,10 @@ from aiogram import Bot, Dispatcher
 from aiogram.webhook.aiohttp_server import (SimpleRequestHandler,
                                             setup_application)
 from aiohttp import web
+from core.config import cfg
 
 from app.cache import Cache
-from core.config import cfg
-from app.core import get_async_session_maker, get_async_engine
+from app.core import get_async_engine, get_async_session_maker
 
 from .dispatcher import create_dispatcher, create_redis_storage
 

@@ -5,14 +5,11 @@ from aiogram.fsm.context import FSMContext
 from arq import ArqRedis
 from sqlalchemy.orm import joinedload
 
-from app.bot import MainGroup, RecordGroup
-from app.bot import ShowRecordData
+from app.bot import MainGroup, RecordGroup, ShowRecordData, manager
 from app.bot.keyboards.record import RECORD_KB
 from app.bot.logic import show_all_records
 from app.bot.logic.user import id_verification_request
-from app.bot import manager
-from app.core import Database
-from app.core import Record
+from app.core import Database, Record
 
 router = Router()
 

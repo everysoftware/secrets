@@ -1,17 +1,22 @@
+# Reference:
 # https://github.com/aiogram/aiogram/blob/dev-3.x/tests/conftest.py
 import asyncio
 
 import pytest
 import pytest_asyncio
+from aiogram import Dispatcher
 from aiogram.fsm.storage.memory import MemoryStorage
 from alembic.command import upgrade as alembic_upgrade
+from httpx import AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import sessionmaker
+from starlette.testclient import TestClient
 
-from app.bot import create_dispatcher
+from app.api.app import app
+# from app.bot.dispatcher import create_dispatcher
 from app.cache import Cache
-from core.config import cfg
 from app.core import get_async_session_maker, get_async_engine
+from app.core.config import cfg
 from utils.alembic import alembic_config_from_url
 from utils.mocked_bot import MockedBot
 from utils.mocked_db import MockedDatabase
@@ -32,7 +37,8 @@ def bot():
 
 @pytest_asyncio.fixture(scope='session')
 async def dispatcher(storage, cache, pool):
-    dp = create_dispatcher(storage, cache, pool)
+    # dp = create_dispatcher(storage, cache, pool)
+    dp = Dispatcher()
     await dp.emit_startup()
     try:
         yield dp
@@ -52,7 +58,7 @@ def cache():
 
 @pytest.fixture(scope='session')
 def engine():
-    return get_async_engine(cfg.db.dsl)
+    return get_async_engine(cfg.db.dsl)  # noqa
 
 
 @pytest_asyncio.fixture(scope='session', autouse=True)
@@ -66,7 +72,7 @@ async def pool(engine):
 
 
 @pytest_asyncio.fixture(scope='session')
-async def session(pool: sessionmaker) -> AsyncSession:
+async def session(pool: sessionmaker):
     async with pool() as session_:
         yield session_
 
@@ -80,9 +86,20 @@ async def db(session: AsyncSession):
 
 @pytest.fixture(scope='session')
 def alembic_config():
-    return alembic_config_from_url(cfg.db.dsl)
+    return alembic_config_from_url(cfg.db.dsl)  # noqa
 
 
 @pytest.fixture(scope='session', autouse=True)
 def run_migrations(alembic_config):
     alembic_upgrade(alembic_config, 'head')
+
+
+@pytest.fixture(scope='session')
+def client():
+    return TestClient(app)
+
+
+@pytest_asyncio.fixture(scope='session')
+async def ac():
+    async with AsyncClient(app=app, base_url="http://test") as ac:
+        yield ac

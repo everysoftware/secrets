@@ -35,11 +35,20 @@ async def two_fa_verified(request: Request, user: User = Depends(current_user)):
     token = request.cookies.get("2fa")
 
     if not token:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="2fa is required")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="2fa is required"
+        )
 
     try:
         payload = jwt.decode_jwt(token, cfg.api.secret_auth, ["fastapi-users:auth"])
     except InvalidTokenError:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Bad 2fa token")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="Bad 2fa token"
+        )
 
-    return payload['sub'] == user.id
+    if payload["sub"] != user.id:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="Bad 2fa token"
+        )
+
+    return user

@@ -1,9 +1,7 @@
 from aiogram import Router, types
 from aiogram.fsm.context import FSMContext
 
-from app.bot import MainGroup
-from app.bot import MAIN_MENU_KB
-from app.bot import DatabaseMd
+from app.bot import MAIN_MENU_KB, DatabaseMd, MainGroup
 
 router = Router()
 

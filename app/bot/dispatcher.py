@@ -5,14 +5,14 @@ from aiogram import Bot, Dispatcher
 from aiogram.fsm.storage.base import BaseStorage
 from aiogram.fsm.storage.redis import RedisStorage
 from arq import create_pool
+from core.config import cfg
 from redis.asyncio.client import Redis
 from sqlalchemy.ext.asyncio import async_sessionmaker
 
+from app.bot import manager
 from app.bot.commands import BOT_COMMANDS
 from app.bot.logic import routers
-from app.bot import manager
 from app.cache import Cache
-from core.config import cfg
 
 
 def create_redis_storage(

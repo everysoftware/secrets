@@ -70,7 +70,7 @@ class RedisConfig:
         username=username, password=password, port=port, host=host
     )
 
-    dsl: str = f'redis://{username}:{password}@{host}:{port}'
+    dsl: str = f"redis://{username}:{password}@{host}:{port}"
 
 
 @dataclass(frozen=True)

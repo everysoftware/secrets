@@ -2,12 +2,11 @@ from aiogram import F, Router, types
 from aiogram.enums import ContentType
 from aiogram.fsm.context import FSMContext
 from sqlalchemy.orm import joinedload
+from utils import DataVerification
 
 from app.bot import LoginGroup
 from app.bot.logic.main import show_main_menu
-from utils import DataVerification
-from app.core import Database
-from app.core import User
+from app.core import Database, User
 
 router = Router()
 
