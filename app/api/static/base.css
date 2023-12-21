@@ -8,13 +8,14 @@ body {
 .header {
     display: flex;
     justify-content: space-between;
-    padding: 20px;
+    align-items: center;
+    padding: 15px;
     background-color: #f8f8f8;
     box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2);
 }
 
 .header .title {
-    font-size: 1.5em;
+    font-size: 1.3em;
     color: #333;
 }
 
@@ -25,8 +26,8 @@ body {
 
 
 .header .nav button {
-    padding: 10px 20px;
-    font-size: 1em;
+    padding: 8px 16px;
+    font-size: 14px;
     color: #fff;
     background-color: #007BFF;
     border: none;

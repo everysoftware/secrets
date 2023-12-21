@@ -45,7 +45,7 @@ async def two_fa_verified(request: Request, user: User = Depends(current_user)):
     if not token:
         token = request.headers.get("2FA")
 
-        if not token.startswith("Bearer "):
+        if not token or not token.startswith("Bearer "):
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED, detail="Bad 2FA token"
             )

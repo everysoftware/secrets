@@ -29,7 +29,8 @@ def test_auth(client: TestClient):
 
 
 def test_auth_token(auth_headers: dict[str, str]):
-    ...
+    # Тестируется автоматически при использовании auth_headers
+    pass
 
 
 def test_2fa(client: TestClient, auth_headers: dict[str, str]):
@@ -45,4 +46,5 @@ def test_2fa(client: TestClient, auth_headers: dict[str, str]):
 
 
 def test_2fa_token(two_fa_headers: dict[str, str]):
-    ...
+    # Тестируется автоматически при использовании two_fa_headers
+    pass
