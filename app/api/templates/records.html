@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block head %}
+<title>Мои пароли</title>
+<link href="../static/records.css" rel="stylesheet" type="text/css">
+{% endblock %}
+
+{% block content %}
+<body>
+<h1 style="text-align: center;">Мои пароли</h1>
+{% for record in records %}
+<div class="card">
+    <h4>{{ record.name }} ({{ record.username }})</h4>
+</div>
+{% endfor %}
+<script>
+    function togglePassword(id) {
+        var password = document.getElementById(id);
+        if (password.innerHTML.startsWith("•")) {
+            password.innerHTML = password.dataset.password;
+        } else {
+            password.innerHTML = "••••••••";
+        }
+    }
+</script>
+</body>
+{% endblock %}

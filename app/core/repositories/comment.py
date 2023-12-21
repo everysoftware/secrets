@@ -1,9 +1,6 @@
-from sqlalchemy.ext.asyncio import AsyncSession
-
+from .base import SQLAlchemyRepository
 from ..models import Comment
-from .base import Repository
 
 
-class CommentRepo(Repository[Comment]):
-    def __init__(self, session: AsyncSession):
-        super().__init__(type_model=Comment, session=session)
+class CommentRepository(SQLAlchemyRepository[Comment]):
+    model = Comment

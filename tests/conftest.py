@@ -18,8 +18,8 @@ from app.cache import Cache
 from app.core import get_async_session_maker, get_async_engine
 from app.core.config import cfg
 from utils.alembic import alembic_config_from_url
+from utils.entities import TEST_USER_LOGIN, TEST_USER_2FA
 from utils.mocked_bot import MockedBot
-from utils.mocked_db import MockedDatabase
 from utils.mocked_redis import MockedRedis
 
 
@@ -103,3 +103,27 @@ def client():
 async def ac():
     async with AsyncClient(app=app, base_url="http://test") as ac:
         yield ac
+
+
+@pytest_asyncio.fixture(scope='session')
+def auth_headers(client: TestClient) -> dict[str, str]:
+    response = client.post("/auth-token/login", data=TEST_USER_LOGIN)
+    assert response.status_code == 200
+
+    json = response.json()
+    assert "access_token" in json
+    assert json["token_type"] == "bearer"
+
+    return {"Authorization": f"Bearer {response.json()['access_token']}"}
+
+
+@pytest_asyncio.fixture(scope='session')
+def two_fa_headers(client: TestClient, auth_headers: dict[str, str]) -> dict[str, str]:
+    response = client.post("/auth-token/2fa", json=TEST_USER_2FA.model_dump(), headers=auth_headers)
+    assert response.status_code == 200
+
+    json = response.json()
+    assert "access_token" in json
+    assert json["token_type"] == "bearer"
+
+    return auth_headers | {"2FA": f"Bearer {response.json()['access_token']}"}

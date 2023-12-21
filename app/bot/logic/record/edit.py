@@ -5,12 +5,12 @@ from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State
 from arq import ArqRedis
 from sqlalchemy.orm import joinedload
-from utils import Encryption
 
 from app.bot import EditRecordGroup, RecordGroup
 from app.bot.keyboards.record import EDIT_RECORD_KB
 from app.bot.logic.record.get import show_record
 from app.core import Comment, Database, Record
+from utils import Encryption
 
 router = Router()
 
@@ -30,7 +30,7 @@ async def process_callback(call: types.CallbackQuery, state: FSMContext) -> None
 
 
 def make_type_handler(
-    field_name, text: str, new_state: State
+        field_name, text: str, new_state: State
 ) -> Callable[..., Awaitable]:
     @router.callback_query(F.data == f"edit_{field_name}", RecordGroup.edit_record)
     async def type_handler(call: types.CallbackQuery, state: FSMContext) -> None:
@@ -42,14 +42,14 @@ def make_type_handler(
 
 
 def make_update_handler(
-    field_name: str,
-    *filters: Callable,
-    encrypt: bool = False,
-    callback: Callable[..., Awaitable] | None = None,
+        field_name: str,
+        *filters: Callable,
+        encrypt: bool = False,
+        callback: Callable[..., Awaitable] | None = None,
 ) -> Callable[..., Awaitable]:
     @router.message(*filters)
     async def handler(
-        message: types.Message, state: FSMContext, db: Database, rq: ArqRedis
+            message: types.Message, state: FSMContext, db: Database, rq: ArqRedis
     ) -> None:
         await message.delete()
         user_data = await state.get_data()
@@ -77,12 +77,12 @@ def make_update_handler(
 
 
 def make_handlers(
-    field_name: str,
-    text: str,
-    state: State,
-    *filters: Callable,
-    encrypt: bool = False,
-    callback: Callable[..., Awaitable] | None = None,
+        field_name: str,
+        text: str,
+        state: State,
+        *filters: Callable,
+        encrypt: bool = False,
+        callback: Callable[..., Awaitable] | None = None,
 ) -> tuple[Callable[..., Awaitable], ...]:
     return (
         make_type_handler(field_name, text, state),
@@ -124,7 +124,7 @@ make_handlers(
 
 
 async def edit_comment_callback(
-    message: types.Message, db: Database, user_data: dict[str, Any]
+        message: types.Message, db: Database, user_data: dict[str, Any]
 ) -> None:
     record = await db.record.get(
         user_data["record_id"], options=[joinedload(Record.comment)]
@@ -156,7 +156,7 @@ async def message_too_long(message: types.Message) -> None:
 
 @router.callback_query(F.data == "back", RecordGroup.edit_record)
 async def back_to_record(
-    call: types.CallbackQuery, state: FSMContext, db: Database, rq: ArqRedis
+        call: types.CallbackQuery, state: FSMContext, db: Database, rq: ArqRedis
 ) -> None:
     await show_record(call, state, db, rq)
     await call.answer()

@@ -62,6 +62,7 @@ class RecordsRead(BaseModel):
     items: list[RecordRead]
     total: int
     page: int
+    pages: int
     per_page: int
 
     model_config = ConfigDict(from_attributes=True)

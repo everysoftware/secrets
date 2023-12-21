@@ -1,22 +1,53 @@
-from sqlalchemy.ext.asyncio import AsyncSession
+from typing import Sequence
 
-from ..models import Record
-from .base import Repository
+from sqlalchemy import func, select
+from sqlalchemy.orm import joinedload
+
+from .base import SQLAlchemyRepository
+from ..models import Comment, Record
 
 
-class RecordRepo(Repository[Record]):
-    def __init__(self, session: AsyncSession):
-        super().__init__(type_model=Record, session=session)
+class RecordRepository(SQLAlchemyRepository[Record]):
+    model = Record
 
-    # @staticmethod
-    # def decrypt(record: Record, master: str) -> DecryptedRecord:
-    #     return DecryptedRecord(
-    #         id=record.id,
-    #         title=record.title,
-    #         username=Encryption.decrypt(record.username, master, record.salt),
-    #         password=Encryption.decrypt(record.password, master, record.salt),
-    #         url=record.url,
-    #         comment=record.comment.text if record.comment else None,
-    #         created_at=record.created_at,
-    #         updated_at=record.updated_at,
-    #     )
+    async def create(self, record: Record, comment: Comment) -> Record:
+        if comment is not None:
+            self.session.add(comment)
+            record.comment = comment
+
+        self.new(record)
+        await self.session.commit()
+
+        return record
+
+    async def count(self, user_id: int) -> int:
+        stmt = select(func.count(Record.id)).where(Record.user_id == user_id)
+        res = await self.session.execute(stmt)
+        count = res.scalar_one()
+
+        return count
+
+    async def paginate(
+            self, user_id: int, page: int, per_page: int
+    ) -> Sequence[Record]:
+        stmt = (
+            select(Record)
+            .where(Record.user_id == user_id)
+            .order_by(Record.name)
+            .options(joinedload(Record.comment))  # noqa E501
+        )
+        offset = (page - 1) * per_page
+        stmt = stmt.limit(per_page).offset(offset)
+        result = await self.session.execute(stmt)
+        records = result.scalars().all()
+
+        return records
+
+    async def update(self, record: Record) -> Record:
+        obj = await self.merge(record)
+        await self.session.commit()
+        return obj
+
+    async def delete(self, record: Record) -> None:
+        await self.session.delete(record)
+        await self.session.commit()

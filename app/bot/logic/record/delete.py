@@ -21,7 +21,7 @@ async def delete_record_question(call: types.CallbackQuery, state: FSMContext) -
 
 @router.callback_query(F.data == "yes", RecordGroup.delete_record)
 async def delete_record_yes(
-    call: types.CallbackQuery, state: FSMContext, db: Database
+        call: types.CallbackQuery, state: FSMContext, db: Database
 ) -> None:
     user_data = await state.get_data()
 

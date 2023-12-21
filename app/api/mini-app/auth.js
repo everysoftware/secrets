@@ -1,4 +1,4 @@
-document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener("DOMContentLoaded", function () {
     var tg = window.Telegram.WebApp;
 
     tg.MainButton.textColor = '#FFFFFF';
@@ -9,7 +9,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
     let passwordInput = document.getElementById("password");
 
-    passwordInput.addEventListener("input", function(e) {
+    passwordInput.addEventListener("input", function (e) {
         e.preventDefault();
         if (passwordInput.value) {
             tg.MainButton.color = '#2cab37';
@@ -20,7 +20,7 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     });
 
-    Telegram.WebApp.onEvent("mainButtonClicked", function(){
+    Telegram.WebApp.onEvent("mainButtonClicked", function () {
         if (passwordInput.value) {
             tg.sendData(passwordInput.value);
             passwordInput.value = '';

@@ -1,6 +1,7 @@
 import datetime
 
 from fastapi_users import schemas
+from pydantic import BaseModel, ConfigDict
 
 from app.core.enums import UserRole
 
@@ -28,3 +29,9 @@ class UserUpdate(schemas.BaseUserUpdate):
     last_name: str | None = None
     username: str | None = None
     language_code: str | None = None
+
+
+class TwoFALogin(BaseModel):
+    master_password: str
+
+    model_config = ConfigDict(from_attributes=True)

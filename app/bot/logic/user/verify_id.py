@@ -3,20 +3,20 @@ from typing import Callable
 from aiogram import F, Router, types
 from aiogram.fsm.context import FSMContext
 from sqlalchemy.orm import joinedload
-from utils import DataVerification
 
 from app.bot import CallbackManager, VerificationGroup
 from app.bot.keyboards.service import CANCEL_KB
 from app.core import Database, User
+from utils import DataVerification
 
 router = Router()
 
 
 async def id_verification_request(
-    message: types.Message,
-    state: FSMContext,
-    redirect: Callable,
-    save_master: bool = False,
+        message: types.Message,
+        state: FSMContext,
+        redirect: Callable,
+        save_master: bool = False,
 ) -> None:
     await state.update_data(last_state=await state.get_state())
     await state.update_data(redirect=hash(redirect))
@@ -40,11 +40,11 @@ async def back(call: types.CallbackQuery, state: FSMContext) -> None:
 
 @router.message(VerificationGroup.typing_master)
 async def confirm_master(
-    message: types.Message,
-    manager: CallbackManager,
-    state: FSMContext,
-    db: Database,
-    **data
+        message: types.Message,
+        manager: CallbackManager,
+        state: FSMContext,
+        db: Database,
+        **data
 ) -> None:
     await message.delete()
 

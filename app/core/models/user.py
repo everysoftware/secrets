@@ -5,8 +5,8 @@ from typing import TYPE_CHECKING
 from fastapi_users_db_sqlalchemy import SQLAlchemyBaseUserTable
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from ..enums import UserRole
 from .base import Base, created_at, int_pk, updated_at
+from ..enums import UserRole
 
 if TYPE_CHECKING:
     from .record import Record

@@ -8,9 +8,8 @@ from app.core.config import cfg
 from app.core.models import User
 from app.core.repositories import get_user_db
 from app.tasks import send_email
-
-from ..utils import SHA256
 from .email import thank_you
+from ..utils import SHA256
 
 
 class UserManager(IntegerIDMixin, BaseUserManager[User, int]):
@@ -18,10 +17,10 @@ class UserManager(IntegerIDMixin, BaseUserManager[User, int]):
     verification_token_secret = cfg.api.secret_auth
 
     async def create(
-        self,
-        user_create: schemas.UC,
-        safe: bool = False,
-        request: Optional[Request] = None,
+            self,
+            user_create: schemas.UC,
+            safe: bool = False,
+            request: Optional[Request] = None,
     ) -> models.UP:
         await self.validate_password(user_create.password, user_create)
 
@@ -54,6 +53,6 @@ class UserManager(IntegerIDMixin, BaseUserManager[User, int]):
 
 
 async def get_user_manager(
-    user_db=Depends(get_user_db),
+        user_db=Depends(get_user_db),
 ) -> AsyncGenerator[UserManager, None]:
     yield UserManager(user_db)

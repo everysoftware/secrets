@@ -1,5 +1,6 @@
 import os
 from contextlib import asynccontextmanager
+from typing import Any, Generator
 
 from fastapi import FastAPI, HTTPException
 from fastapi_cache import FastAPICache
@@ -8,12 +9,11 @@ from starlette.responses import JSONResponse
 from starlette.staticfiles import StaticFiles
 
 from app.cache.adapter import get_cache
-
 from .routers import routers
 
 
 @asynccontextmanager
-async def lifespan(_: FastAPI):
+async def lifespan(_: FastAPI) -> Generator[Any, Any, None]:
     cache = await get_cache()
     FastAPICache.init(RedisBackend(cache.client), prefix="fastapi-cache")
     yield
@@ -28,7 +28,7 @@ for router in routers:
 
 
 @app.exception_handler(HTTPException)
-async def http_exception_handler(_, exc):
+async def http_exception_handler(_, exc) -> JSONResponse:
     return JSONResponse(
         status_code=exc.status_code,
         content={"detail": exc.detail},

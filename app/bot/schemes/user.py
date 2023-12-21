@@ -1,7 +1,6 @@
 import datetime
 
 from app.core.enums import UserRole
-
 from .base import Base
 
 

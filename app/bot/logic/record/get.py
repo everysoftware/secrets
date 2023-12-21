@@ -16,7 +16,7 @@ router = Router()
 
 @router.callback_query(ShowRecordData.filter(), MainGroup.view_all_records)
 async def show_record_request(
-    call: types.CallbackQuery, callback_data: ShowRecordData, state: FSMContext
+        call: types.CallbackQuery, callback_data: ShowRecordData, state: FSMContext
 ) -> None:
     await call.message.answer(
         f"Получен запрос на просмотр пароля {callback_data.record_name} 📝"
@@ -29,10 +29,10 @@ async def show_record_request(
 
 
 async def show_record(
-    update: types.Message | types.CallbackQuery,
-    state: FSMContext,
-    db: Database,
-    rq: ArqRedis,
+        update: types.Message | types.CallbackQuery,
+        state: FSMContext,
+        db: Database,
+        rq: ArqRedis,
 ) -> None:
     user_data = await state.get_data()
 
@@ -56,14 +56,14 @@ async def show_record(
 
 @manager.callback
 async def process_callback(
-    message: types.Message, state: FSMContext, db: Database, rq: ArqRedis
+        message: types.Message, state: FSMContext, db: Database, rq: ArqRedis
 ) -> None:
     await show_record(message, state, db, rq)
 
 
 @router.callback_query(F.data == "back", RecordGroup.view_record)
 async def back_to_all_records(
-    call: types.CallbackQuery, state: FSMContext, db: Database
+        call: types.CallbackQuery, state: FSMContext, db: Database
 ) -> None:
     await state.clear()
     await show_all_records(call, state, db)

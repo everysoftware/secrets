@@ -3,8 +3,8 @@ from aiogram import Dispatcher
 from aiogram.dispatcher.event.bases import UNHANDLED
 from sqlalchemy.orm import sessionmaker
 
-from utils.tg_entities import get_update, get_message
 from utils.mocked_bot import MockedBot
+from utils.tg_entities import get_update, get_message
 
 
 @pytest.mark.asyncio

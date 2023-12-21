@@ -30,8 +30,8 @@ class AES:
 
         return f"{iv_str}:{encrypted_data_str}"
 
-    @classmethod
-    def decrypt(cls, key: str | bytes, encrypted_data: str) -> str:
+    @staticmethod
+    def decrypt(encrypted_data: str, key: str | bytes) -> str:
         if isinstance(key, str):
             key = key.encode("utf-8")
 

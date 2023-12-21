@@ -3,8 +3,9 @@ from fastapi_users import jwt
 from starlette import status
 from starlette.responses import Response
 
-from app.api.auth.base_config import auth_backend, current_user, fastapi_users
-from app.api.auth.schemes import UserCreate, UserRead, UserUpdate
+from app.api.auth.base_config import (bearer_backend, cookie_backend,
+                                      current_user, fastapi_users)
+from app.api.auth.schemes import TwoFALogin, UserCreate, UserRead, UserUpdate
 from app.api.utils import SHA256
 from app.core.config import cfg
 from app.core.models import User
@@ -17,7 +18,10 @@ router.include_router(
     tags=["auth"],
 )
 router.include_router(
-    fastapi_users.get_auth_router(auth_backend), prefix="/auth", tags=["auth"]
+    fastapi_users.get_auth_router(cookie_backend), prefix="/auth", tags=["auth"]
+)
+router.include_router(
+    fastapi_users.get_auth_router(bearer_backend), prefix="/auth-token", tags=["auth"]
 )
 router.include_router(
     fastapi_users.get_reset_password_router(), prefix="/auth", tags=["auth"]
@@ -33,7 +37,7 @@ router.include_router(
 
 
 async def create_2fa_token(user: User) -> str:
-    to_encode = {"sub": user.id, "aud": "fastapi-users:auth", "type": "2fa"}
+    to_encode = {"sub": user.id, "aud": "fastapi-users-auth", "type": "2fa"}
     encoded_jwt = jwt.generate_jwt(
         to_encode, cfg.api.secret_auth, lifetime_seconds=60 * 5
     )
@@ -42,25 +46,44 @@ async def create_2fa_token(user: User) -> str:
 
 
 @router.post(
-    "/2fa/verify",
+    "/auth/2fa",
     responses={
-        status.HTTP_401_UNAUTHORIZED: {"description": "Incorrect master password"},
+        status.HTTP_401_UNAUTHORIZED: {"description": "Bad credentials"},
     },
     tags=["auth"],
 )
-async def verify_2fa(
-    master_password: str, response: Response, user: User = Depends(current_user)
+async def auth_2fa(
+        credentials: TwoFALogin, response: Response, user: User = Depends(current_user)
 ):
-    if SHA256.verify(master_password, user.hashed_master):
+    if SHA256.verify(credentials.master_password, user.hashed_master):
         response.set_cookie(
-            key="2fa",
+            key="app-2fa",
             value=await create_2fa_token(user),
             httponly=True,
             secure=True,
             max_age=60 * 5,  # 5 minutes
         )
-        return {"detail": "2FA verified"}
+        return {"detail": "2FA passed."}
     else:
         raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED, detail="Incorrect master password"
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="Bad credentials"
+        )
+
+
+@router.post(
+    "/auth-token/2fa",
+    responses={
+        status.HTTP_401_UNAUTHORIZED: {"description": "Bad credentials"},
+    },
+    tags=["auth"],
+)
+async def auth_2fa_token(credentials: TwoFALogin, user: User = Depends(current_user)):
+    if SHA256.verify(credentials.master_password, user.hashed_master):
+        return {
+            "access_token": await create_2fa_token(user),
+            "token_type": "bearer",
+        }
+    else:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="Bad credentials"
         )

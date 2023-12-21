@@ -10,9 +10,8 @@ from app.bot.keyboards.auth import AUTH_KB, REG_KB
 from app.bot.schemes import User as UserScheme
 from app.core import Database, User
 from app.core.enums import UserRole
-
-from ..middlewares import DatabaseMd
 from .main import show_main_menu
+from ..middlewares import DatabaseMd
 
 router = Router()
 

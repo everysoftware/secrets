@@ -11,7 +11,7 @@ router = Router()
 
 
 async def show_user(
-    update: types.Message | types.CallbackQuery, state: FSMContext, db: Database
+        update: types.Message | types.CallbackQuery, state: FSMContext, db: Database
 ) -> None:
     async with db.session.begin():
         user = await db.user.get(update.from_user.id)
@@ -26,7 +26,7 @@ async def show_user(
 @router.message(RecordGroup.view_record, F.text == "Мой профиль 👨")
 @router.message(MainGroup.view_user, F.text == "Мой профиль 👨")
 async def process_message(
-    message: types.Message, state: FSMContext, db: Database
+        message: types.Message, state: FSMContext, db: Database
 ) -> None:
     await show_user(message, state, db)
 

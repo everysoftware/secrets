@@ -27,7 +27,7 @@ async def delete_account_yesno(message: types.Message, state: FSMContext) -> Non
 
 @router.callback_query(F.data == "yes", ProfileGroup.deleting_account)
 async def delete_account_yes(
-    call: types.CallbackQuery, state: FSMContext, db: Database
+        call: types.CallbackQuery, state: FSMContext, db: Database
 ) -> None:
     async with db.session.begin():
         user = await db.user.get(call.from_user.id)
@@ -44,7 +44,7 @@ async def delete_account_yes(
 
 @router.callback_query(F.data == "no", ProfileGroup.deleting_account)
 async def delete_account_no(
-    call: types.CallbackQuery, state: FSMContext, db: Database
+        call: types.CallbackQuery, state: FSMContext, db: Database
 ) -> None:
     await call.message.answer("Удаление аккаунта отменено ❌")
     await show_user(call, state, db)

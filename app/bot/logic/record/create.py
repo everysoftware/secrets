@@ -1,11 +1,11 @@
 from aiogram import F, Router, types
 from aiogram.fsm.context import FSMContext
-from utils import Encryption
 
 from app.bot import AddRecordGroup, MainGroup, RecordGroup, manager
 from app.bot.logic.main import show_main_menu
 from app.bot.logic.user import id_verification_request
 from app.core import Database, Record
+from utils import Encryption
 
 router = Router()
 

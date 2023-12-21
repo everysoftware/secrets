@@ -1,6 +1,12 @@
-from .base import Repository
-from .comment import CommentRepo
-from .record import RecordRepo
-from .user import UserRepo, get_user_db
+from .base import SQLAlchemyRepository
+from .comment import CommentRepository
+from .record import RecordRepository
+from .user import UserRepository, get_user_db
 
-__all__ = ("Repository", "UserRepo", "RecordRepo", "CommentRepo", "get_user_db")
+__all__ = (
+    "SQLAlchemyRepository",
+    "UserRepository",
+    "RecordRepository",
+    "CommentRepository",
+    "get_user_db",
+)

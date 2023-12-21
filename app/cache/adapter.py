@@ -38,7 +38,7 @@ class Cache:
         return await self.client.delete(key)
 
     async def on_startup(self) -> None:
-        asyncio.create_task(self.client.ping())
+        await asyncio.create_task(self.client.ping())
 
 
 async def get_cache() -> Cache:

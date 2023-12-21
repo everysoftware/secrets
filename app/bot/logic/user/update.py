@@ -1,12 +1,12 @@
 from aiogram import F, Router, types
 from aiogram.fsm.context import FSMContext
 from sqlalchemy.orm import joinedload, selectinload
-from utils import DataVerification, Encryption
 
 from app.bot import (MainGroup, ProfileMasterEditingGroup,
                      ProfilePasswordEditingGroup, TypingMd, manager)
 from app.bot.logic.user import id_verification_request, show_user
 from app.core import Credentials, Database, User
+from utils import DataVerification, Encryption
 
 router = Router()
 router.message.middleware(TypingMd())
@@ -22,7 +22,7 @@ async def type_old_password(call: types.CallbackQuery, state: FSMContext) -> Non
 
 @router.message(ProfilePasswordEditingGroup.typing_old_password)
 async def type_new_password(
-    message: types.Message, state: FSMContext, db: Database
+        message: types.Message, state: FSMContext, db: Database
 ) -> None:
     await message.delete()
 
@@ -32,7 +32,7 @@ async def type_new_password(
         )
 
     if DataVerification.verify(
-        message.text, user.credentials.account_password, user.credentials.salt
+            message.text, user.credentials.account_password, user.credentials.salt
     ):
         await message.answer("Пароль верный. Введите новый пароль ⬇️")
         await state.set_state(ProfilePasswordEditingGroup.typing_new_password)
@@ -42,7 +42,7 @@ async def type_new_password(
 
 @router.message(ProfilePasswordEditingGroup.typing_new_password)
 async def update_password(
-    message: types.Message, state: FSMContext, db: Database
+        message: types.Message, state: FSMContext, db: Database
 ) -> None:
     await message.delete()
 
@@ -79,7 +79,7 @@ async def type_new_master(message: types.Message, state: FSMContext) -> None:
     ProfileMasterEditingGroup.typing_new_password, flags={"chat_action": "typing"}
 )
 async def update_master(
-    message: types.Message, state: FSMContext, db: Database
+        message: types.Message, state: FSMContext, db: Database
 ) -> None:
     await message.delete()
     await message.answer("Подождите, это может занять какое-то время... ⏳")

@@ -5,7 +5,6 @@ from aiogram import Bot, Dispatcher
 from aiogram.fsm.storage.base import BaseStorage
 from aiogram.fsm.storage.redis import RedisStorage
 from arq import create_pool
-from core.config import cfg
 from redis.asyncio.client import Redis
 from sqlalchemy.ext.asyncio import async_sessionmaker
 
@@ -13,12 +12,13 @@ from app.bot import manager
 from app.bot.commands import BOT_COMMANDS
 from app.bot.logic import routers
 from app.cache import Cache
+from core.config import cfg
 
 
 def create_redis_storage(
-    redis: Redis,
-    state_ttl: int = cfg.redis.state_ttl,
-    data_ttl: int = cfg.redis.data_ttl,
+        redis: Redis,
+        state_ttl: int = cfg.redis.state_ttl,
+        data_ttl: int = cfg.redis.data_ttl,
 ) -> RedisStorage:
     return RedisStorage(redis=redis, state_ttl=state_ttl, data_ttl=data_ttl)
 
@@ -28,7 +28,7 @@ def generate_secret() -> str:
 
 
 async def on_startup(
-    bot: Bot, dispatcher: Dispatcher, secret_token: str | None = None
+        bot: Bot, dispatcher: Dispatcher, secret_token: str | None = None
 ) -> None:
     await bot.set_my_commands(BOT_COMMANDS)
     dispatcher["rq"] = await create_pool(cfg.redis.pool_settings)
@@ -46,9 +46,9 @@ async def on_shutdown(bot: Bot) -> None:
 
 
 def create_dispatcher(
-    storage: BaseStorage,
-    cache: Cache,
-    pool: async_sessionmaker,
+        storage: BaseStorage,
+        cache: Cache,
+        pool: async_sessionmaker,
 ) -> Dispatcher:
     dp = Dispatcher(storage=storage, cache=cache, pool=pool, manager=manager)
 

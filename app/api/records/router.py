@@ -1,44 +1,23 @@
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, Path
-from sqlalchemy import func, select
-from sqlalchemy.orm import joinedload
 
 from app.api.auth.base_config import current_user, two_fa_verified
-from app.api.utils import AES
-from app.core import Database, get_database
-from app.core.config import cfg
 from app.core.enums import UserRole
-from app.core.models import Comment, Record, User
-
+from app.core.models import User
+from app.core.services import RecordService
 from .schemes import RecordCreate, RecordRead, RecordsRead, RecordUpdate
+from ..dependencies import record_service
 
 router = APIRouter(prefix="/records", tags=["records"])
 
 
 @router.post("/create", response_model=RecordRead, status_code=201)
 async def create_record(
-    record: RecordCreate,
-    user: User = Depends(two_fa_verified),
-    db: Database = Depends(get_database),
+        record: RecordCreate,
+        service: RecordService = Depends(record_service),
 ):
-    obj = Record(
-        user_id=user.id,
-        name=record.name,
-        username=AES.encrypt(record.username, cfg.api.secret_encryption),
-        password=AES.encrypt(record.password, cfg.api.secret_encryption),
-        url=record.url,
-    )
-
-    if record.comment is not None:
-        comment = Comment(**record.comment.model_dump())
-        db.session.add(comment)
-        obj.comment = comment
-
-    obj = db.record.new(obj)
-    await db.session.commit()
-
-    return obj
+    return await service.create(record)
 
 
 @router.get(
@@ -48,13 +27,15 @@ async def create_record(
         404: {"description": "Record not found"},
         403: {"description": "Not enough rights"},
     },
+    dependencies=[Depends(two_fa_verified)],
 )
 async def get_record(
-    id: Annotated[int, Path(ge=1)],  # noqa E501
-    db: Database = Depends(get_database),
-    user: User = Depends(two_fa_verified),
+        id: Annotated[int, Path(ge=1)],  # noqa E501
+        user: User = Depends(current_user),
+        service: RecordService = Depends(record_service),
 ):
-    obj = await db.record.get(id, options=[joinedload(Record.comment)])  # noqa E501
+    obj = await service.get(id)
+
     if obj is None:
         raise HTTPException(status_code=404, detail="Record not found")
     if obj.user_id != user.id and user.role != UserRole.ADMIN:
@@ -63,36 +44,28 @@ async def get_record(
     return obj
 
 
-async def count_records(db: Database, user_id: int) -> int:
-    stmt = select(func.count(Record.id)).where(Record.user_id == user_id)
-    res = await db.session.execute(stmt)
-    count = res.scalar_one()
-
-    return count
+@router.get("/count")
+async def count_records(service: RecordService = Depends(record_service)):
+    return await service.count()
 
 
 @router.get("", response_model=RecordsRead)
 async def paginate_records(
-    page: Annotated[int, Path(ge=1)] = 1,
-    per_page: Annotated[int, Path(ge=1)] = 10,
-    db: Database = Depends(get_database),
-    user: User = Depends(current_user),
+        page: int = 1, per_page: int = 10, service: RecordService = Depends(record_service)
 ):
-    stmt = (
-        select(Record)
-        .where(Record.user_id == user.id)
-        .order_by(Record.name)
-        .options(joinedload(Record.comment))  # noqa E501
-    )
-    offset = (page - 1) * per_page
-    stmt = stmt.limit(per_page).offset(offset)
-    result = await db.session.execute(stmt)
-    records = result.scalars().all()
+    total = await service.count()
+    pages = total // per_page + (total % per_page > 0)
+
+    if page > pages:
+        raise HTTPException(status_code=404, detail="Page not found")
+
+    records = await service.paginate(page, per_page)
 
     return RecordsRead(
         items=records,
-        total=await count_records(db, user.id),
+        total=total,
         page=page,
+        pages=pages,
         per_page=per_page,
     )
 
@@ -104,38 +77,22 @@ async def paginate_records(
         404: {"description": "Record not found"},
         403: {"description": "Not enough rights"},
     },
+    dependencies=[Depends(two_fa_verified)],
 )
 async def patch_record(
-    id: Annotated[int, Path(ge=1)],  # noqa E501
-    record: RecordUpdate,
-    db: Database = Depends(get_database),
-    user: User = Depends(current_user),
+        id: Annotated[int, Path(ge=1)],  # noqa E501
+        record: RecordUpdate,
+        user: User = Depends(two_fa_verified),
+        service: RecordService = Depends(record_service),
 ):
-    obj = await db.record.get(id, options=[joinedload(Record.comment)])  # noqa E501
+    obj = await service.get(id)
+
     if obj is None:
         raise HTTPException(status_code=404, detail="Record not found")
     if obj.user_id != user.id and user.role != UserRole.ADMIN:
         raise HTTPException(status_code=403, detail="Not enough rights")
 
-    if record.name is not None:
-        obj.name = record.name
-    if record.username is not None:
-        obj.username = AES.encrypt(record.username, cfg.api.secret_encryption)
-    if record.password is not None:
-        obj.password = AES.encrypt(record.password, cfg.api.secret_encryption)
-    if record.url is not None:
-        obj.url = record.url
-
-    if record.comment is not None and record.comment.text is not None:
-        if obj.comment is None:
-            obj.comment = db.comment.new(Comment(**record.comment.model_dump()))
-            await db.record.merge(obj)
-        else:
-            comment = obj.comment
-            comment.text = record.comment.text
-            await db.comment.merge(comment)
-
-    await db.session.commit()
+    await service.update(id, record)
 
     return obj
 
@@ -148,16 +105,17 @@ async def patch_record(
     },
 )
 async def delete_record(
-    id: Annotated[int, Path(ge=1)],  # noqa E501
-    db: Database = Depends(get_database),
-    user: User = Depends(current_user),
+        id: Annotated[int, Path(ge=1)],  # noqa E501
+        user: User = Depends(two_fa_verified),
+        service: RecordService = Depends(record_service),
 ):
-    obj = await db.record.get(id, options=[joinedload(Record.comment)])  # noqa E501
+    obj = await service.get(id)
+
     if obj is None:
         raise HTTPException(status_code=404, detail="Record not found")
     if obj.user_id != user.id and user.role != UserRole.ADMIN:
         raise HTTPException(status_code=403, detail="Not enough rights")
-    await db.record.delete(obj)
-    await db.session.commit()
+
+    await service.delete(id)
 
     return {"detail": "Record deleted successfully"}

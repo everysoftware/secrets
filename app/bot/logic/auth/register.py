@@ -1,11 +1,11 @@
 from aiogram import F, Router, types
 from aiogram.fsm.context import FSMContext
-from utils import DataVerification
 
 from app.bot import RegisterGroup
 from app.bot.logic.main import show_main_menu
 from app.core import Credentials, Database
 from app.core.enums import UserRole
+from utils import DataVerification
 
 router = Router()
 
@@ -30,7 +30,7 @@ async def type_master(message: types.Message, state: FSMContext) -> None:
 
 @router.message(RegisterGroup.type_master)
 async def register_user(
-    message: types.Message, state: FSMContext, db: Database
+        message: types.Message, state: FSMContext, db: Database
 ) -> None:
     await message.delete()
     user_data = await state.get_data()

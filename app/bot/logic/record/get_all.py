@@ -16,7 +16,7 @@ PER_PAGE = 10
 
 
 async def paginate_records(
-    db: Database, user_id: int, page: int = 1
+        db: Database, user_id: int, page: int = 1
 ) -> Sequence[Record]:
     """Функция пагинации для модели Record."""
     # Создайте запрос с помощью select
@@ -38,7 +38,7 @@ async def paginate_records(
 
 
 async def show_all_records(
-    update: types.Message | types.CallbackQuery, state: FSMContext, db: Database
+        update: types.Message | types.CallbackQuery, state: FSMContext, db: Database
 ) -> None:
     async with db.session.begin():
         stmt = select(func.count(Record.id)).where(
@@ -66,7 +66,7 @@ async def show_all_records(
 @router.message(RecordGroup.view_record, F.text == "Мои пароли 📁")
 @router.message(MainGroup.view_user, F.text == "Мои пароли 📁")
 async def process_message(
-    message: types.Message, state: FSMContext, db: Database
+        message: types.Message, state: FSMContext, db: Database
 ) -> None:
     await show_all_records(message, state, db)
 
