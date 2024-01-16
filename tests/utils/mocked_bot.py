@@ -22,9 +22,7 @@ class MockedSession(BaseSession):
         self.requests: deque[Request] = deque()
         self.closed = True
 
-    def add_result(
-            self, response: Response[TelegramType]
-    ) -> Response[TelegramType]:
+    def add_result(self, response: Response[TelegramType]) -> Response[TelegramType]:
         """Mocked method for add result.
 
         :param response: Response to add
@@ -48,10 +46,10 @@ class MockedSession(BaseSession):
         self.closed = True
 
     async def make_request(
-            self,
-            bot: Bot,
-            method: TelegramMethod[TelegramType],
-            timeout: int | None = UNSET,
+        self,
+        bot: Bot,
+        method: TelegramMethod[TelegramType],
+        timeout: int | None = UNSET,
     ) -> TelegramType:
         """Build request and get response.
 
@@ -77,15 +75,15 @@ class MockedSession(BaseSession):
         return method
 
     async def stream_content(
-            self,
-            url: str,
-            headers: dict[str, Any] | None = None,
-            timeout: int = 30,
-            chunk_size: int = 65536,
-            raise_for_status: bool = True,
+        self,
+        url: str,
+        headers: dict[str, Any] | None = None,
+        timeout: int = 30,
+        chunk_size: int = 65536,
+        raise_for_status: bool = True,
     ) -> AsyncGenerator[bytes, None]:
         """Just mocked and shutted down method."""
-        yield b''
+        yield b""
 
 
 class MockedBot(Bot):
@@ -97,26 +95,26 @@ class MockedBot(Bot):
     def __init__(self, **kwargs):
         """Mocked session init."""
         super().__init__(
-            kwargs.pop('token', '42:TEST'), session=MockedSession(), **kwargs
+            kwargs.pop("token", "42:TEST"), session=MockedSession(), **kwargs
         )
         self._me = User(
             id=self.id,
             is_bot=True,
-            first_name='FirstName',
-            last_name='LastName',
-            username='tbot',
-            language_code='uk-UA',
+            first_name="FirstName",
+            last_name="LastName",
+            username="tbot",
+            language_code="uk-UA",
         )
 
     def add_result_for(
-            self,
-            method: type[TelegramMethod[TelegramType]],
-            ok: bool,
-            result: TelegramType = None,
-            description: str | None = None,
-            error_code: int = 200,
-            migrate_to_chat_id: int | None = None,
-            retry_after: int | None = None,
+        self,
+        method: type[TelegramMethod[TelegramType]],
+        ok: bool,
+        result: TelegramType = None,
+        description: str | None = None,
+        error_code: int = 200,
+        migrate_to_chat_id: int | None = None,
+        retry_after: int | None = None,
     ) -> Response[TelegramType]:
         """The mocked add_result_for function adds a result to the session.
 

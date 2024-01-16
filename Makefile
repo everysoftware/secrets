@@ -4,18 +4,13 @@ help:
 	@echo "  make <commands>"
 	@echo ""
 	@echo "AVAILABLE COMMANDS"
-	@echo "  run             Start"
-	@echo "  run-bot         Start bot"
-	@echo "  run-api         Start api"
+	@echo "  run             Start backend"
 	@echo "  run-deps        Start dependencies"
-	@echo "  run-deps-alone  Start dependencies without bot and api"
-	@echo "  stop            Stop all"
+	@echo "  run-deps-alone  Start dependencies with stopping backend"
+	@echo "  stop            Stop backend"
 	@echo "  test            Run tests"
-	@echo "  enhance         Enhance code (lint, format, mypy, isort)"
-	@echo "  lint            Run ruff"
-	@echo "  format          Run black"
-	@echo "  mypy            Run mypy"
-	@echo "  isort           Run isort"
+	@echo "  lint            Lint project"
+	@echo "  format          Format project"
 	@echo "  logs            Show logs"
 	@echo "  freeze          Make requirements.txt"
 	@echo "  generate        Generate migration"
@@ -26,7 +21,7 @@ help:
 .PHONY: venv
 venv:
 	python -m venv venv
-	pip install -r requirements.txt
+	@echo "Requirements installation is not implemented"
 
 .PHONY: upgrade
 upgrade:
@@ -34,28 +29,21 @@ upgrade:
 
 .PHONY: run-deps
 run-deps:
-	@echo "Running dependencies"
-	docker-compose up -d db redis scheduler
+	docker-compose up -d db redis
 
 .PHONY: run-deps-alone
 run-deps-alone:
-	@echo "Running dependencies alone"
-	@echo "Stop bot"
-	docker-compose stop bot
 	@echo "Stop api"
+	make stop
+	@echo "Running dependencies"
 	make run-deps
 
-.PHONY: run-bot
-run-bot:
+.PHONY: run
+run:
+	@echo "Run dependencies"
 	make run-deps
-	@echo "Running bot"
-	docker-compose build bot
-	docker-compose up -d bot
-
-.PHONY: run-api
-run-api:
-	make run-deps
-	@echo "Running api"
+	@echo "Run api"
+	@echo "Not implemented"
 
 .PHONY: stop
 stop:
@@ -63,35 +51,27 @@ stop:
 
 .PHONY: logs
 logs:
-	docker logs secrets-bot-1
+	@echo "Not implemented"
 
 .PHONY: test
 test:
+	@echo "Lint project"
+	make lint
+	@echo "Run mypy"
+	make mypy
+	@echo "Run dependencies"
 	make run-deps
+	@echo "Run tests"
 	pytest -s -v
 
 .PHONY: lint
 lint:
-	ruff app
+	ruff backend tests
+	mypy backend tests
 
 .PHONY: format
 format:
-	black app
-
-.PHONY: mypy
-mypy:
-	mypy app
-
-.PHONY: isort
-isort:
-	isort app
-
-.PHONY: enhance
-enhance:
-	make format
-	make isort
-	make lint
-	make mypy
+	ruff format backend tests
 
 .PHONY: freeze
 freeze:
@@ -99,8 +79,12 @@ freeze:
 
 .PHONY: generate
 generate:
+	make run-deps-alone
+	$Env:PYTHONPATH = "backend"
 	alembic revision --autogenerate
 
 .PHONY: migrate
 migrate:
+	make run-deps-alone
+	$Env:PYTHONPATH = "backend"
 	alembic upgrade head

@@ -2,13 +2,10 @@ import string
 
 import pytest
 
-from api.utils import generate_password
+from application.utils import generate_password
 
 
-@pytest.mark.parametrize(
-    "length",
-    [16, 32, 0, 1]
-)
+@pytest.mark.parametrize("length", [16, 32, 0, 1])
 def test_generate_password(length: int):
     special = "!\"#$%&'()<>*+,-./:;=?@[\\]^_`{|}~"
     password = generate_password(length, special)

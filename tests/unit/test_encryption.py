@@ -1,7 +1,7 @@
 import pytest
 
-from api.utils import AES
-from utils.utils_entities import TEXT_DATA
+from application.utils import AES
+from entities.unit import TEXT_DATA
 
 
 def test_generate_key():
@@ -11,10 +11,7 @@ def test_generate_key():
     assert len(key) == 32
 
 
-@pytest.mark.parametrize(
-    "data",
-    TEXT_DATA
-)
+@pytest.mark.parametrize("data", TEXT_DATA)
 def test_encrypt_decrypt(data):
     key = AES.generate_key()
     encrypted_data = AES.encrypt(data, key)
@@ -23,10 +20,7 @@ def test_encrypt_decrypt(data):
     assert decrypted_data == data
 
 
-@pytest.mark.parametrize(
-    "data",
-    TEXT_DATA
-)
+@pytest.mark.parametrize("data", TEXT_DATA)
 def test_decrypt_with_wrong_key(data):
     key1 = AES.generate_key()
     key2 = AES.generate_key()
