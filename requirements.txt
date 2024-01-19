@@ -11,6 +11,7 @@ asyncpg==0.28.0
 attrs==23.1.0
 bcrypt==4.1.1
 billiard==4.2.0
+black==23.12.1
 celery==5.3.6
 certifi==2023.7.22
 cffi==1.16.0
@@ -26,12 +27,14 @@ email-validator==2.0.0.post2
 Faker==21.0.0
 fastapi==0.104.1
 fastapi-cache2==0.2.1
+fastapi-pagination==0.12.14
 fastapi-users==12.1.2
 fastapi-users-db-sqlalchemy==6.0.1
 flake8==6.1.0
 flower==2.0.1
 frozenlist==1.4.0
 greenlet==3.0.0
+gunicorn==21.2.0
 h11==0.14.0
 hiredis==2.2.3
 httpcore==1.0.2

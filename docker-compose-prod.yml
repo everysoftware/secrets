@@ -1,0 +1,27 @@
+version: '3.7'
+
+services:
+  app:
+    build:
+      context: .
+    env_file:
+      - .env
+    ports:
+      - "8000:8000"
+    restart: on-failure
+    depends_on:
+      - db
+      - redis
+
+  celery:
+    build:
+      context: .
+    command: celery -A backend.infrastructure.tasks.app worker --loglevel=info
+    env_file:
+      - .env
+    restart: on-failure
+    depends_on:
+      - redis
+
+volumes:
+  pgdata:

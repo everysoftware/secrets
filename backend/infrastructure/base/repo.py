@@ -4,7 +4,7 @@ from typing import TypeVar
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from domain.base import BaseRepository
-from domain.base.repo import ReadScheme, UpdateScheme, CreateScheme
+from domain.base.repo import Schema, CreateScheme, UpdateScheme
 from .models import Base
 
 SAModel = TypeVar("SAModel", bound=Base)
@@ -17,37 +17,41 @@ class SARepository(BaseRepository, abc.ABC):
     def __init__(self, session: AsyncSession):
         self.session = session
 
-    async def _create(self, model: SAModel) -> SAModel:
-        self.session.add(model)
-        return model
-
-    async def _get(self, ident: int) -> SAModel | None:
+    async def get_model(self, ident: int) -> SAModel | None:
         return await self.session.get(entity=self.model, ident=ident)
 
-    async def _merge(self, model: SAModel) -> SAModel:
+    async def update_model(self, model: SAModel) -> SAModel:
         return await self.session.merge(model)
 
-    async def _delete(self, model: SAModel) -> None:
-        return await self.session.delete(model)
-
-    async def create(self, schema: CreateScheme) -> ReadScheme:
-        model = self.model(**schema.model_dump())
-        model = await self._create(model)
+    async def create(self, scheme: CreateScheme) -> Schema:
+        model = self.model(**scheme.model_dump())
+        self.session.add(model)
         await self.session.commit()
-        return self.read_scheme.model_validate(model)
 
-    async def get(self, ident: int) -> ReadScheme | None:
-        model = await self._get(ident)
-        return self.read_scheme.model_validate(model) if model else None
+        return self.scheme.model_validate(model)
 
-    async def update(self, ident: int, scheme: UpdateScheme) -> ReadScheme:
-        model = await self._get(ident)
-        model = await self._merge(model)
+    async def get(self, ident: int) -> Schema | None:
+        model = await self.get_model(ident)
+
+        return self.scheme.model_validate(model) if model else None
+
+    async def update(self, ident: int, scheme: UpdateScheme) -> Schema:
+        model = await self.get_model(ident)
+
+        for key in scheme.model_fields.keys():
+            if getattr(scheme, key) is not None:
+                setattr(model, key, getattr(scheme, key))
+
+        model = await self.session.merge(model)
+
         await self.session.commit()
-        return self.read_scheme.model_validate(model)
 
-    async def delete(self, ident: int) -> ReadScheme:
-        model = await self._get(ident)
-        await self._delete(model)
+        return self.scheme.model_validate(model)
+
+    async def delete(self, ident: int) -> Schema:
+        model = await self.get_model(ident)
+        await self.session.delete(model)
+
         await self.session.commit()
-        return self.read_scheme.model_validate(model)
+
+        return self.scheme.model_validate(model)

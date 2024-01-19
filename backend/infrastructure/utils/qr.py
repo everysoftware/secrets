@@ -5,7 +5,6 @@ import qrcode
 
 
 def generate_qr_code(uri: str) -> str:
-    print(uri)
     img = qrcode.make(uri)
     buffered = BytesIO()
     img.save(buffered)

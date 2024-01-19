@@ -1,30 +1,30 @@
 import abc
 from typing import TypeVar
 
-from pydantic import BaseModel
+from .schemes import BaseScheme
 
-ReadScheme = TypeVar("ReadScheme", bound=BaseModel)
-CreateScheme = TypeVar("CreateScheme", bound=BaseModel)
-UpdateScheme = TypeVar("UpdateScheme", bound=BaseModel)
+Schema = TypeVar("Schema", bound=BaseScheme)
+CreateScheme = TypeVar("CreateScheme", bound=BaseScheme)
+UpdateScheme = TypeVar("UpdateScheme", bound=BaseScheme)
 
 
 class BaseRepository(abc.ABC):
-    read_scheme: type[BaseModel]
-    create_scheme: type[BaseModel]
-    update_scheme: type[BaseModel]
+    scheme: type[BaseScheme]
+    create_scheme: type[BaseScheme]
+    update_scheme: type[BaseScheme]
 
     @abc.abstractmethod
-    async def create(self, schema: CreateScheme) -> ReadScheme:
+    async def create(self, schema: CreateScheme) -> Schema:
         pass
 
     @abc.abstractmethod
-    async def get(self, ident: int) -> ReadScheme | None:
+    async def get(self, ident: int) -> Schema | None:
         ...
 
     @abc.abstractmethod
-    async def update(self, ident: int, schema: UpdateScheme) -> ReadScheme:
+    async def update(self, ident: int, schema: UpdateScheme) -> Schema:
         ...
 
     @abc.abstractmethod
-    async def delete(self, ident: int) -> ReadScheme:
+    async def delete(self, ident: int) -> Schema:
         ...

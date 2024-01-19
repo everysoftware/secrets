@@ -13,7 +13,7 @@ class AESEncryption(BaseEncryption):
         return base64.b64encode(os.urandom(32)).decode("utf-8")
 
     def encrypt(self, data: str, key: str) -> str:
-        key = base64.b64decode("utf-8")
+        key = base64.b64decode(key)
 
         iv = os.urandom(16)
         cipher = Cipher(algorithms.AES(key), modes.CBC(iv), backend=default_backend())

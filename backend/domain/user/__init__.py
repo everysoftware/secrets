@@ -1,4 +1,4 @@
 from .repo import BaseUserRepository
-from .schemes import UserRead, UserCreate, UserUpdate
+from .schemes import UserScheme, UserCreate, UserUpdate
 
-__all__ = ["BaseUserRepository", "UserRead", "UserCreate", "UserUpdate"]
+__all__ = ["BaseUserRepository", "UserScheme", "UserCreate", "UserUpdate"]

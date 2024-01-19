@@ -1,12 +1,19 @@
 from .generator import BasePasswordGenerator
 from .repo import BasePasswordRepository
-from .schemes import PasswordCreate, PasswordRead, PasswordUpdate, PasswordItem
+from .schemes import (
+    PasswordCreate,
+    PasswordScheme,
+    PasswordUpdate,
+    PasswordItem,
+    PasswordSettings,
+)
 
 __all__ = [
     "BasePasswordRepository",
     "PasswordCreate",
-    "PasswordRead",
+    "PasswordScheme",
     "PasswordUpdate",
     "PasswordItem",
     "BasePasswordGenerator",
+    "PasswordSettings",
 ]

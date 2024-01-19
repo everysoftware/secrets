@@ -25,7 +25,7 @@ class DomainSettings(BaseSettings):
     environment: Environment
     product_name: str
 
-    model_config = SettingsConfigDict(env_prefix="domain_")
+    model_config = SettingsConfigDict(env_prefix="", extra="allow")
 
 
 domain_settings = DomainSettings()

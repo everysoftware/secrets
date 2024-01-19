@@ -1,23 +1,31 @@
 version: '3.7'
+
 services:
+  db:
+    image: postgres:15-alpine
+    env_file:
+      - .env
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    restart: on-failure
+    expose:
+      - "5432"
+
   redis:
     build:
       context: docker
       dockerfile: Redis.Dockerfile
     env_file:
       - .env
+    environment:
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
     restart: on-failure
-    ports:
-      - "6379:6379"
-  db:
-    image: postgres:15-alpine
-    env_file:
-      - .env
-    volumes:
-      - pgdata:/var/lib/postgresql/data
-    restart: on-failure
-    ports:
-      - "5435:5432"
+    expose:
+      - "6379"
+
 volumes:
   pgdata:
-  pgadmin-data:

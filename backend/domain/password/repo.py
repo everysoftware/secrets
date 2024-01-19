@@ -3,7 +3,7 @@ import abc
 from domain.base import Page, Params
 from domain.base.repo import BaseRepository
 from domain.password.schemes import (
-    PasswordRead,
+    PasswordScheme,
     PasswordCreate,
     PasswordUpdate,
     PasswordItem,
@@ -11,7 +11,7 @@ from domain.password.schemes import (
 
 
 class BasePasswordRepository(BaseRepository, abc.ABC):
-    read_scheme = PasswordRead
+    scheme = PasswordScheme
     create_scheme = PasswordCreate
     update_scheme = PasswordUpdate
 

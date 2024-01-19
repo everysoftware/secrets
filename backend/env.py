@@ -1,9 +1,14 @@
+import os
 import pathlib
 
 from dotenv import load_dotenv
 
 
 def setup_env() -> None:
+    if os.getenv("ENV_LOADED"):
+        print("Skipping environment variables loading")
+        return
+
     path = pathlib.Path(__file__).parent.parent
 
     env_files = [".env.dev", ".env"]

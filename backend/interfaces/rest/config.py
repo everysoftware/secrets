@@ -22,8 +22,6 @@ class AuthSettings(BaseSettings):
 
 class RESTSettings(BaseSettings):
     version: str = "1"
-    host: str
-    port: int
 
     auth: AuthSettings = AuthSettings()
     cors: CORSSettings = CORSSettings()
@@ -33,9 +31,7 @@ class RESTSettings(BaseSettings):
         configs = {"title": f"{domain_settings.product_name} API"}
 
         if domain_settings.environment.is_deployed:
-            configs["root_path"] = f"/v{domain_settings.api.version}"
-
-        if not domain_settings.environment.is_debug:
+            configs["root_path"] = f"/v{rest_settings.version}"
             configs["openapi_url"] = None  # скрываем доки
 
         return configs

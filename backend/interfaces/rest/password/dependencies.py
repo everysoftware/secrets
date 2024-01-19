@@ -1,7 +1,7 @@
 from fastapi import Depends
 
 from application.password import PasswordService
-from domain.password import PasswordRead
+from domain.password import PasswordScheme
 from infrastructure import User
 from interfaces.rest.auth.dependencies import verified_user
 from interfaces.rest.dependencies import password_service
@@ -13,7 +13,7 @@ async def valid_password(
     item_id: int,
     user: User = Depends(verified_user),
     service: PasswordService = Depends(password_service),
-) -> PasswordRead:
+) -> PasswordScheme:
     password = await service.get(item_id)
 
     if not password:

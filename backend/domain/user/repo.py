@@ -1,14 +1,16 @@
 import abc
 
 from domain.base.repo import BaseRepository
-from domain.user.schemes import UserRead, UserCreate, UserUpdate
+from domain.user.schemes import UserScheme, UserCreate, UserUpdate
 
 
 class BaseUserRepository(BaseRepository, abc.ABC):
-    read_scheme = UserRead
+    scheme = UserScheme
     create_scheme = UserCreate
     update_scheme = UserUpdate
 
-    @abc.abstractmethod
-    def enable_two_fa(self, user: UserRead) -> str:
+    async def enable_2fa(self) -> UserScheme:
+        ...
+
+    async def update_otp_secret(self, secret: str) -> UserScheme:
         ...
