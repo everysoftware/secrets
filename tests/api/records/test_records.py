@@ -3,7 +3,7 @@ from httpx import AsyncClient
 
 from schemes.record import RecordRead, RecordPage, RecordUpdate, RecordCreate
 from application.utils import AES
-from config import cfg
+from common.settings import cfg
 from entities.records import (
     TOTAL_RECORDS,
     TEST_RECORDS,

@@ -1,9 +1,9 @@
 from celery import Celery
 
-from infrastructure.config import infrastructure_settings
+from common.settings import settings
 
 app = Celery(
     main="tasks",
-    broker=infrastructure_settings.redis.dsn,
-    backend=infrastructure_settings.redis.dsn,
+    broker=settings.infrastructure.redis.dsn,
+    backend=settings.infrastructure.redis.dsn,
 )

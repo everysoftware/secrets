@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 
 from __main__ import app
 from schemes.user import UserRead, UserCreate
-from config import cfg
+from common.settings import cfg
 from domain.enums import UserRole
 from entities.auth import get_user_create, get_login_data, get_2fa_data
 from application.utils import alembic_config_from_url

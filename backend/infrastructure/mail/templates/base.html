@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>Secrets</title>
+</head>
+<body>
+<div style="font-family: Arial, sans-serif; color: #333;">
+    <p style="color: #48a999;">Здравствуйте, {{ user.first_name }} {{ user.last_name }}!</p>
+    <div class="main-content" id="content">
+        {% block content %}{% endblock %}
+    </div>
+    <p style="color: #48a999;">С уважением,</p>
+    <p style="color: #48a999;">Команда Secrets</p>
+</div>
+</body>

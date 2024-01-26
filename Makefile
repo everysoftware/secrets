@@ -1,7 +1,7 @@
 SOURCEPATH = backend
 TESTPATH = tests
-APP = backend.interfaces.rest.app:app
-API_HOST = 0.0.0.0
+APP = backend.interface.app:app
+API_HOST = localhost
 API_PORT = 8000
 CELERY_APP = backend.infrastructure.tasks.app
 

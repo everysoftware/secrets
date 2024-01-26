@@ -4,22 +4,22 @@ from email.mime.text import MIMEText
 
 from jinja2 import Environment, FileSystemLoader
 
-from domain.mail.templates import BaseMailTemplates
-from domain.user import UserScheme
-from infrastructure.config import infrastructure_settings
+from domain.interfaces import IMailTemplates
+from domain.schemes import UserScheme
+from common.settings import settings
 
 
 def base_message(subject: str, user: UserScheme) -> Message:
     msg = MIMEMultipart("alternative")
-    msg["From"] = infrastructure_settings.smtp.username
+    msg["From"] = settings.infrastructure.smtp.username
     msg["To"] = user.email
     msg["Subject"] = subject
 
     return msg
 
 
-class MailTemplates(BaseMailTemplates):
-    env = Environment(loader=FileSystemLoader("backend/domain/mail/templates"))
+class MailTemplates(IMailTemplates):
+    env = Environment(loader=FileSystemLoader("backend/infrastructure/mail/templates"))
 
     def render(self, template: str, subject: str, user: UserScheme, **kwargs) -> str:
         msg = base_message(subject, user)

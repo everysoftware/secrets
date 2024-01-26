@@ -1,15 +1,15 @@
 import smtplib
 from email.message import Message
 
-from infrastructure.config import infrastructure_settings
+from common.settings import settings
 
 
 def smtp_session() -> smtplib.SMTP_SSL:
     server = smtplib.SMTP_SSL(
-        infrastructure_settings.smtp.host, infrastructure_settings.smtp.port
+        settings.infrastructure.smtp.host, settings.infrastructure.smtp.port
     )
     server.login(
-        infrastructure_settings.smtp.username, infrastructure_settings.smtp.password
+        settings.infrastructure.smtp.username, settings.infrastructure.smtp.password
     )
     return server
 

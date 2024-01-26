@@ -1,3 +1,3 @@
-from .env import setup_env
+from common.env import setup_env
 
 setup_env()
