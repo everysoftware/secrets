@@ -8,7 +8,7 @@ WORKDIR /app
 # Установите переменные окружения
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
-ENV PYTHONPATH /app/backend
+ENV PYTHONPATH /app/src
 ENV ENVLOADED 1
 
 # Установите зависимости

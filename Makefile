@@ -1,9 +1,9 @@
-SOURCEPATH = backend
+SOURCEPATH = src
 TESTPATH = tests
-APP = backend.interface.app:app
+APP = src.interfaces.app:app
 API_HOST = localhost
 API_PORT = 8000
-CELERY_APP = backend.infrastructure.tasks.app
+CELERY_APP = src.infrastructure.tasks.app
 
 .PHONY: help
 help:
