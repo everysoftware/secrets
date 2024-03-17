@@ -1,12 +1,12 @@
-from .base import Base, created_at, int_pk, updated_at
-from .password import Password
-from .user import User
+from .base import BaseOrm, created_at, int_pk, updated_at
+from .password import PasswordOrm
+from .user import UserOrm
 
 __all__ = [
-    "Base",
+    "BaseOrm",
     "created_at",
     "int_pk",
     "updated_at",
-    "Password",
-    "User",
+    "PasswordOrm",
+    "UserOrm",
 ]

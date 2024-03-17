@@ -1,8 +1,9 @@
+from .base import MBase
 from .client import send_email_message
-from .templates import MailTemplates, mail_templates
+from .templates import MWelcome
 
 __all__ = [
     "send_email_message",
-    "MailTemplates",
-    "mail_templates",
+    "MBase",
+    "MWelcome",
 ]

@@ -5,7 +5,7 @@ from fastapi_pagination import Page as BasePage, Params as BaseParams
 from pydantic import ConfigDict, BaseModel, Field
 
 
-class BaseScheme(BaseModel):
+class SBase(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
@@ -17,9 +17,9 @@ updated_at_field = Annotated[
 ]
 
 
-class Page(BasePage):
+class SPage(BasePage):
     pass
 
 
-class Params(BaseParams):
+class SParams(BaseParams):
     pass

@@ -1,9 +1,8 @@
-SOURCEPATH = src
-TESTPATH = tests
-APP = src.interfaces.app:app
+SOURCE_PATH = src
+TEST_PATH = tests
+APP = src.main:app
 API_HOST = localhost
 API_PORT = 8000
-CELERY_APP = src.infrastructure.tasks.app
 
 .PHONY: help
 help:
@@ -11,13 +10,12 @@ help:
 	@echo "  make <commands>"
 	@echo ""
 	@echo "AVAILABLE COMMANDS"
-	@echo "  run             Start api"
+	@echo "  run-dev         Start api in development mode"
 	@echo "  run-prod        Start api in production mode"
 	@echo "  run-deps        Start dependencies"
 	@echo "  test            Run tests"
 	@echo "  lint            Lint project"
 	@echo "  format          Format project"
-	@echo "  logs            Show logs"
 	@echo "  freeze          Make requirements.txt"
 	@echo "  generate        Generate migration"
 	@echo "  migrate         Run migrations"
@@ -33,41 +31,29 @@ PHONY: pip
 pip:
 	python -m pip install --upgrade pip
 
-PHONY: celery
-celery:
-	set PYTHONPATH=$(SOURCEPATH) && celery -A $(CELERY_APP) worker --loglevel=info --pool=solo
-
-PHONY: flower
-flower:
-	set PYTHONPATH=$(SOURCEPATH) && celery -A $(CELERY_APP) flower
-
 .PHONY: run-deps
 run-deps:
 	docker-compose up -d
 
-PHONY: run
-run:
+PHONY: run-dev
+run-dev:
 	@echo "Run dependencies"
 	make run-deps
 	@echo "Run api"
-	set PYTHONPATH=$(SOURCEPATH) && uvicorn $(APP) --host $(API_HOST) --port $(API_PORT) --reload
+	uvicorn $(APP) --host $(API_HOST) --port $(API_PORT) --reload
 
 PHONY: run-prod
 run-prod:
 	docker-compose -f docker-compose.yml -f docker-compose-prod.yml up --build
 
-PHONY: logs
-logs:
-	@echo "Not implemented"
-
 PHONY: lint
 lint:
-	ruff --fix $(SOURCEPATH) $(TESTPATH)
-	mypy $(SOURCEPATH) $(TESTPATH)
+	ruff --fix $(SOURCE_PATH) $(TEST_PATH)
+	mypy $(SOURCE_PATH) $(TEST_PATH)
 
 PHONY: format
 format:
-	black $(SOURCEPATH) $(TESTPATH)
+	black $(SOURCE_PATH) $(TEST_PATH)
 
 PHONY: test
 test:
@@ -87,9 +73,9 @@ freeze:
 PHONY: generate
 generate:
 	make run-deps
-	set PYTHONPATH=$(SOURCEPATH) && alembic revision --autogenerate
+	alembic revision --autogenerate
 
 PHONY: migrate
 migrate:
 	make run-deps
-	set PYTHONPATH=$(SOURCEPATH) && alembic upgrade head
+	alembic upgrade head

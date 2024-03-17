@@ -1,6 +1,7 @@
 from .auth import AuthService
 from .base import Service
 from .password import PasswordService
+from .security import SecurityService
 from .user import UserService
 
 __all__ = [
@@ -8,4 +9,5 @@ __all__ = [
     "UserService",
     "PasswordService",
     "Service",
+    "SecurityService",
 ]

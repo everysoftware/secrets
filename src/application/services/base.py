@@ -1,9 +1,7 @@
-from abc import ABC
-
-from infrastructure.utils import UnitOfWork
+from src.infrastructure.db import UnitOfWork
 
 
-class Service(ABC):
+class Service:
     uow: UnitOfWork
 
     def __init__(self, uow: UnitOfWork):

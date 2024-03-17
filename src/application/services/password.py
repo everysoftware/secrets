@@ -1,106 +1,83 @@
-from common.settings import settings
-from domain.schemes.base import (
-    Page,
-    Params,
+from src.infrastructure.db import UnitOfWork
+from src.infrastructure.models import PasswordOrm
+from src.domain.schemes import (
+    SPassword,
+    SUser,
+    SPasswordEncrypted,
+    SPasswordCreate,
+    SPasswordUpdate,
+    SPasswordItem,
+    SPage,
+    SParams,
 )
-from domain.schemes.entities import (
-    PasswordScheme,
-    UserScheme,
-)
-from domain.schemes.transfer import (
-    PasswordCreate,
-    PasswordItem,
-    PasswordSettings,
-    PasswordUpdate,
-    EncryptedPassword,
-)
-from infrastructure.models import Password
-from infrastructure.utils import password_generator, aes
 from .base import Service
+from .security import SecurityService
 
 
 class PasswordService(Service):
-    async def create(self, user: UserScheme, scheme: PasswordCreate) -> PasswordScheme:
-        model = Password(**scheme.model_dump())
+    security: SecurityService
 
+    def __init__(self, uow: UnitOfWork, security: SecurityService):
+        super().__init__(uow)
+        self.security = security
+
+    async def create(self, user: SUser, scheme: SPasswordCreate) -> SPassword:
+        """Create a new password for the user."""
+        encrypted = self.security.encrypt_password_create(scheme)
+        model = PasswordOrm(**encrypted.model_dump())
         model.user_id = user.id
-        model.username = aes.encrypt(
-            scheme.username, settings.infrastructure.encryption.secret
-        )
-        model.password = aes.encrypt(
-            scheme.password, settings.infrastructure.encryption.secret
-        )
 
         async with self.uow:
             await self.uow.passwords.create(model)
 
         return await self.get(model.id)
 
-    async def get(self, ident: int) -> PasswordScheme | None:
+    async def get(self, ident: int) -> SPassword | None:
+        """Get a password by its id."""
         async with self.uow:
             model = await self.uow.passwords.get(ident)
 
         if model is None:
             return None
 
-        encrypted_scheme = EncryptedPassword.model_validate(model)
+        scheme = SPasswordEncrypted.model_validate(model)
+        decrypted = self.security.decrypt_password(scheme)
 
-        dump = encrypted_scheme.model_dump()
-        dump["username"] = aes.decrypt(
-            encrypted_scheme.username, settings.infrastructure.encryption.secret
-        )
-        dump["password"] = aes.decrypt(
-            encrypted_scheme.password, settings.infrastructure.encryption.secret
-        )
-
-        scheme = PasswordScheme(**dump)
-
-        return scheme
+        return decrypted
 
     async def search(
-        self, user: UserScheme, params: Params, query: str | None = None
-    ) -> Page[PasswordItem]:
-        where = [Password.user_id == user.id]
+        self, user: SUser, params: SParams, query: str | None = None
+    ) -> SPage[SPasswordItem]:
+        """Search for passwords by user."""
+        where = [PasswordOrm.user_id == user.id]
+
         if query is not None:
-            where.append(Password.name.ilike(f"%{query}%"))
+            where.append(PasswordOrm.title.ilike(f"%{query}%"))
 
         async with self.uow:
             return await self.uow.passwords.search(
                 params,
                 where=where,
-                order_by=[Password.name.asc()],
+                order_by=[PasswordOrm.title.asc()],
             )
 
     async def update(
-        self, scheme: PasswordScheme, update_scheme: PasswordUpdate
-    ) -> PasswordScheme:
+        self, scheme: SPassword, update_scheme: SPasswordUpdate
+    ) -> SPassword:
+        """Update a password."""
         async with self.uow:
             model = await self.uow.passwords.get(scheme.id)
 
-            for name, value in update_scheme.model_dump(
-                exclude_unset=True, exclude={"username", "password"}
-            ).items():
+            encrypted = self.security.encrypt_password_update(update_scheme)
+            for name, value in encrypted.model_dump(exclude_unset=True).items():
                 setattr(model, name, value)
-
-            if update_scheme.username is not None:
-                model.username = aes.encrypt(
-                    update_scheme.username, settings.infrastructure.encryption.secret
-                )
-
-            if update_scheme.password is not None:
-                model.password = aes.encrypt(
-                    update_scheme.password, settings.infrastructure.encryption.secret
-                )
 
             await self.uow.passwords.update(model)
 
         return await self.get(model.id)
 
-    async def delete(self, scheme: PasswordScheme) -> None:
+    async def delete(self, scheme: SPassword) -> None:
+        """Delete a password."""
         async with self.uow:
             model = await self.uow.passwords.get(scheme.id)
             await self.uow.passwords.delete(model)
-
-    @staticmethod
-    async def generate(password_settings: PasswordSettings) -> str:
-        return password_generator.generate(password_settings)

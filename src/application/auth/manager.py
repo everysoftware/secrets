@@ -1,34 +1,19 @@
-from typing import AsyncGenerator
-
-from fastapi import Depends, Request
+from fastapi import Request
 from fastapi_users import BaseUserManager, IntegerIDMixin
-from fastapi_users_db_sqlalchemy import SQLAlchemyUserDatabase
-from sqlalchemy.ext.asyncio import AsyncSession
 
-from common.log import log
-from common.settings import settings
-from domain.schemes.entities import UserScheme
-from infrastructure.database import async_session
-from infrastructure.mail import mail_templates
-from infrastructure.models import User
-from infrastructure.tasks import send_email
+from src.domain.schemes import SUser
+from src.infrastructure.config import log, settings
+from src.infrastructure.mail import MWelcome, send_email_message
+from src.application.auth.dependencies import UserOrm
 
 
-class UserManager(IntegerIDMixin, BaseUserManager[User, int]):
-    reset_password_token_secret = settings.auth.secret
-    verification_token_secret = settings.auth.secret
+class UserManager(IntegerIDMixin, BaseUserManager[UserOrm, int]):
+    reset_password_token_secret = settings.app.auth_secret
+    verification_token_secret = settings.app.auth_secret
 
-    async def on_after_register(self, user: User, request: Request | None = None):
+    async def on_after_register(
+        self, user: UserOrm, request: Request | None = None
+    ) -> None:
         log.info(f"User {user.email} (#{user.id}) has registered")
 
-        send_email.delay(mail_templates.welcome(UserScheme.model_validate(user)))
-
-
-async def get_user_db(session: AsyncSession = Depends(async_session)):
-    yield SQLAlchemyUserDatabase(session, User)
-
-
-async def get_user_manager(
-    user_db=Depends(get_user_db),
-) -> AsyncGenerator[UserManager, None]:
-    yield UserManager(user_db)
+        send_email_message(MWelcome(user=SUser.model_validate(user)).render())

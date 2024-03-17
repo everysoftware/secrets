@@ -1,19 +1,17 @@
 import smtplib
 from email.message import Message
 
-from common.settings import settings
+from src.infrastructure.config import settings
 
 
 def smtp_session() -> smtplib.SMTP_SSL:
-    server = smtplib.SMTP_SSL(
-        settings.infrastructure.smtp.host, settings.infrastructure.smtp.port
-    )
-    server.login(
-        settings.infrastructure.smtp.username, settings.infrastructure.smtp.password
-    )
+    """Создание сессии SMTP."""
+    server = smtplib.SMTP_SSL(settings.smtp.host, settings.smtp.port)
+    server.login(settings.smtp.username, settings.smtp.password)
     return server
 
 
 def send_email_message(message: Message) -> None:
+    """Отправка сообщения."""
     with smtp_session() as server:
         server.send_message(message)

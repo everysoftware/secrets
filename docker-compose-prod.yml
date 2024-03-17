@@ -13,15 +13,5 @@ services:
       - db
       - redis
 
-  celery:
-    build:
-      context: .
-    command: celery -A backend.infrastructure.tasks.app worker --loglevel=info
-    env_file:
-      - .env
-    restart: on-failure
-    depends_on:
-      - redis
-
 volumes:
   pgdata:

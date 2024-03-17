@@ -1,7 +1,6 @@
-from domain.repositories import IUserRepository
-from infrastructure.models import User
+from src.infrastructure.models import UserOrm
 from .base import SARepository
 
 
-class UserRepository(IUserRepository, SARepository[User]):
-    model = User
+class UserRepository(SARepository[UserOrm]):
+    model = UserOrm
