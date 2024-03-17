@@ -18,7 +18,8 @@ class LoggerSettings(BaseSettings):
     @field_validator("path")
     def validate_log_config(cls, v: str) -> str:
         if not os.path.exists(v):
-            raise ValueError(f"Log path {v} does not exist")
+            os.makedirs(v)
+
         return v
 
     model_config = SettingsConfigDict(env_prefix="log_")
@@ -37,21 +38,24 @@ log_config = {
 
 def stdout_filter(record: loguru.Record) -> bool:
     level: loguru.RecordLevel = record["level"]
+
     return level.name == "INFO" or level.no <= 25
 
 
 def stderr_filter(record: loguru.Record) -> bool:
     level: loguru.RecordLevel = record["level"]
+
     return level.name == "ERROR" or level.no >= 30
 
 
 def setup_stdout() -> None:
     log_file = os.path.join(logger_settings.path, logger_settings.stdout_filename)
+
     loguru.logger.add(
         log_file,
+        **log_config,
         level="INFO",
         filter=stdout_filter,
-        **log_config,
         backtrace=False,
         diagnose=False,
     )
@@ -59,13 +63,14 @@ def setup_stdout() -> None:
 
 def setup_stderr() -> None:
     log_file = os.path.join(logger_settings.path, logger_settings.stderr_filename)
+
     loguru.logger.add(
         log_file,
         level="ERROR",
         filter=stderr_filter,
-        **log_config,
         backtrace=True,
         diagnose=True,
+        **log_config,
     )
 
 
