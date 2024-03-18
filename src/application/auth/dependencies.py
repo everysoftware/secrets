@@ -40,7 +40,7 @@ fastapi_users = FastAPIUsers[UserOrm, int](
 current_user = fastapi_users.current_user()
 
 
-async def check_disabled_second_factor(user: UserOrm = Depends(current_user)) -> None:
+async def check_disabled_2fa(user: UserOrm = Depends(current_user)) -> None:
     """Check if second factor is disabled."""
     if user.two_factor:
         raise SecondFactorAlreadyEnabled()
@@ -51,13 +51,16 @@ async def check_otp(
     user: UserOrm = Depends(current_user),
 ) -> UserOrm:
     """Check OTP."""
+    if user.otp_secret is None:
+        raise ValueError("OTP secret is not set.")
+
     if not validate_otp(login.otp, user.otp_secret):
         raise WrongOTP()
 
     return user
 
 
-async def login_two_factor(
+async def process_2fa(
     user: UserOrm = Depends(check_otp),
     strategy: JWTStrategy = Depends(get_jwt_2factor_strategy),
 ) -> Response:
@@ -68,10 +71,11 @@ async def login_two_factor(
 async def get_token(request: Request) -> str | None:
     """Get token from request."""
     for transport in transports:
-        token = await transport.scheme(request)
+        if callable(transport.scheme):
+            token = await transport.scheme(request)
 
-        if token:
-            return token
+            if token:
+                return token
 
     return None
 
@@ -83,12 +87,12 @@ async def get_current_user(
     strategy: JWTStrategy = Depends(get_jwt_2factor_strategy),
 ) -> SUser:
     """Get current user."""
-    user = SUser.model_validate(user)
+    user_scheme = SUser.model_validate(user)
 
     if not user.two_factor:
-        return user
+        return user_scheme
 
     if not await strategy.read_token(token, user_manager):
         raise SecondFactorRequired()
 
-    return user
+    return user_scheme

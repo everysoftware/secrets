@@ -4,16 +4,15 @@ from src.api.exceptions import PasswordNotFound, NotEnoughRights
 from src.application.auth import get_current_user
 from src.application.dependencies import get_password_service
 from src.application.services import PasswordService
-from src.domain.schemes import SPassword
-from src.infrastructure.models import UserOrm
+from src.domain.schemes import SPassword, SUser
 
 
 async def valid_password(
     item_id: int,
-    user: UserOrm = Depends(get_current_user),
+    user: SUser = Depends(get_current_user),
     service: PasswordService = Depends(get_password_service),
 ) -> SPassword:
-    password = await service.get(item_id)
+    password = await service.get_or_none(item_id)
 
     if password is None:
         raise PasswordNotFound()

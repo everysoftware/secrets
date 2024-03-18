@@ -1,7 +1,7 @@
 import string
 from typing import Annotated
 
-from fastapi_users import schemas, models
+from fastapi_users import schemas
 from pydantic import Field, EmailStr, field_validator
 
 from .base import created_at_field, updated_at_field, SBase
@@ -24,7 +24,7 @@ password_field = Annotated[
 
 
 class SUser(schemas.BaseUser[int], SBase):
-    id: models.ID
+    id: int
     email: EmailStr
     hashed_password: str = Field(exclude=True)
     first_name: first_name_field

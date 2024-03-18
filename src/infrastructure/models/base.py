@@ -28,3 +28,6 @@ class BaseOrm(DeclarativeBase):
     __abstract__ = True
     type_annotation_map = {int: BigInteger}
     metadata = metadata
+
+    def get_or_raise(self, key: str):
+        return getattr(self, key)

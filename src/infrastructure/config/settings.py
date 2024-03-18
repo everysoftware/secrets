@@ -1,6 +1,5 @@
 from typing import Any, Literal
 
-from pydantic import PostgresDsn, RedisDsn
 from pydantic_settings import SettingsConfigDict, BaseSettings
 from sqlalchemy import URL
 
@@ -14,7 +13,7 @@ class DatabaseSettings(BaseSettings):
     password: str
 
     @property
-    def dsn(self) -> PostgresDsn:
+    def dsn(self) -> str:
         return URL.create(
             drivername=self.driver_name,
             database=self.db,
@@ -38,7 +37,7 @@ class RedisSettings(BaseSettings):
     ttl_data: int | None = None
 
     @property
-    def dsn(self) -> RedisDsn:
+    def dsn(self) -> str:
         return f"redis://{self.username}:{self.password}@{self.host}:{self.port}/{self.database}"
 
     model_config = SettingsConfigDict(extra="allow", env_prefix="redis_")
@@ -86,7 +85,7 @@ class Settings:
     app: AppSettings
 
     def __init__(self) -> None:
-        self.db = DatabaseSettings()
-        self.redis = RedisSettings()
-        self.smtp = SMTPSettings()
-        self.app = AppSettings()
+        self.db = DatabaseSettings()  # type: ignore[call-arg]
+        self.redis = RedisSettings()  # type: ignore[call-arg]
+        self.smtp = SMTPSettings()  # type: ignore[call-arg]
+        self.app = AppSettings()  # type: ignore[call-arg]

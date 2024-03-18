@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from fastapi_users.models import ID
 from fastapi_users_db_sqlalchemy import SQLAlchemyBaseUserTable
 from sqlalchemy import String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -31,12 +30,6 @@ class UserOrm(SQLAlchemyBaseUserTable[int], BaseOrm):
     updated_at: Mapped[updated_at]
 
     if TYPE_CHECKING:
-        id: ID
-        email: str
-        hashed_password: str
-        is_active: bool
-        is_superuser: bool
-        is_verified: bool
         passwords: list[PasswordOrm]
     else:
         passwords: Mapped[list[PasswordOrm]] = relationship(back_populates="user")

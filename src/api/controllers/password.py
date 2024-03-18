@@ -17,7 +17,9 @@ from src.domain.schemes import (
 router = APIRouter(prefix="/passwords", tags=["passwords"])
 
 
-@router.post("", status_code=status.HTTP_201_CREATED)
+@router.post(
+    "", status_code=status.HTTP_201_CREATED, description="Create a new password"
+)
 async def create_password(
     password: SPasswordCreate,
     user: SUser = Depends(get_current_user),
@@ -29,6 +31,7 @@ async def create_password(
 @router.get(
     "/{item_id}",
     status_code=status.HTTP_200_OK,
+    description="Get a password by id",
 )
 async def get_password(
     password: SPassword = Depends(valid_password),
@@ -39,6 +42,7 @@ async def get_password(
 @router.patch(
     "/{item_id}",
     status_code=status.HTTP_200_OK,
+    description="Update a password",
 )
 async def patch_password(
     update_password: SPasswordUpdate,
@@ -51,15 +55,16 @@ async def patch_password(
 @router.delete(
     "/{item_id}",
     status_code=status.HTTP_204_NO_CONTENT,
+    description="Delete a password",
 )
 async def delete_password(
     password: SPassword = Depends(valid_password),
     service: PasswordService = Depends(get_password_service),
-):
-    await service.delete(password)
+) -> None:
+    return await service.delete(password)
 
 
-@router.get("", status_code=status.HTTP_200_OK)
+@router.get("", status_code=status.HTTP_200_OK, description="Search for passwords")
 async def search_password(
     query: str | None = None,
     params: SParams = Depends(),

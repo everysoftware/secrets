@@ -2,9 +2,9 @@ from .config import backends, transports, cookie_backend
 from .dependencies import (
     fastapi_users,
     get_current_user,
-    check_disabled_second_factor,
+    check_disabled_2fa,
     check_otp,
-    login_two_factor,
+    process_2fa,
 )
 from .exceptions import WrongOTP, SecondFactorAlreadyEnabled, SecondFactorRequired
 from .manager import UserManager
@@ -27,7 +27,7 @@ __all__ = [
     "SecondFactorRequired",
     "fastapi_users",
     "get_current_user",
-    "check_disabled_second_factor",
+    "check_disabled_2fa",
     "check_otp",
-    "login_two_factor",
+    "process_2fa",
 ]

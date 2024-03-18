@@ -1,5 +1,3 @@
-from src.infrastructure.db import UnitOfWork
-from src.infrastructure.models import PasswordOrm
 from src.domain.schemes import (
     SPassword,
     SUser,
@@ -10,6 +8,9 @@ from src.domain.schemes import (
     SPage,
     SParams,
 )
+from src.infrastructure.db import UnitOfWork
+from src.infrastructure.models import PasswordOrm
+from src.infrastructure.repositories import EntityNotFound
 from .base import Service
 from .security import SecurityService
 
@@ -32,13 +33,27 @@ class PasswordService(Service):
 
         return await self.get(model.id)
 
-    async def get(self, ident: int) -> SPassword | None:
-        """Get a password by its id."""
+    async def get_or_none(self, ident: int) -> SPassword | None:
+        """Get a password by its id. Return `None` if not found."""
         async with self.uow:
-            model = await self.uow.passwords.get(ident)
+            model = await self.uow.passwords.get_or_none(ident)
 
         if model is None:
             return None
+
+        scheme = SPasswordEncrypted.model_validate(model)
+        decrypted = self.security.decrypt_password(scheme)
+
+        return decrypted
+
+    async def get(self, ident: int) -> SPassword:
+        """Get a password by its id. Raise `EntityNotFound` if not found."""
+
+        async with self.uow:
+            try:
+                model = await self.uow.passwords.get(ident)
+            except EntityNotFound:
+                raise
 
         scheme = SPasswordEncrypted.model_validate(model)
         decrypted = self.security.decrypt_password(scheme)

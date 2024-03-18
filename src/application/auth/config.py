@@ -1,8 +1,11 @@
+from typing import Sequence
+
 from fastapi_users.authentication import (
     BearerTransport,
     CookieTransport,
     JWTStrategy,
     AuthenticationBackend,
+    Transport,
 )
 
 from src.infrastructure.config import settings
@@ -15,7 +18,7 @@ cookie_transport = CookieTransport(
 # For testing purposes, we must have a bearer authentication
 bearer_transport = BearerTransport("fill_me")
 
-transports = [cookie_transport, bearer_transport]
+transports: Sequence[Transport] = [cookie_transport, bearer_transport]
 
 
 def get_jwt_strategy() -> JWTStrategy:

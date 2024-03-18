@@ -19,8 +19,11 @@ class AuthService(Service):
             return SUser.model_validate(model)
 
     async def connect_two_factor(self, user: SUser) -> SQRCode:
-        """Connect user to Google Authenticator."""
-        user = await self._reset_otp_secret(SUser.model_validate(user))
+        """Connect user to authenticator app."""
+        user = await self._reset_otp_secret(user)
+
+        if user.otp_secret is None:
+            raise ValueError("OTP secret is not set.")
 
         uri = generate_uri(user.otp_secret, user.email)
         qr_code = generate_qr_code(uri)

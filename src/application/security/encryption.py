@@ -17,14 +17,11 @@ def generate_aes_key() -> str:
     return base64.b64encode(os.urandom(KEY_SIZE)).decode(ENCODING)
 
 
-def encrypt_aes(data: str | None, key: str) -> str | None:
-    if data is None:
-        return None
-
-    key = base64.b64decode(key)
+def encrypt_aes(data: str, key: str) -> str:
+    key_bytes = base64.b64decode(key)
     iv = os.urandom(IV_SIZE)
 
-    cipher = Cipher(algorithms.AES(key), modes.CBC(iv), backend=default_backend())
+    cipher = Cipher(algorithms.AES(key_bytes), modes.CBC(iv), backend=default_backend())
     encryptor = cipher.encryptor()
 
     context = padding.PKCS7(CONTEXT_BLOCK_SIZE).padder()
@@ -39,16 +36,13 @@ def encrypt_aes(data: str | None, key: str) -> str | None:
     return result
 
 
-def decrypt_aes(encrypted_data: str | None, key: str) -> str | None:
-    if encrypted_data is None:
-        return None
-
-    key = base64.b64decode(key)
+def decrypt_aes(encrypted_data: str, key: str) -> str:
+    key_str = base64.b64decode(key)
     iv_str, encrypted_data_str = encrypted_data.split(SEPARATOR)
     iv = base64.b64decode(iv_str)
     encrypted_bytes = base64.b64decode(encrypted_data_str)
 
-    cipher = Cipher(algorithms.AES(key), modes.CBC(iv), backend=default_backend())
+    cipher = Cipher(algorithms.AES(key_str), modes.CBC(iv), backend=default_backend())
     decryptor = cipher.decryptor()
     decrypted_bytes = decryptor.update(encrypted_bytes) + decryptor.finalize()
 

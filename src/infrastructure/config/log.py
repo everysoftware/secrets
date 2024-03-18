@@ -27,14 +27,6 @@ class LoggerSettings(BaseSettings):
 
 logger_settings = LoggerSettings()
 
-log_config = {
-    "rotation": logger_settings.rotation,
-    "retention": logger_settings.retention,
-    "compression": logger_settings.compression,
-    # Логи добавляются в очередь перед записью, чтобы избежать блокировки ввода-вывода.
-    "enqueue": True,
-}
-
 
 def stdout_filter(record: loguru.Record) -> bool:
     level: loguru.RecordLevel = record["level"]
@@ -53,11 +45,14 @@ def setup_stdout() -> None:
 
     loguru.logger.add(
         log_file,
-        **log_config,
         level="INFO",
         filter=stdout_filter,
         backtrace=False,
         diagnose=False,
+        rotation=logger_settings.rotation,
+        retention=logger_settings.retention,
+        compression=logger_settings.compression,
+        enqueue=True,
     )
 
 
@@ -70,7 +65,10 @@ def setup_stderr() -> None:
         filter=stderr_filter,
         backtrace=True,
         diagnose=True,
-        **log_config,
+        rotation=logger_settings.rotation,
+        retention=logger_settings.retention,
+        compression=logger_settings.compression,
+        enqueue=True,
     )
 
 
