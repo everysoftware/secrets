@@ -19,7 +19,7 @@ class UserOrm(SQLAlchemyBaseUserTable[int], BaseOrm):
     email: Mapped[str] = mapped_column(String(length=320), unique=True, index=True)
     hashed_password: Mapped[str] = mapped_column(String(length=1024))
     first_name: Mapped[str]
-    last_name: Mapped[str]
+    last_name: Mapped[str | None]
     two_factor: Mapped[bool] = mapped_column(default=False)
     otp_secret: Mapped[str | None]
     is_active: Mapped[bool] = mapped_column(default=True)

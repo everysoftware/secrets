@@ -44,7 +44,11 @@ run-dev:
 
 PHONY: run-prod
 run-prod:
-	docker-compose -f docker-compose.yml -f docker-compose-prod.yml up --build
+	docker-compose -f docker-compose.yml -f docker-compose-prod.yml up -d --build
+
+PHONY: stop-prod
+stop-prod:
+	docker-compose -f docker-compose.yml -f docker-compose-prod.yml stop
 
 PHONY: lint
 lint:

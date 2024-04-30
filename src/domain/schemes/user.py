@@ -7,9 +7,11 @@ from pydantic import Field, EmailStr, field_validator
 from .base import created_at_field, updated_at_field, SBase
 
 first_name_field = Annotated[str, Field(min_length=1, max_length=32, examples=["John"])]
-last_name_field = Annotated[str, Field(min_length=1, max_length=32, examples=["Doe"])]
+last_name_field = Annotated[
+    str | None, Field(min_length=1, max_length=32, examples=["Doe"])
+]
 otp_secret_field = Annotated[
-    str | None, Field(None, min_length=32, max_length=32, exclude=True)
+    str | None, Field(min_length=32, max_length=32, exclude=True)
 ]
 password_field = Annotated[
     str,
@@ -28,9 +30,9 @@ class SUser(schemas.BaseUser[int], SBase):
     email: EmailStr
     hashed_password: str = Field(exclude=True)
     first_name: first_name_field
-    last_name: last_name_field
+    last_name: last_name_field = None
     two_factor: bool = False
-    otp_secret: otp_secret_field
+    otp_secret: otp_secret_field = None
     is_active: bool = True
     is_superuser: bool = False
     is_verified: bool = False
@@ -40,9 +42,9 @@ class SUser(schemas.BaseUser[int], SBase):
 
 class SUserCreate(schemas.BaseUserCreate):
     first_name: first_name_field
-    last_name: last_name_field
     email: EmailStr
     password: password_field
+    last_name: last_name_field = None
 
     @field_validator("password")
     def validate_password(cls, password):

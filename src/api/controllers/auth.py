@@ -26,7 +26,7 @@ router.include_router(fastapi_users.get_auth_router(cookie_backend))
     status_code=status.HTTP_200_OK,
     dependencies=[Depends(check_disabled_2fa)],
     description=(
-        "Returns a QR code to connect authenticator app, e.g. Google Authenticator."
+        "QR code to connect authenticator app, e.g. Google Authenticator."
         "This endpoint updates the user's secret key and resets the two-factor authentication."
     ),
 )
