@@ -1,10 +1,8 @@
 from typing import TypeVar, Generic, Sequence, Protocol
 
-from fastapi_pagination.ext.sqlalchemy import paginate
-from sqlalchemy import select, func, UnaryExpression, ColumnElement
+from sqlalchemy import select, func, ColumnElement, BinaryExpression
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.domain.schemes import SParams, SPage, SPasswordItem
 from src.infrastructure.models import BaseOrm
 
 SAModel = TypeVar("SAModel", bound=BaseOrm)
@@ -64,15 +62,22 @@ class SARepository(Repository, Generic[SAModel]):
 
         return count
 
-    async def search(
+    async def get_many(
         self,
-        params: SParams,
         *,
-        where: Sequence[ColumnElement[bool]] = (),
-        order_by: Sequence[UnaryExpression] = (),
-    ) -> SPage[SPasswordItem]:
-        """Search models in the database."""
-        stmt = select(self.model).where(*where).order_by(*order_by)
-        page = await paginate(self.session, stmt, params)
+        where: Sequence[BinaryExpression[bool] | ColumnElement[bool]] = (),
+        order_by: Sequence[ColumnElement[bool]] = (),
+        limit: int = 10,
+        offset: int = 0,
+    ) -> list[SAModel]:
+        """Get many models in the database."""
+        stmt = (
+            select(self.model)
+            .where(*where)
+            .order_by(*order_by)
+            .limit(limit)
+            .offset(offset)
+        )
+        res = await self.session.execute(stmt)
 
-        return page
+        return list(res.scalars().all())

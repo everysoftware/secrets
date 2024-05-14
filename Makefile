@@ -46,6 +46,10 @@ PHONY: run-prod
 run-prod:
 	docker-compose -f docker-compose.yml -f docker-compose-prod.yml up -d --build
 
+PHONY: kill
+kill:
+	TASKKILL /F /IM python.exe
+
 PHONY: stop-prod
 stop-prod:
 	docker-compose -f docker-compose.yml -f docker-compose-prod.yml stop

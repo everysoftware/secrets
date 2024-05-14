@@ -1,7 +1,6 @@
 import datetime
 from typing import Annotated, TypeVar, Generic
 
-from fastapi_pagination import Page as BasePage, Params as BaseParams
 from pydantic import ConfigDict, BaseModel, Field
 
 
@@ -19,9 +18,10 @@ updated_at_field = Annotated[
 T = TypeVar("T", bound=BaseModel)
 
 
-class SPage(BasePage[T], Generic[T]):
-    pass
+class SPage(SBase, Generic[T]):
+    items: list[T]
 
 
-class SParams(BaseParams):
-    pass
+class SParams(SBase):
+    limit: int = Field(100, ge=1)
+    offset: int = Field(0, ge=0)

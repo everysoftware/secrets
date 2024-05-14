@@ -1,7 +1,6 @@
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, HTTPException
-from fastapi_pagination import add_pagination
 from starlette.middleware.cors import CORSMiddleware
 from starlette.responses import JSONResponse
 
@@ -16,15 +15,12 @@ async def lifespan(_app: FastAPI):
 
 app = FastAPI(**settings.app.configs, lifespan=lifespan)
 app.add_middleware(
-    # TODO: Resolve the issue with the CORS middleware
-    CORSMiddleware,
+    CORSMiddleware,  # type: ignore[arg-type]
     allow_origins=settings.app.cors_origins,
     allow_credentials=True,
     allow_methods=settings.app.cors_methods,
     allow_headers=settings.app.cors_headers,
 )
-
-add_pagination(app)
 
 
 @app.exception_handler(HTTPException)

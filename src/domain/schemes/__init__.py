@@ -8,6 +8,7 @@ from .password import (
     SPassword,
     SPasswordCreateEncrypted,
     SPasswordUpdateEncrypted,
+    SPasswordPage,
 )
 from .auth import SEnableTwoFactor, SQRCode
 from .user import SUserCreate, SUserUpdate, SUser
@@ -28,4 +29,5 @@ __all__ = [
     "SPasswordUpdateEncrypted",
     "SEnableTwoFactor",
     "SQRCode",
+    "SPasswordPage",
 ]

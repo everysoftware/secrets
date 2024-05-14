@@ -4,8 +4,6 @@ from src.domain.schemes import (
     SPasswordEncrypted,
     SPasswordCreate,
     SPasswordUpdate,
-    SPasswordItem,
-    SPage,
     SParams,
 )
 from src.infrastructure.db import UnitOfWork
@@ -13,6 +11,7 @@ from src.infrastructure.models import PasswordOrm
 from src.infrastructure.repositories import EntityNotFound
 from .base import Service
 from .security import SecurityService
+from ...domain.schemes.password import SPasswordPage, SPasswordItem
 
 
 class PasswordService(Service):
@@ -62,7 +61,7 @@ class PasswordService(Service):
 
     async def search(
         self, user: SUser, params: SParams, query: str | None = None
-    ) -> SPage[SPasswordItem]:
+    ) -> SPasswordPage:
         """Search for passwords by user."""
         where = [PasswordOrm.user_id == user.id]
 
@@ -70,11 +69,16 @@ class PasswordService(Service):
             where.append(PasswordOrm.title.ilike(f"%{query}%"))
 
         async with self.uow:
-            return await self.uow.passwords.search(
-                params,
+            items = await self.uow.passwords.get_many(
                 where=where,
                 order_by=[PasswordOrm.title.asc()],
+                limit=params.limit,
+                offset=params.offset,
             )
+            encrypted = [SPasswordEncrypted.model_validate(i) for i in items]
+            decrypted = [self.security.decrypt_password(i) for i in encrypted]
+
+            return SPasswordPage(items=decrypted)
 
     async def update(
         self, scheme: SPassword, update_scheme: SPasswordUpdate

@@ -2,7 +2,7 @@ from typing import Annotated
 
 from pydantic import Field
 
-from .base import SBase, created_at_field, updated_at_field
+from .base import SBase, created_at_field, updated_at_field, SPage
 
 title_field = Annotated[
     str, Field(min_length=1, max_length=128, examples=["Facebook", "Google", "GitHub"])
@@ -21,12 +21,8 @@ password_field = Annotated[
         min_length=1, max_length=128, examples=["qwerty123", "12345678", "Password123!"]
     ),
 ]
-note_field = Annotated[
-    str | None, Field(None, min_length=1, max_length=256, examples=["Sample comment"])
-]
-url_field = Annotated[
-    str | None, Field(None, max_length=256, examples=["https://example.com"])
-]
+note_field = Annotated[str, Field("", max_length=256, examples=["Sample comment"])]
+url_field = Annotated[str, Field("", max_length=256, examples=["https://example.com"])]
 
 
 class SPassword(SBase):
@@ -77,6 +73,10 @@ class SPasswordItem(SBase):
     title: title_field
     username: username_field
     url: url_field
+
+
+class SPasswordPage(SPage[SPasswordItem]):
+    pass
 
 
 class SPasswordGenerate(SBase):
