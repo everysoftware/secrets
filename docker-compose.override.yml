@@ -1,9 +1,0 @@
-version: '3.7'
-
-services:
-  db:
-    ports:
-      - "5435:5432"
-
-volumes:
-  pgdata:

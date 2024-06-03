@@ -1,89 +1,57 @@
-SOURCE_PATH = src
-TEST_PATH = tests
-APP = src.main:app
-API_HOST = localhost
-API_PORT = 8000
+APP_NAME = secrets_app
+TESTS_PATH = tests
 
-.PHONY: help
-help:
-	@echo "USAGE"
-	@echo "  make <commands>"
-	@echo ""
-	@echo "AVAILABLE COMMANDS"
-	@echo "  run-dev         Start api in development mode"
-	@echo "  run-prod        Start api in production mode"
-	@echo "  run-deps        Start dependencies"
-	@echo "  test            Run tests"
-	@echo "  lint            Lint project"
-	@echo "  format          Format project"
-	@echo "  freeze          Make requirements.txt"
-	@echo "  generate        Generate migration"
-	@echo "  migrate         Run migrations"
-	@echo "  pip             Upgrade pip"
-	@echo "  venv            Create virtual environment"
-	@echo "  help            Show this message"
+.PHONY: freeze
+freeze:
+	pip freeze > requirements.txt
 
-.PHONY: venv
-venv:
-	powershell -Command "venv/Scripts/activate; pip install -r requirements.txt"
-
-PHONY: pip
-pip:
-	python -m pip install --upgrade pip
-
-.PHONY: run-deps
-run-deps:
-	docker-compose up -d
-
-PHONY: run-dev
+.PHONY: run-dev
 run-dev:
-	@echo "Run dependencies"
-	make run-deps
-	@echo "Run api"
-	uvicorn $(APP) --host $(API_HOST) --port $(API_PORT) --reload
+	docker-compose -f docker-compose-base.yml -f docker-compose-dev.yml up --build -d
+	uvicorn $(APP_NAME):app --host 0.0.0.0 --port 8000 --reload
 
-PHONY: run-prod
+.PHONY: run-prod
 run-prod:
-	docker-compose -f docker-compose.yml -f docker-compose-prod.yml up -d --build
+	docker-compose -f docker-compose-base.yml -f docker-compose-prod.yml up --build -d
+
+.PHONY: stop-prod
+stop-prod:
+	docker-compose -f docker-compose-base.yml -f docker-compose-prod.yml stop
+
+.PHONY: format
+format:
+	ruff format $(APP_NAME) $(TESTS_PATH)
+
+.PHONY: lint
+lint:
+	ruff check $(APP_NAME) $(TESTS_PATH) --fix
+	mypy $(APP_NAME) --install-types
+
+PHONY: generate
+generate:
+	docker-compose -f docker-compose-base.yml -f docker-compose-dev.yml up --build -d
+	alembic revision --autogenerate
+
+PHONY: upgrade
+upgrade:
+	docker-compose -f docker-compose-base.yml -f docker-compose-dev.yml up --build -d
+	alembic upgrade head
+
+PHONY: downgrade
+downgrade:
+	docker-compose -f docker-compose-base.yml -f docker-compose-dev.yml up --build -d
+	alembic downgrade -1
+
+PHONY: check
+check:
+	docker-compose -f docker-compose-base.yml -f docker-compose-dev.yml up --build -d
+	pytest $(TESTS_PATH) -v
+
+PHONY: test
+test:
+	docker-compose -f docker-compose-base.yml -f docker-compose-dev.yml up --build -d
+	pytest $(TESTS_PATH) -s -v
 
 PHONY: kill
 kill:
 	TASKKILL /F /IM python.exe
-
-PHONY: stop-prod
-stop-prod:
-	docker-compose -f docker-compose.yml -f docker-compose-prod.yml stop
-
-PHONY: lint
-lint:
-	ruff --fix $(SOURCE_PATH) $(TEST_PATH)
-	mypy $(SOURCE_PATH) $(TEST_PATH)
-
-PHONY: format
-format:
-	black $(SOURCE_PATH) $(TEST_PATH)
-
-PHONY: test
-test:
-	@echo "Format project"
-	make format
-	@echo "Lint project"
-	make lint
-	@echo "Run dependencies"
-	make run-deps
-	@echo "Run tests"
-	pytest -s -v
-
-PHONY: freeze
-freeze:
-	pip freeze > requirements.txt
-
-PHONY: generate
-generate:
-	make run-deps
-	alembic revision --autogenerate
-
-PHONY: migrate
-migrate:
-	make run-deps
-	alembic upgrade head

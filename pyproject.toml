@@ -1,0 +1,27 @@
+[tool.poetry]
+name = "secrets_app"
+version = "0.1.0"
+description = ""
+authors = ["Ivan Stasevich <pravitel2015ify@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+fastapi = "^0.111.0"
+gunicorn = "^22.0.0"
+sqlalchemy = "^2.0.30"
+cryptography = "^42.0.7"
+alembic = "^1.13.1"
+fastapi-users = {extras = ["sqlalchemy"], version = "^13.0.0"}
+pydantic-settings = "^2.3.0"
+asyncpg = "^0.29.0"
+
+
+[tool.poetry.group.dev.dependencies]
+mypy = "^1.10.0"
+ruff = "^0.4.7"
+pre-commit = "^3.7.1"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
