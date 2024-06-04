@@ -240,4 +240,3 @@ cython_debug/
 .idea/
 .env.dev
 logs
-migrations/versions/*
