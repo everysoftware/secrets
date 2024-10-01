@@ -5,8 +5,11 @@
 Разворачиваемый менеджер паролей с AES шифрованием.
 
 ---
+
 **Backend:** https://github.com/everysoftware/secrets
+
 **Frontend:** https://github.com/everysoftware/secrets-frontend
+
 ---
 
 ## Фичи
