@@ -161,5 +161,5 @@ cython_debug/
 
 # Environments
 *.env
-.dev.env
+.env.prod
 !.env.example

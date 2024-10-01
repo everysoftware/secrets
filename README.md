@@ -36,6 +36,6 @@ Python 3.12 • FastAPI • SQLAlchemy • cryptography
 
 ## Скриншоты
 
-![img_1.png](assets/swagger_overview.png)
+![img.png](assets/api_reference.png)
 
 **Made with ❤️ by Ivan Stasevich**

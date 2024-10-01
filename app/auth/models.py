@@ -8,7 +8,7 @@ from app.db.base import BaseOrm
 from app.db.mixins import IDMixin, TimestampMixin
 
 
-class UserOrm(BaseOrm, IDMixin, TimestampMixin, SQLAlchemyBaseUserTable[int]):
+class UserOrm(BaseOrm, IDMixin, TimestampMixin, SQLAlchemyBaseUserTable[int]):  # type: ignore[misc]
     __tablename__ = "users"
 
     first_name: Mapped[str]
