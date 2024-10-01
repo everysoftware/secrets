@@ -1,5 +1,3 @@
-version: "3.8"
-
 services:
   db:
     image: postgres:16-alpine
@@ -15,7 +13,7 @@ services:
     build:
       context: .
       dockerfile: docker/fastapi.Dockerfile
-      target: prod
+      target: dev
     env_file:
       - .env
     restart: unless-stopped

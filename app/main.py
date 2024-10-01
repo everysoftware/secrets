@@ -4,10 +4,10 @@ from typing import AsyncGenerator, Any
 from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 
-from app.auth.router import router as auth_router
+from app.auth.auth_router import router as auth_router
+from app.auth.user_router import router as users_router
+from app.config import settings
 from app.passwords.router import router as passwords_router
-from app.settings import settings
-from app.users.router import router as users_router
 
 # Routers
 routers = [auth_router, passwords_router, users_router]
@@ -26,7 +26,7 @@ app = FastAPI(
     lifespan=lifespan,
     title=settings.app.title,
     version=settings.app.version,
-    summary="A powerful and secure password management API",
+    root_path="/api/v1",
 )
 
 app.add_middleware(
@@ -38,12 +38,7 @@ app.add_middleware(
 )
 
 for router in routers:
-    app.include_router(router, prefix="/api/v1")
-
-
-@app.get("/healthcheck", include_in_schema=False)
-def healthcheck() -> dict[str, Any]:
-    return {"status": "ok"}
+    app.include_router(router)
 
 
 @app.get("/hc", include_in_schema=False)

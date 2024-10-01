@@ -1,21 +1,24 @@
+from typing import Annotated
+
+from fastapi import Depends
+
 from app.auth.dependencies import MeDep
-from app.dependencies import GWDep
 from app.exceptions import NotEnoughRights
 from app.passwords.exceptions import PasswordNotFound
-from app.passwords.schemas import SPassword
+from app.passwords.schemas import SPasswordRead
+from app.passwords.service import PasswordService
+
+PasswordServiceDep = Annotated[PasswordService, Depends()]
 
 
 async def valid_password(
-    password_id: int,
+    service: PasswordServiceDep,
     user: MeDep,
-    gw: GWDep,
-) -> SPassword:
-    password = await gw.passwords.get(password_id)
-
+    password_id: int,
+) -> SPasswordRead:
+    password = await service.get(password_id)
     if password is None:
         raise PasswordNotFound()
-
     if password.user_id != user.id and not user.is_superuser:
         raise NotEnoughRights()
-
     return password

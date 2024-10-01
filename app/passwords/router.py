@@ -2,15 +2,15 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, status, Query
 
-from app.dependencies import GWDep
-from app.passwords.dependencies import valid_password
+from app.auth.dependencies import MeDep
+from app.db.schemas import PageParams
+from app.passwords.dependencies import valid_password, PasswordServiceDep
 from app.passwords.schemas import (
     SPasswordCreate,
-    SPassword,
+    SPasswordRead,
     SPasswordUpdate,
     SPasswordPage,
 )
-from app.schemas import PageParams
 
 router = APIRouter(prefix="/passwords", tags=["Passwords"])
 
@@ -22,9 +22,10 @@ router = APIRouter(prefix="/passwords", tags=["Passwords"])
 )
 async def create_password(
     creation: SPasswordCreate,
-    gw: GWDep,
-) -> SPassword:
-    return await gw.passwords.create(creation)
+    user: MeDep,
+    service: PasswordServiceDep,
+) -> SPasswordRead:
+    return await service.create(user, creation)
 
 
 @router.get(
@@ -33,8 +34,8 @@ async def create_password(
     description="Get a password by id",
 )
 async def get_password(
-    password: Annotated[SPassword, Depends(valid_password)],
-) -> SPassword:
+    password: Annotated[SPasswordRead, Depends(valid_password)],
+) -> SPasswordRead:
     return password
 
 
@@ -44,31 +45,32 @@ async def get_password(
     description="Update a password",
 )
 async def patch_password(
+    service: PasswordServiceDep,
     update: SPasswordUpdate,
-    password: Annotated[SPassword, Depends(valid_password)],
-    gw: GWDep,
-) -> SPassword:
-    return await gw.passwords.update(password.id, update)
+    password: Annotated[SPasswordRead, Depends(valid_password)],
+) -> SPasswordRead:
+    return await service.update(password, update)
 
 
 @router.delete(
     "/{password_id}",
-    status_code=status.HTTP_204_NO_CONTENT,
+    status_code=status.HTTP_200_OK,
     description="Delete a password",
 )
 async def delete_password(
-    password: Annotated[SPassword, Depends(valid_password)],
-    gw: GWDep,
-) -> None:
-    return await gw.passwords.delete(password)
+    service: PasswordServiceDep,
+    password: Annotated[SPasswordRead, Depends(valid_password)],
+) -> SPasswordRead:
+    return await service.delete(password)
 
 
 @router.get(
     "", status_code=status.HTTP_200_OK, description="Search for passwords"
 )
 async def search_password(
+    service: PasswordServiceDep,
     params: Annotated[PageParams, Depends()],
-    gw: GWDep,
+    user: MeDep,
     query: str | None = Query(None),
 ) -> SPasswordPage:
-    return await gw.passwords.search(params, query)
+    return await service.search(user, params, query)

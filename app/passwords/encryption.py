@@ -1,58 +1,32 @@
-from app.passwords.schemas import (
-    SPasswordCreate,
-    SPasswordCreateEncrypted,
-    SPasswordEncrypted,
-    SPassword,
-    SPasswordUpdate,
-    SPasswordUpdateEncrypted,
-)
+from typing import Any
+
+from app.config import settings
 from app.security.encryption import encrypt_aes, decrypt_aes
-from app.settings import settings
 
 
-class PasswordEncryption:
-    @staticmethod
-    def encrypt_password_create(
-        scheme: SPasswordCreate,
-    ) -> SPasswordCreateEncrypted:
-        return SPasswordCreateEncrypted(
-            **scheme.model_dump(exclude={"username", "password"}),
-            username=encrypt_aes(
-                scheme.username, settings.app.encryption_secret
-            ),
-            password=encrypt_aes(
-                scheme.password, settings.app.encryption_secret
-            ),
+def encrypt_password(data: dict[str, Any]) -> dict[str, Any]:
+    password = data.pop("password", None)  # type: str | None
+    if password is not None:
+        data["encrypted_password"] = encrypt_aes(
+            password, settings.app.encryption_secret
         )
-
-    @staticmethod
-    def decrypt_password(scheme: SPasswordEncrypted) -> SPassword:
-        return SPassword(
-            **scheme.model_dump(exclude={"username", "password"}),
-            username=decrypt_aes(
-                scheme.username, settings.app.encryption_secret
-            ),
-            password=decrypt_aes(
-                scheme.password, settings.app.encryption_secret
-            ),
+    username = data.pop("username", None)  # type: str | None
+    if username is not None:
+        data["encrypted_username"] = encrypt_aes(
+            username, settings.app.encryption_secret
         )
+    return data
 
-    @staticmethod
-    def encrypt_password_update(
-        scheme: SPasswordUpdate,
-    ) -> SPasswordUpdateEncrypted:
-        scheme_dump = scheme.model_dump(
-            exclude_unset=True, exclude={"username", "password"}
+
+def decrypt_password(data: dict[str, Any]) -> dict[str, Any]:
+    password = data.pop("encrypted_password", None)  # type: str | None
+    if password is not None:
+        data["password"] = decrypt_aes(
+            password, settings.app.encryption_secret
         )
-
-        if scheme.username is not None:
-            scheme_dump["username"] = encrypt_aes(
-                scheme.username, settings.app.encryption_secret
-            )
-
-        if scheme.password is not None:
-            scheme_dump["password"] = encrypt_aes(
-                scheme.password, settings.app.encryption_secret
-            )
-
-        return SPasswordUpdateEncrypted(**scheme_dump)
+    username = data.pop("encrypted_username", None)  # type: str | None
+    if username is not None:
+        data["username"] = decrypt_aes(
+            username, settings.app.encryption_secret
+        )
+    return data

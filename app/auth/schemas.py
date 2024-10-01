@@ -5,8 +5,10 @@ from fastapi_users import schemas
 from pydantic import EmailStr, field_validator
 from pydantic import Field
 
+from app.schemas import BackendBase
 
-class SUser(schemas.BaseUser[int]):
+
+class SUserRead(BackendBase, schemas.BaseUser[int]):
     id: int
     email: EmailStr
     hashed_password: str = Field(exclude=True)
@@ -19,7 +21,7 @@ class SUser(schemas.BaseUser[int]):
     updated_at: datetime.datetime
 
 
-class SUserCreate(schemas.BaseUserCreate):
+class SUserCreate(BackendBase, schemas.BaseUserCreate):
     first_name: str = Field(min_length=1, max_length=32, examples=["John"])
     email: EmailStr
     password: str = Field(
@@ -33,7 +35,7 @@ class SUserCreate(schemas.BaseUserCreate):
 
     @field_validator("password")  # noqa
     @classmethod
-    def validate_password(cls, password):
+    def validate_password(cls, password: str) -> str:
         if not any(c.isupper() for c in password):
             raise ValueError(
                 "Пароль должен содержать хотя бы одну заглавную букву"
@@ -48,11 +50,10 @@ class SUserCreate(schemas.BaseUserCreate):
             raise ValueError(
                 "Пароль должен содержать хотя бы один специальный символ"
             )
-
         return password
 
 
-class SUserUpdate(schemas.BaseUserUpdate):
+class SUserUpdate(BackendBase, schemas.BaseUserUpdate):
     first_name: str | None = Field(
         None, min_length=1, max_length=32, examples=["John"]
     )

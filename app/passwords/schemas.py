@@ -1,51 +1,54 @@
 from pydantic import Field
 
-from app.schemas import MainModel, Page, EntityModel
+from app.db.schemas import Page
+from app.db.schemas import TimestampModel, IDModel
+from app.schemas import BackendBase
 
 
-class SPasswordBase(MainModel):
-    title: str = Field(min_length=1, max_length=128, examples=["Facebook"])
-    username: str = Field(
-        min_length=1,
-        max_length=128,
-        examples=["user@example.com"],
-    )
+class SPasswordBase(BackendBase):
+    name: str = Field(min_length=1, max_length=128, examples=["Facebook"])
     url: str = Field("", max_length=256, examples=["https://example.com"])
     note: str = Field("", max_length=256, examples=["Sample comment"])
 
 
-class SPassword(EntityModel, SPasswordBase):
+class SPasswordDB(SPasswordBase, IDModel, TimestampModel):
     user_id: int
-    password: str = Field(min_length=1, max_length=128, examples=["qwerty123"])
+    encrypted_username: str
+    encrypted_password: str
+
+
+class SPasswordRead(SPasswordBase, IDModel, TimestampModel):
+    user_id: int
+    username: str
+    password: str
 
 
 class SPasswordCreate(SPasswordBase):
+    username: str = Field(
+        min_length=1, max_length=128, examples=["user@example.com"]
+    )
     password: str = Field(min_length=1, max_length=128, examples=["qwerty123"])
 
 
-class SPasswordUpdate(SPasswordCreate):
-    pass
+class SPasswordUpdate(BackendBase):
+    username: str | None = Field(
+        None, min_length=1, max_length=128, examples=["user@example.com"]
+    )
+    password: str | None = Field(
+        None, min_length=1, max_length=128, examples=["qwerty123"]
+    )
+    name: str | None = Field(
+        None, min_length=1, max_length=128, examples=["Facebook"]
+    )
+    url: str | None = Field(
+        None, max_length=256, examples=["https://example.com"]
+    )
+    note: str | None = Field(None, max_length=256, examples=["Sample comment"])
 
 
-class SPasswordItem(SPasswordBase):
-    id: int
+class SPasswordItem(SPasswordRead):
+    password: str = Field(exclude=True)
 
 
 class SPasswordPage(Page[SPasswordItem]):
     pass
-
-
-# Encryption
-class SPasswordEncrypted(SPassword):
-    username: str
-    password: str
-
-
-class SPasswordCreateEncrypted(SPasswordCreate):
-    username: str
-    password: str
-
-
-class SPasswordUpdateEncrypted(SPasswordUpdate):
-    username: str | None = None
-    password: str | None = None
