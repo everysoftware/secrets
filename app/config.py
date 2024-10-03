@@ -9,6 +9,7 @@ from app.schemas import SettingsBase
 class AppSettings(SettingsBase):
     title: str = "Secrets API"
     version: str = "0.1.0"
+    root_path: str = "/v1"
     env: Literal["dev", "prod"] = "dev"
     cors_headers: list[str] = ["*"]
     cors_origins: list[str] = ["*"]
