@@ -2,9 +2,9 @@ from contextlib import asynccontextmanager
 from typing import AsyncGenerator
 
 from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import settings
+from app.cors import setup_cors
 from app.routing import main_router
 
 
@@ -19,16 +19,10 @@ async def lifespan(_app: FastAPI) -> AsyncGenerator[None, None]:
 
 app = FastAPI(
     lifespan=lifespan,
-    title=settings.app.title,
-    version=settings.app.version,
-    root_path=settings.app.root_path,
+    title=settings.app_display_name,
+    version=settings.app_version,
+    root_path=settings.app_root_path,
 )
-app.add_middleware(
-    CORSMiddleware,  # noqa
-    allow_origins=settings.app.cors_origins,
-    allow_credentials=True,
-    allow_methods=settings.app.cors_methods,
-    allow_headers=settings.app.cors_headers,
-)
+setup_cors(app)
 
 app.include_router(main_router)

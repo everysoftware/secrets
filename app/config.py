@@ -1,28 +1,30 @@
 from typing import Literal
 
-from pydantic_settings import SettingsConfigDict
-
+from app.auth.config import AuthSettings
 from app.db.config import DBSettings
+from app.passwords.config import PasswordSettings
 from app.schemas import SettingsBase
 
 
-class AppSettings(SettingsBase):
-    title: str = "Secrets API"
-    version: str = "0.1.0"
-    root_path: str = "/v1"
-    env: Literal["dev", "prod"] = "dev"
+class CORSSettings(SettingsBase):
     cors_headers: list[str] = ["*"]
-    cors_origins: list[str] = ["*"]
     cors_methods: list[str] = ["*"]
-    auth_secret: str = "changethis"
-    auth_token_lifetime: int = 3600
-    encryption_secret: str = "changethis"
-
-    model_config = SettingsConfigDict(env_prefix="app_")
+    cors_origins: list[str] = ["*"]
+    cors_origin_regex: str | None = None
 
 
-class Settings:
-    app: AppSettings = AppSettings()
+class Settings(SettingsBase):
+    app_name: str = "fastapiapp"
+    app_display_name: str = "FastAPI App"
+    app_version: str = "0.1.0"
+    app_env: Literal["dev", "prod"] = "dev"
+    app_debug: bool = False
+    app_domain: str = "localhost:8000"
+    app_root_path: str = "/v1"
+
+    app: AuthSettings = AuthSettings()
+    passwords: PasswordSettings = PasswordSettings()
+    cors: CORSSettings = CORSSettings()
     db: DBSettings = DBSettings()
 
 
