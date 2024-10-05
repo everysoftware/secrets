@@ -2,7 +2,7 @@ from typing import Literal
 
 from app.auth.config import AuthSettings
 from app.db.config import DBSettings
-from app.passwords.config import PasswordSettings
+from app.security.config import SecuritySettings
 from app.schemas import SettingsBase
 
 
@@ -23,7 +23,7 @@ class Settings(SettingsBase):
     app_root_path: str = "/v1"
 
     app: AuthSettings = AuthSettings()
-    passwords: PasswordSettings = PasswordSettings()
+    security: SecuritySettings = SecuritySettings()
     cors: CORSSettings = CORSSettings()
     db: DBSettings = DBSettings()
 
