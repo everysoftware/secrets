@@ -20,7 +20,7 @@ class Settings(SettingsBase):
     app_env: Literal["dev", "prod"] = "dev"
     app_debug: bool = False
     app_domain: str = "localhost:8000"
-    app_root_path: str = "/v1"
+    app_root_path: str = "/api/v1"
 
     app: AuthSettings = AuthSettings()
     security: SecuritySettings = SecuritySettings()
