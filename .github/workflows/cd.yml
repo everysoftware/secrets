@@ -19,7 +19,7 @@ jobs:
     - name: Deploy to server
       run: |
         ssh -o StrictHostKeyChecking=no ${{ secrets.DEPLOY_USERNAME }}@${{ secrets.DEPLOY_IP_ADDRESS }} <<EOF
-          cd home/secrets-bot
+          cd home/secrets-telegram-bot
           git pull
           docker-compose down
           docker-compose up --build -d
