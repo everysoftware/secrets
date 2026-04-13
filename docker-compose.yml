@@ -1,11 +1,22 @@
 services:
   redis:
-    build:
-      context: buildfiles
-      dockerfile: RedisDockerfile
+    image: redis:7.2.1
     env_file:
       - .env
-    restart: on-failure
+    environment:
+      - REDIS_PASSWORD=${REDIS_PASSWORD?Variable not set}
+    restart: unless-stopped
+    # Set credentials & logging
+    command: >
+      sh -c '
+        mkdir -p /usr/local/etc/redis &&
+        echo "bind 0.0.0.0" > /usr/local/etc/redis/redis.conf &&
+        echo "appendonly yes" >> /usr/local/etc/redis/redis.conf &&
+        echo "user default on >$REDIS_PASSWORD ~* +@all" > /usr/local/etc/redis/users.acl &&
+        redis-server /usr/local/etc/redis/redis.conf --aclfile /usr/local/etc/redis/users.acl
+      '
+    volumes:
+      - redisdata:/var/lib/redis/data
     ports:
       - "6375:6379"
   db:
@@ -43,4 +54,4 @@ services:
 
 volumes:
   pgdata:
-  pgadmin-data:
+  redisdata:
