@@ -1,0 +1,46 @@
+services:
+  redis:
+    build:
+      context: buildfiles
+      dockerfile: RedisDockerfile
+    env_file:
+      - .env
+    restart: on-failure
+    ports:
+      - "6375:6379"
+  db:
+    image: postgres:15-alpine
+    env_file:
+      - .env
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    restart: on-failure
+    ports:
+      - "5435:5432"
+  bot:
+    build:
+      context: .
+      dockerfile: buildfiles/Dockerfile
+    command: /bin/bash -c "source venv/bin/activate && make migrate && python -m src.bot"
+    env_file:
+      - .env
+    restart: always
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+      - redis
+  scheduler:
+    build:
+      context: .
+      dockerfile: buildfiles/Scheduler.Dockerfile
+    env_file:
+      - .env
+    restart: always
+    command: /bin/bash -c "source venv/bin/activate && arq src.scheduler.main.WorkerSettings"
+    depends_on:
+      - redis
+
+volumes:
+  pgdata:
+  pgadmin-data:
