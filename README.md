@@ -5,9 +5,9 @@
 [![Lint and test](https://github.com/everysoftware/secrets-bot/actions/workflows/ci.yml/badge.svg)](https://github.com/everysoftware/secrets-bot/actions/workflows/ci.yml)
 [![Deploy to server](https://github.com/everysoftware/secrets-bot/actions/workflows/cd.yml/badge.svg)](https://github.com/everysoftware/secrets-bot/actions/workflows/cd.yml)
 
-<img src="https://raw.githubusercontent.com/everysoftware/secrets-bot/master/assets/promo.png" width="250" />  
-<img src="https://raw.githubusercontent.com/everysoftware/secrets-bot/master/assets/password_view.png" width="250" />  
-<img src="https://raw.githubusercontent.com/everysoftware/secrets-bot/master/assets/password_gen.png" width="250" />  
+<img src="https://raw.githubusercontent.com/everysoftware/secrets-telegram-bot/master/assets/promo.png" width="300" />  
+<img src="https://raw.githubusercontent.com/everysoftware/secrets-telegram-bot/master/assets/password_view.png" width="300" />  
+<img src="https://raw.githubusercontent.com/everysoftware/secrets-telegram-bot/master/assets/password_gen.png" width="300" />  
 
 ## Начало работы
 
@@ -21,10 +21,9 @@
 <details>
 
 <summary>Посмотреть</summary> 
-
-<img src="https://github.com/everysoftware/secrets-bot/assets/22497421/bfa8b444-e5af-4f0b-8e74-5d59d49c690b" width="300" />  
-<img src="https://github.com/everysoftware/secrets-bot/assets/22497421/115b336c-bf42-4f62-81b5-4a303b19098e" width="300" />   
-<img src="https://github.com/everysoftware/secrets-bot/assets/22497421/ca728311-e476-454d-b8c2-2c6abae96c58" width="300" />  
+<img src="https://raw.githubusercontent.com/everysoftware/secrets-telegram-bot/master/assets/welcome.png" width="300" />  
+<img src="https://raw.githubusercontent.com/everysoftware/secrets-telegram-bot/master/assets/password_change.png" width="300" />  
+<img src="https://raw.githubusercontent.com/everysoftware/secrets-telegram-bot/master/assets/password_list.png" width="300" />  
 
 </details>
 
@@ -39,4 +38,4 @@
 2. Соберите и запустите контейнеры Docker: ```docker-compose up -d --build```
 3. Готово!
 
-**Made with ❤️ by @ivanstasevich**
+**Made with ❤️ by @everysoftware**
