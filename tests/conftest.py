@@ -8,14 +8,14 @@ from alembic.command import upgrade as alembic_upgrade
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import sessionmaker
 
-from bot.dispatcher import create_dispatcher
-from cache import Cache
-from config import cfg
-from db import async_session_factory, create_async_engine
-from utils.alembic import alembic_config_from_url
-from utils.mocked_bot import MockedBot
-from utils.mocked_db import MockedDatabase
-from utils.mocked_redis import MockedRedis
+from src.bot.dispatcher import create_dispatcher
+from src.cache import Cache
+from src.config import cfg
+from src.db import async_session_factory, create_async_engine
+from tests.utils.alembic import alembic_config_from_url
+from tests.utils.mocked_bot import MockedBot
+from tests.utils.mocked_db import MockedDatabase
+from tests.utils.mocked_redis import MockedRedis
 
 
 @pytest.fixture(scope='session')
